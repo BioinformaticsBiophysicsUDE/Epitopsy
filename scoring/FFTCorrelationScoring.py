@@ -10,7 +10,7 @@ import numpy as np
 from epitopsy.cython import FFTCorrelationScoringCython
 from epitopsy.scoring.Scoring import Scoring
 from epitopsy.DXFile import DXBox
-from epitopsy.tools import anfft
+import anfft
 
 class FFT_correlation_scoring(Scoring):
     '''
