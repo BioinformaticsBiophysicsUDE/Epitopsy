@@ -1,0 +1,12 @@
+# Git ignore list #
+###################
+# Compiled source #
+###################
+*.com
+*.class
+*.dll
+*.exe
+*.o
+*.so
+*.pyc
+*.py~

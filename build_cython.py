@@ -1,10 +1,13 @@
 '''
 Created on Sep 30, 2011
-
-@author: Christoph Wilms
+Edited on Nov 14, 2013
+@author: Christoph Wilms, Ludwig Ohl
 '''
 import os
+import sys
 from subprocess import call
+import numpy
+from distutils.sysconfig import get_python_inc
 
 if __name__ == '__main__':
     """
@@ -46,8 +49,10 @@ if __name__ == '__main__':
         python_headers_usr = os.path.join("/usr", "include","python2.7")
         numpy_headers_usr = os.path.join("/usr", "include","python2.7","numpy")
 
-        python_headers_cluster = "/home/wilms/Programs/python/include/python2.7"
-        numpy_headers_cluster = "/home/wilms/Programs/python/lib/python2.7/site-packages/numpy/core/include"
+        python_headers_cluster = get_python_inc()
+	print 'Using python Headers from ', python_headers_cluster
+        numpy_headers_cluster = numpy.get_include()
+	print 'Using numpy Headers from ', numpy_headers_cluster
 
         if(os.path.exists(python_headers_usr)
                 and os.path.exists(numpy_headers_usr)):
