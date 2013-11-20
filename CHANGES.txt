@@ -1,1 +1,1 @@
-v0.1, 14.11.2013 -- Initial Version
+v0.1, 20.11.2013 -- Added adaptive headers
