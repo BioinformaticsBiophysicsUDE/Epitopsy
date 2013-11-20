@@ -1,0 +1,9 @@
+setup.cfg
+setup.py
+setuptools_cython.py
+setuptools_cython.egg-info/PKG-INFO
+setuptools_cython.egg-info/SOURCES.txt
+setuptools_cython.egg-info/dependency_links.txt
+setuptools_cython.egg-info/entry_points.txt
+setuptools_cython.egg-info/requires.txt
+setuptools_cython.egg-info/top_level.txt

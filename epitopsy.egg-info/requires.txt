@@ -1,0 +1,4 @@
+python >= 2.7.4
+numpy >= 1.7.0
+cython >= 0.18.0
+biopython >= 1.6.0

@@ -1,0 +1,17 @@
+{
+  "info": {},
+  "packages": {
+    "epitopsy-0.1.0-py27_0.tar.bz2": {
+      "build": "py27_0",
+      "build_number": 0,
+      "depends": [
+        "python 2.7*"
+      ],
+      "file_hash": "9ffc3ff9980a16a8986449fa3f0f9990672ee6a8",
+      "md5": "d6b059ab1202b60b2a08bd80e53a6524",
+      "name": "epitopsy",
+      "size": 5628559,
+      "version": "0.1.0"
+    }
+  }
+}
