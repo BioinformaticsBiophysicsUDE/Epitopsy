@@ -1,8 +1,10 @@
-from setuptools import setup
+#from setuptools import setup
+from distutils.core import setup
 from Cython.Build import cythonize
+from Cython.Distutils import build_ext
 from distutils.extension import Extension
-from distutils.sysconfig import get_python_inc
-import numpy
+#from distutils.sysconfig import get_python_inc
+from numpy import get_include
 
 # setuptools DWIM monkey-patch madness
 # http://mail.python.org/pipermail/distutils-sig/2007-September/thread.html#8204
@@ -11,6 +13,20 @@ if 'setuptools.extension' in sys.modules:
     m = sys.modules['setuptools.extension']
     m.Extension.__dict__ = m._Extension.__dict__
 
+### Python and Numpy Header paths
+cyHeaders = [get_include()]
+
+### Cython Files that need compiling
+cyFileNames = ['cython/CalculateInteractionEnergyCython', 
+    'cython/dx_cython', 
+    'cython/pdb_cython', 
+    'cython/FFTCorrelationScoringCython', 
+    'cython/optimizer_cython', 
+    'cython/fast_dca', 
+    'cython/fast_dca_float32'
+]
+
+cythonExtensions = [Extension('epitopsy/'+cyFile, ['epitopsy/'+cyFile+'.pyx'], include_dirs=cyHeaders, extra_compile_args=['-pthread','-fPIC','-fwrapv','-O2','-Wall','-fopenmp','-fno-strict-aliasing']) for cyFile in cyFileNames]
 
 
 setup(
@@ -30,16 +46,11 @@ setup(
     license='LICENSE.txt',
     description='Bioinforamtics Toolkit.',
     long_description=open('README.txt').read(),
-    install_requires=[
-	"python >= 2.7.4",
-        "numpy >= 1.7.0",
-        "cython >= 0.18.0",
-	"biopython >= 1.6.0"
+    requires=[
+	"python (>= 2.7.4)",
+        "numpy (>= 1.7.0)",
+        "cython (>= 0.18.0)",
+	"biopython (>= 1.6.0)"
     ],
-    setup_requires=[
-            'setuptools_cython',
-    ],
-    ext_modules = [
-        Extension('epitopsy.cython', ["epitopsy/cython/CalculateInteractionEnergyCython.pyx", "epitopsy/cython/dx_cython.pyx", "epitopsy/cython/pdb_cython.pyx", "epitopsy/cython/FFTCorrelationScoringCython.pyx", "epitopsy/cython/optimizer_cython.pyx", "epitopsy/cython/fast_dca.pyx", "epitopsy/cython/fast_dca_float32.pyx"], include_dirs= [numpy.get_include(), get_python_inc()])
-    ],
+    ext_modules = cythonize(cythonExtensions),
 )

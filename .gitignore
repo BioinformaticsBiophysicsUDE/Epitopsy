@@ -8,5 +8,6 @@
 *.exe
 *.o
 *.so
+*.c
 *.pyc
 *.py~
