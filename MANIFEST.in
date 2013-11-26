@@ -1,5 +1,4 @@
 include MANIFEST.in README.txt INSTALL.txt ToDo.txt USAGE.txt
 include COPYING.txt LICENSE.txt Makefile
-include cython/ *.pyx *.pxd *.c *.h *.so
-
+recursive-include epitopsy/cython *
 

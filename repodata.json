@@ -1,17 +1,17 @@
 {
   "info": {},
   "packages": {
-    "epitopsy-0.1.0-py27_0.tar.bz2": {
+    "epitopsy-0.2.0-py27_0.tar.bz2": {
       "build": "py27_0",
       "build_number": 0,
       "depends": [
         "python 2.7*"
       ],
-      "file_hash": "9ffc3ff9980a16a8986449fa3f0f9990672ee6a8",
-      "md5": "d6b059ab1202b60b2a08bd80e53a6524",
+      "file_hash": "668db917b08c58ed0e0149e777b421707fbfca8a",
+      "md5": "06d7f24797c3006c7c54a9f79db6497d",
       "name": "epitopsy",
-      "size": 5628559,
-      "version": "0.1.0"
+      "size": 2228928,
+      "version": "0.2.0"
     }
   }
 }
