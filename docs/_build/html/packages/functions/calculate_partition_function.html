@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>calculate_partition_function — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="functions Package" href="../../epitopsy.functions.html" />
+    <link rel="next" title="depreciated_calculate_partition_function_slow — YYYYYYY" href="depreciated_calculate_partition_function_slow.html" />
+    <link rel="prev" title="StartMD — YYYYYYY" href="StartMD.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="depreciated_calculate_partition_function_slow.html" title="depreciated_calculate_partition_function_slow — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="StartMD.html" title="StartMD — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.functions.html" accesskey="U">functions Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-calculate_partition_function">
+<span id="calculate-partition-function-yyyyyyy"></span><h1><a class="reference internal" href="#module-calculate_partition_function" title="calculate_partition_function: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">calculate_partition_function</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-calculate_partition_function" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="calculate-partition-function-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-calculate-partition-function"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="calculate_partition_function.calculate_interaction_energy">
+<tt class="descclassname">calculate_partition_function.</tt><tt class="descname">calculate_interaction_energy</tt><big>(</big><em>pdb_path, ligand_path, mesh_size, number_of_rotations=150, Temperature=310., extend=None, ph=None, use_pdb2pqr=True, cubic_box=True, center_pdb=False, box_center=[0, 0, 0], box_dim=None, box_type=[&quot;esp&quot;, &quot;vdw&quot;], write_top_hits=False, explicit_sampling=False, zipped=False</em><big>)</big><a class="headerlink" href="#calculate_partition_function.calculate_interaction_energy" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function calculates the difference in Gibbs free energy in units
+of <img class="math" src="../../_images/math/0bdb54eeab12004669ec208789680f5e7679298d.png" alt="k_bT"/>.</p>
+<p>Probability of all states at position <img class="math" src="../../_images/math/98a575e02fc864058b63f22e7e6030582e64e011.png" alt="\vec{r}"/>:</p>
+<blockquote>
+<div><img class="math" src="../../_images/math/ff554c4053bff86f08c39252404561faadc61417.png" alt="p(r) = \frac{1}{Z} \sum_i^N e^{\left ( \frac{-E_i}{k_b T} \right )}"/></div></blockquote>
+<p>Probability of all states at position <img class="math" src="../../_images/math/98a575e02fc864058b63f22e7e6030582e64e011.png" alt="\vec{r}"/> in solution (with <img class="math" src="../../_images/math/9fe46701fb538f53997b9a8c6ec67c44ee032593.png" alt="E_i = 0"/> for all rotations):</p>
+<blockquote>
+<div><img class="math" src="../../_images/math/635a79f13f63de26ddce608ad550a52f479ca866.png" alt="p(r_{solv}) = \frac{1}{Z} \sum_i^N e^{\left ( \frac{-E_i}{k_b T} \right )} = \frac{N}{Z}"/></div></blockquote>
+<p>Dissociation constant:</p>
+<blockquote>
+<div><img class="math" src="../../_images/math/b1e377855c154023ebf4d5d5f12b896b898b6053.png" alt="K = \frac{p(r)}{p(r_{solv})} = \frac{1}{N} \sum_i^N e^{\left ( \frac{-E_i}{k_b T} \right )}"/></div></blockquote>
+<p>Gibbs free energy:</p>
+<blockquote>
+<div><img class="math" src="../../_images/math/65b73550b698954e1772b7f31e0f76ff24477d25.png" alt="\Delta G = - k_bT \times ln(K)"/></div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb_path</strong> &#8211; path to the fixed pdb file</li>
+<li><strong>ligand_path</strong> &#8211; path to the .pqr file of the ligand. the .pdb file has
+to be in the same folder</li>
+<li><strong>mesh_size</strong> &#8211; grid mesh size in all three dimensions [mx,my,mz]</li>
+<li><strong>number_of_rotations</strong> &#8211; how many different orientations for the ligand?</li>
+<li><strong>Temperature</strong> &#8211; temperature for the electrostatic potential calculations</li>
+<li><strong>extend</strong> &#8211; extend the box dimensions by this factor</li>
+<li><strong>ph</strong> &#8211; can be used to calculate the pqr for a specific pH, default is
+<tt class="docutils literal"><span class="pre">None</span></tt></li>
+<li><strong>use_pdb2pqr</strong> &#8211; use pdb2pqr to calculate the pqr of pdb_path, if
+<tt class="docutils literal"><span class="pre">False</span></tt> a pqr with the same name, but ending with &#8216;.pqr&#8217; has
+to be in the same folder</li>
+<li><strong>cubic_box</strong> &#8211; cubic box or not, hence <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></li>
+<li><strong>center_pdb</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> the pdb will be centered at box_center,
+default is <tt class="docutils literal"><span class="pre">False</span></tt></li>
+<li><strong>box_center</strong> &#8211; center of the apbs calculations, default is [0,0,0]</li>
+<li><strong>box_dim</strong> &#8211; dimension of the box, default is <tt class="docutils literal"><span class="pre">None</span></tt> and it is
+calculated automatically</li>
+<li><strong>box_type</strong> &#8211; types of boxes APBS should write to disk. We need at least
+[&#8220;esp&#8221;,&#8221;vdw&#8221;], &#8220;smol&#8221; is optional <img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> [&#8220;esp&#8221;,&#8221;vdw&#8221;,&#8221;smol&#8221;]</li>
+<li><strong>write_top_hits</strong> &#8211; write the top scoring conformations</li>
+<li><strong>explicit_sampling</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> it does not use FFT correlation for
+the detection of overlapping orienations. This option does
+not work with write_top_hits. Default is <tt class="docutils literal"><span class="pre">False</span></tt></li>
+<li><strong>zipped</strong> &#8211; if <tt class="docutils literal"><span class="pre">True</span></tt> all dxboxes will be gzipped, else the energy
+matrix and the energy matrix with the LAS surface
+are not zipped. Default is <tt class="docutils literal"><span class="pre">False</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the energy</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">calculate_partition_function</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="StartMD.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">StartMD</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="depreciated_calculate_partition_function_slow.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">depreciated_calculate_partition_function_slow</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/functions/calculate_partition_function.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="depreciated_calculate_partition_function_slow.html" title="depreciated_calculate_partition_function_slow — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="StartMD.html" title="StartMD — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.functions.html" >functions Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

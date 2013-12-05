@@ -1,0 +1,229 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Sequence — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../index.html" />
+    <link rel="up" title="epitopsy Package" href="../epitopsy.html" />
+    <link rel="next" title="Structure — YYYYYYY" href="Structure.html" />
+    <link rel="prev" title="DXFile — YYYYYYY" href="DXFile.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Structure.html" title="Structure — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="DXFile.html" title="DXFile — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../epitopsy.html" accesskey="U">epitopsy Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-Sequence">
+<span id="sequence-yyyyyyy"></span><h1><a class="reference internal" href="#module-Sequence" title="Sequence: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Sequence</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-Sequence" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="sequence-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-sequence"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Sequence.make_alignment_upper_case">
+<tt class="descclassname">Sequence.</tt><tt class="descname">make_alignment_upper_case</tt><big>(</big><em>orig_aln</em><big>)</big><a class="headerlink" href="#Sequence.make_alignment_upper_case" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the alignment and transforms all characters to upper case.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>orig_aln</strong> &#8211; biopython alignment</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">an upper case biopython alignment</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sequence.make_alignment_clean">
+<tt class="descclassname">Sequence.</tt><tt class="descname">make_alignment_clean</tt><big>(</big><em>orig_aln</em><big>)</big><a class="headerlink" href="#Sequence.make_alignment_clean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Uses the alignment, removes sequences with non standard amino acids and
+reduces the alignment size if unnecessary gaps are there (this may happen,
+if a sequence has been removed).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>orig_aln</strong> &#8211; biopython alignment</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a clean biopython alignment</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sequence.format_stockholm_to_fasta">
+<tt class="descclassname">Sequence.</tt><tt class="descname">format_stockholm_to_fasta</tt><big>(</big><em>input_path</em>, <em>output_path</em><big>)</big><a class="headerlink" href="#Sequence.format_stockholm_to_fasta" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change the format of an stockholm formatted alignment ot an fasta formatted
+alignment.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>input_path</strong> &#8211; path to the stockholm formatted format</li>
+<li><strong>output_path</strong> &#8211; path to the new fasta alignment</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sequence.get_pairwise_alignment">
+<tt class="descclassname">Sequence.</tt><tt class="descname">get_pairwise_alignment</tt><big>(</big><em>ref_seq</em>, <em>query_seq</em><big>)</big><a class="headerlink" href="#Sequence.get_pairwise_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ref_seq</strong> &#8211; string of the reference sequence</li>
+<li><strong>query_seq</strong> &#8211; string of the query sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary with keys (&#8220;ref_seq&#8221;, &#8220;query_seq&#8221;) and the
+corresponding aligned sequences. It uses the first calculated
+alignment, equally scored alignments are not considered.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Sequence.get_almost_conserved_columns">
+<tt class="descclassname">Sequence.</tt><tt class="descname">get_almost_conserved_columns</tt><big>(</big><em>aln</em>, <em>cutoff=0.95</em><big>)</big><a class="headerlink" href="#Sequence.get_almost_conserved_columns" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>aln</strong> &#8211; biopython alignment</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list with the columns, where the amino acid with the highest
+frequency has a frequency larger than the cutoff. The columns start with 1!</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Sequence</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="DXFile.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">DXFile</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Structure.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Structure</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/packages/Sequence.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Structure.html" title="Structure — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="DXFile.html" title="DXFile — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../epitopsy.html" >epitopsy Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

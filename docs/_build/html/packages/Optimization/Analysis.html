@@ -1,0 +1,257 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Analysis — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Optimization Package" href="../../epitopsy.Optimization.html" />
+    <link rel="next" title="Distributed_Client — YYYYYYY" href="Distributed_Client.html" />
+    <link rel="prev" title="Optimization Package" href="../../epitopsy.Optimization.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Distributed_Client.html" title="Distributed_Client — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="../../epitopsy.Optimization.html" title="Optimization Package"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" accesskey="U">Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-Analysis">
+<span id="analysis-yyyyyyy"></span><h1><a class="reference internal" href="#module-Analysis" title="Analysis: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Analysis</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-Analysis" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="analysis-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-analysis"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Analysis.hypervolume">
+<tt class="descclassname">Analysis.</tt><tt class="descname">hypervolume</tt><big>(</big><em>pareto_set</em>, <em>optimization_type</em>, <em>reference_point = None</em><big>)</big><a class="headerlink" href="#Analysis.hypervolume" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the hypervolume by slicing objectives (HSO).</p>
+<p>The calculation has been &#8216;stolen&#8217; from inspyred, but it is open source
+and so is this code :-)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pareto_set</strong> &#8211; the list or lists of objective values comprising the Pareto front</li>
+<li><strong>optimization_type</strong> &#8211; &#8216;min&#8217; for minimization or &#8216;max&#8217; for maximization</li>
+<li><strong>reference_point</strong> &#8211; the reference point to be used (default None)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Analysis.hypervolume_max">
+<tt class="descclassname">Analysis.</tt><tt class="descname">hypervolume_max</tt><big>(</big><em>pareto_set</em>, <em>reference_point = None</em><big>)</big><a class="headerlink" href="#Analysis.hypervolume_max" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the hypervolume by slicing objectives (HSO).</p>
+<p>This function calculates the hypervolume (or S-measure) of a nondominated
+set using the Hypervolume by Slicing Objectives (HSO) procedure of <a class="reference external" href="http://www.lania.mx/~ccoello/EMOO/while05a.pdf.gz">While, et al.
+(IEEE CEC 2005)</a>.
+The <em>pareto_set</em> should be a list of lists of objective values.
+The <em>reference_point</em> may be specified or it may be left as the default
+value of None. In that case, the reference point is calculated to be the
+maximum value in the set for all objectives (the ideal point). This function
+assumes that objectives are to be maximized.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pareto_set</strong> &#8211; the list or lists of objective values comprising the Pareto front</li>
+<li><strong>reference_point</strong> &#8211; the reference point may be specified or it may be left as
+the default value <tt class="docutils literal"><span class="pre">None</span></tt>. In that case, the reference point is calculated
+to be the maximum value in the set for all objectives (the ideal point).
+This function  assumes that objectives are to be maximized.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Analysis.dominates">
+<tt class="descclassname">Analysis.</tt><tt class="descname">dominates</tt><big>(</big><em>p</em>, <em>q</em>, <em>k = None</em><big>)</big><a class="headerlink" href="#Analysis.dominates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Analysis.insert">
+<tt class="descclassname">Analysis.</tt><tt class="descname">insert</tt><big>(</big><em>p</em>, <em>k</em>, <em>pl</em><big>)</big><a class="headerlink" href="#Analysis.insert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Analysis.slice">
+<tt class="descclassname">Analysis.</tt><tt class="descname">slice</tt><big>(</big><em>pl</em>, <em>k</em>, <em>ref</em><big>)</big><a class="headerlink" href="#Analysis.slice" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Analysis.hypervolume_min">
+<tt class="descclassname">Analysis.</tt><tt class="descname">hypervolume_min</tt><big>(</big><em>pareto_set</em>, <em>reference_point = None</em><big>)</big><a class="headerlink" href="#Analysis.hypervolume_min" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the hypervolume by slicing objectives (HSO).</p>
+<p>This function calculates the hypervolume (or S-measure) of a nondominated
+set using the Hypervolume by Slicing Objectives (HSO) procedure of <a class="reference external" href="http://www.lania.mx/~ccoello/EMOO/while05a.pdf.gz">While, et al.
+(IEEE CEC 2005)</a>.
+The <em>pareto_set</em> should be a list of lists of objective values.
+The <em>reference_point</em> may be specified or it may be left as the default
+value of None. In that case, the reference point is calculated to be the
+maximum value in the set for all objectives (the ideal point). This function
+assumes that objectives are to be minimized.</p>
+<p>### I have hijacked the function and now it calculates the correct hypervolume
+for a minimization! ###</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>pareto_set</strong> &#8211; the list or lists of objective values comprising the Pareto front</li>
+<li><strong>reference_point</strong> &#8211; the reference point may be specified or it may be left as
+the default value <tt class="docutils literal"><span class="pre">None</span></tt>. In that case, the reference point is calculated
+to be the maximum value in the set for all objectives (the ideal point).
+This function  assumes that objectives are to be maximized.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descclassname">Analysis.</tt><tt class="descname">dominates</tt><big>(</big><em>p</em>, <em>q</em>, <em>k = None</em><big>)</big></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descclassname">Analysis.</tt><tt class="descname">insert</tt><big>(</big><em>p</em>, <em>k</em>, <em>pl</em><big>)</big></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt>
+<tt class="descclassname">Analysis.</tt><tt class="descname">slice</tt><big>(</big><em>pl</em>, <em>k</em>, <em>ref</em><big>)</big></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Analysis</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="../../epitopsy.Optimization.html"
+                        title="previous chapter">Optimization Package</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Distributed_Client.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Distributed_Client</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/Optimization/Analysis.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Distributed_Client.html" title="Distributed_Client — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="../../epitopsy.Optimization.html" title="Optimization Package"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" >Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

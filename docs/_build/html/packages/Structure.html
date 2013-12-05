@@ -1,0 +1,2269 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Structure — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../index.html" />
+    <link rel="up" title="epitopsy Package" href="../epitopsy.html" />
+    <link rel="next" title="build_cython — Cython compilation" href="build_cython.html" />
+    <link rel="prev" title="Sequence — YYYYYYY" href="Sequence.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="build_cython.html" title="build_cython — Cython compilation"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Sequence.html" title="Sequence — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../epitopsy.html" accesskey="U">epitopsy Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-Structure">
+<span id="structure-yyyyyyy"></span><h1><a class="reference internal" href="#module-Structure" title="Structure: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Structure</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-Structure" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<blockquote>
+<div>Biopython License Agreement</div></blockquote>
+<p>Permission to use, copy, modify, and distribute this software and its
+documentation with or without modifications and for any purpose and
+without fee is hereby granted, provided that any copyright notices
+appear in all copies and that both those copyright notices and this
+permission notice appear in supporting documentation, and that the
+names of the contributors or copyright holders not be used in
+advertising or publicity pertaining to distribution of the software
+without specific prior permission.</p>
+<p>THE CONTRIBUTORS AND COPYRIGHT HOLDERS OF THIS SOFTWARE DISCLAIM ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL THE
+CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT
+OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
+OR PERFORMANCE OF THIS SOFTWARE.</p>
+<div class="section" id="module-syntax">
+<span id="structure-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-structure"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Structure.Structure_Template">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">Structure_Template</tt><big>(</big><em>object</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is a template class from which PDBFile and PQRFile will be derived,
+because they share a lot of functions.</p>
+<p>This class is not supposed to work with multiple models (for example NMR
+structures)!</p>
+<p>List of class one has to implement for each derivative:</p>
+<ul class="simple">
+<li>read structure</li>
+<li>write structure</li>
+</ul>
+<dl class="method">
+<dt id="Structure.Structure_Template.get_all_atom_coords">
+<tt class="descname">get_all_atom_coords</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_all_atom_coords" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a List of atom coordinates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_coords_from_atom_list">
+<tt class="descname">get_coords_from_atom_list</tt><big>(</big><em>atom_list</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_coords_from_atom_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atom_list</strong> &#8211; list of atom objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of atom coordinates for the specified atom objects</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_hetero_atoms">
+<tt class="descname">get_hetero_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_hetero_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all hetero atoms</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_hetero_atoms_coords">
+<tt class="descname">get_hetero_atoms_coords</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_hetero_atoms_coords" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all hetero atom coordinates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_amino_atoms">
+<tt class="descname">get_amino_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_amino_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all amino acid atoms</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_amino_atoms_coords">
+<tt class="descname">get_amino_atoms_coords</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_amino_atoms_coords" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all amino acid atom coordinates.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_all_atoms">
+<tt class="descname">get_all_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_all_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all atom coordinates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_info_1">
+<tt class="descname">get_info_1</tt><big>(</big><em>atoms=None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_info_1" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all atom information 1 values. For a pdb this is
+the occupancy and for a pqr it is the charge</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_info_2">
+<tt class="descname">get_info_2</tt><big>(</big><em>atoms=None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_info_2" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all atom information 2 values. For a pdb this is
+the temperature factor and for a pqr it is the radius</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_chain_ids">
+<tt class="descname">get_chain_ids</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_chain_ids" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a list of all chain ids in this structure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_first_res_id">
+<tt class="descname">get_first_res_id</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_first_res_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the integer number of the first amino acid</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_atoms_of_type">
+<tt class="descname">get_atoms_of_type</tt><big>(</big><em>atom_type</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_atoms_of_type" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atom_type</strong> &#8211; type of atom to return (e.g. &#8216;CA&#8217;)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">all atom objects of a certain type</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.transform">
+<tt class="descname">transform</tt><big>(</big><em>T</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Transform the pdb structure with the given matrix.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>T</strong> &#8211; [3,3] numpy matrix  to transform the coordinates by
+matrix multiplication</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.translate">
+<tt class="descname">translate</tt><big>(</big><em>transVector</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.translate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to translate protein structure by the given vector.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>transvector</strong> &#8211; Numpy array holding translation distances for each
+dimension</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.translate_x">
+<tt class="descname">translate_x</tt><big>(</big><em>dist</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.translate_x" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to translate protein structure in x direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dist</strong> &#8211; amount of displacement in x direction.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.translate_y">
+<tt class="descname">translate_y</tt><big>(</big><em>dist</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.translate_y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to translate protein structure in y direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dist</strong> &#8211; amount of displacement in y direction</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.translate_z">
+<tt class="descname">translate_z</tt><big>(</big><em>dist</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.translate_z" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to translate protein structure in z direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>dist</strong> &#8211; amount of displacement in z direction</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.translate_origin_and_rotate">
+<tt class="descname">translate_origin_and_rotate</tt><big>(</big><em>phi</em>, <em>theta</em>, <em>psi</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.translate_origin_and_rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This methods centers the structure at the origin, rotates it with
+angle_x around the x axis (angle_y around y axis, etc.) and moves
+it back to where it was.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>phi</strong> &#8211; euler angle for rotation</li>
+<li><strong>theta</strong> &#8211; euler angle for rotation</li>
+<li><strong>psi</strong> &#8211; euler angle for rotation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.move_to_new_position">
+<tt class="descname">move_to_new_position</tt><big>(</big><em>new_coord</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.move_to_new_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method moves the geometric center of the structure to the
+supplied coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_coord</strong> &#8211; list/numpy array of the new coordinates</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotate_and_move_to_new_position">
+<tt class="descname">rotate_and_move_to_new_position</tt><big>(</big><em>phi</em>, <em>theta</em>, <em>psi</em>, <em>new_coord</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotate_and_move_to_new_position" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method centers the structure at (0,0,0), rotates it and the
+moves it to a new position.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>phi</strong> &#8211; euler angle for rotation</li>
+<li><strong>theta</strong> &#8211; euler angle for rotation</li>
+<li><strong>psi</strong> &#8211; euler angle for rotation</li>
+<li><strong>new_coord</strong> &#8211; new coordination for the center of geometry</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotate">
+<tt class="descname">rotate</tt><big>(</big><em>angle</em>, <em>axis</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to rotate protein structure.
+For the rotation I use the Rodrigues&#8217; rotation formula.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>degree</strong> &#8211; angle by which to rotate</li>
+<li><strong>axis</strong> &#8211; axis around which to rotate</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotateX">
+<tt class="descname">rotateX</tt><big>(</big><em>degree</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotateX" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degree</strong> &#8211; angle for rotation around the x axis</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotateY">
+<tt class="descname">rotateY</tt><big>(</big><em>degree</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotateY" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degree</strong> &#8211; angle for rotation around the y axis</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotateZ">
+<tt class="descname">rotateZ</tt><big>(</big><em>degree</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotateZ" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>degree</strong> &#8211; angle for rotation around the z axis</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.pRotate">
+<tt class="descname">pRotate</tt><big>(</big><em>phi</em>, <em>theta</em>, <em>psi</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.pRotate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply euler angle rotation to the structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>phi</strong> &#8211; euler angle for rotation</li>
+<li><strong>theta</strong> &#8211; euler angle for rotation</li>
+<li><strong>psi</strong> &#8211; euler angle for rotation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.rotate_by_matrix">
+<tt class="descname">rotate_by_matrix</tt><big>(</big><em>rot_matrix</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.rotate_by_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>rot_matrix</strong> &#8211; [3,3] numpy matrix to transform the coordinates by
+matrix multiplication</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determineCenterOfMass">
+<tt class="descname">determineCenterOfMass</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determineCenterOfMass" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to determine the center of mass for the protein structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_geometric_center">
+<tt class="descname">determine_geometric_center</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_geometric_center" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a vector pointing to the geometric center of the structure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_center_of_extremes_of_atoms">
+<tt class="descname">determine_center_of_extremes_of_atoms</tt><big>(</big><em>atoms</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_center_of_extremes_of_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> &#8211; list of atom objects</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a vector pointing to the geometric center of the coordination
+extremes of the given atom coordinates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_center_of_extremes">
+<tt class="descname">determine_center_of_extremes</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_center_of_extremes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a vector pointing to the geometric center of the coordination
+extremes of this structure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_max_diameter">
+<tt class="descname">determine_max_diameter</tt><big>(</big><em>atoms = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_max_diameter" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> &#8211; a list of atom objects, otherwise it uses all
+atoms of this structure and calculates the maximum diameter (optional)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a float number of the maximum diameter</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_radius">
+<tt class="descname">determine_radius</tt><big>(</big><em>atoms = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_radius" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine the geometric center and calculate the minimal radius that
+encapsulates all atoms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> &#8211; optional a list of atom objects, otherwise it uses all
+atoms of this structure and calculates the radius</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a float number of the radius</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.center">
+<tt class="descname">center</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Translate geometric center to (0.0/0.0/0.0).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.determine_coordinate_extremes">
+<tt class="descname">determine_coordinate_extremes</tt><big>(</big><em>atoms = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.determine_coordinate_extremes" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atoms</strong> &#8211; optional a list of atom objects, otherwise it uses all
+atoms of this structure and calculates the extreme coordinates
+in each  direction.</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">extreme values in each direction as a 3*2 array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_radius_of_gyration">
+<tt class="descname">get_radius_of_gyration</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_radius_of_gyration" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method calculates the radius of gyration. It is the maximum
+distance of an atom to the geometrical center.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a float number as the radius of gyration</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.clone">
+<tt class="descname">clone</tt><big>(</big><em>chain_id_list = None</em>, <em>res_id_list = None</em>, <em>res_type_list = None</em>, <em>atom_types_list = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.clone" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns a clone of this structure. Through the list
+parameters specific items can be selected. If one supplies one letter
+codes for the residues they will be translated to three letter codes!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chain_id_list</strong> &#8211; list of chains to copy to the clone</li>
+<li><strong>res_id_list</strong> &#8211; list of residues in each chain to copy to the clone</li>
+<li><strong>res_type_list</strong> &#8211; types of residues to copy to the new clone</li>
+<li><strong>atom_types_list</strong> &#8211; types of atoms to copy to the new clone</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a new PDBFile / PQRFile / LatFile object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_residue_id_list">
+<tt class="descname">get_residue_id_list</tt><big>(</big><em>chain_id = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_residue_id_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>chain_id</strong> &#8211; optionally, if <tt class="docutils literal"><span class="pre">None</span></tt>, it uses the all available chains</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list with all residue ID&#8217;s of the structure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_res_id_aa_dict">
+<tt class="descname">get_res_id_aa_dict</tt><big>(</big><em>chain_id</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_res_id_aa_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a dictionary of the first chain, which contains the residue id as
+key and the corresponding amino acid as value</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.contains_chain_break">
+<tt class="descname">contains_chain_break</tt><big>(</big><em>chain_id = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.contains_chain_break" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>chain_id</strong> &#8211; if <tt class="docutils literal"><span class="pre">None</span></tt>, it uses the all available chains (optional)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">either <tt class="docutils literal"><span class="pre">True</span> <span class="pre">(chain</span> <span class="pre">break)</span> <span class="pre">or</span> <span class="pre">``False</span></tt> (no chain break).</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_res_id_array_mapping">
+<tt class="descname">get_res_id_array_mapping</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_res_id_array_mapping" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a dictionary with residue ids as keys and values, which can be
+used as an index in an array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_residue_names_from_res_id_list">
+<tt class="descname">get_residue_names_from_res_id_list</tt><big>(</big><em>res_id_list</em>, <em>chain_id = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_residue_names_from_res_id_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res_id_list</strong> &#8211; list of residue ids</li>
+<li><strong>chain_id</strong> &#8211; optionally, if <tt class="docutils literal"><span class="pre">None</span></tt>, it uses the all available chains</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list with the names of the residue ids in the given list.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_residues">
+<tt class="descname">get_residues</tt><big>(</big><em>chain_id = None</em>, <em>res_id_list = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns a list with residue objects of the residue ids in
+the given list, if <tt class="docutils literal"><span class="pre">None</span></tt> is given, it returns all residues.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chain_id</strong> &#8211; optionally, if <tt class="docutils literal"><span class="pre">None</span></tt>, it uses the all available chains</li>
+<li><strong>res_id_list</strong> &#8211; list of residue ids from which one wants the objects</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of residues objects matching the given criteria</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_atoms_by_id">
+<tt class="descname">get_atoms_by_id</tt><big>(</big><em>atom_id_list</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_atoms_by_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns the Atoms,  by their corresponding number from
+the pdb-file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>atom_id_list</strong> &#8211; list of atom id numbers</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list of atom objects to the matching atom ids</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_atoms_close_to_reference">
+<tt class="descname">get_atoms_close_to_reference</tt><big>(</big><em>reference_point</em>, <em>max_radius</em>, <em>min_radius = 0</em>, <em>atoms = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_atoms_close_to_reference" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function returns all atoms of this structure, which lie in the
+range [min_radius, max_radius] to the reference point.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>reference_point</strong> &#8211; Numpy array of the reference</li>
+<li><strong>max_radius</strong> &#8211; maximal distance to include the atoms</li>
+<li><strong>min_radius</strong> &#8211; minimal distance of the atoms to the the reference</li>
+<li><strong>atoms</strong> &#8211; optional list of atoms, if <tt class="docutils literal"><span class="pre">None</span></tt> is given it uses all
+atoms from the protein</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of atom objects close to the given reference point</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.find_chain_contacts">
+<tt class="descname">find_chain_contacts</tt><big>(</big><em>chain1</em>, <em>chain2</em>, <em>max_distance</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.find_chain_contacts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds Atoms of chain1 which are within max_distance of chain2</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>chain1</strong> &#8211; first chain id</li>
+<li><strong>chain2</strong> &#8211; second chain id</li>
+<li><strong>max_distance</strong> &#8211; Maximal distance to include atoms in the calculation</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of atom objects from chain1 which distance to chain2 is
+smaller than max_distance</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_sequence">
+<tt class="descname">get_sequence</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a dictionary which contains the chain and the sequence:
+&#8216;A&#8217; : &#8216;RG...CC&#8217;
+&#8216;B&#8217; : &#8216;PW...FV&#8217;
+Non standard amino acids will not be returned!!!</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.snap_vdw_to_box">
+<tt class="descname">snap_vdw_to_box</tt><big>(</big><em>box_mesh_size</em>, <em>box_dim</em>, <em>box_offset</em>, <em>warning = True</em>, <em>vdw_radii = 2</em>, <em>increase_vdw_by = 0</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.snap_vdw_to_box" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method snaps a structure to a given dxbox. If the structure is
+a pqr it uses the supplied vdw radii otherwise it uses the variable
+&#8216;vdw_radii&#8217; for each atom.</p>
+<p>If any coordinate lies outside the box an error will be printed to the
+standard output.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>box_mesh_size</strong> &#8211; mesh size [m,m,m]</li>
+<li><strong>box_dim</strong> &#8211; [x,y,z]</li>
+<li><strong>box_offset</strong> &#8211; [x_o,y_o,z_o]</li>
+<li><strong>warning</strong> &#8211; boolean, print an error, if the structure does not fit
+completely into the given box dimensions</li>
+<li><strong>vdw_radii</strong> &#8211; if this is a pdb file there are no other radii
+available (in Angstroem)</li>
+<li><strong>increase_vdw_by</strong> &#8211; can be used to blow up the radii of each atom
+(in Angstroem)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Numpy array with 0&#8217;s outside and 1&#8217;s inside the protein.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_rmsd_rotation_translation_from_superposition">
+<tt class="descname">get_rmsd_rotation_translation_from_superposition</tt><big>(</big><em>pdb_to_rotate</em>, <em>atom_types = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_rmsd_rotation_translation_from_superposition" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method tries to fit the given pdb onto this one. The method
+returns a dictionary, which contains the &#8216;rmsd&#8217;, &#8216;rotation&#8217; matrix
+and the &#8216;translation&#8217;.
+The parameter &#8216;atom_types&#8217; can be used to supply a list of atoms, which
+should be fit onto each other, if &#8216;None&#8217; is supplied, it will try to
+fit all atoms onto each other.
+In case the number of atoms does not match, it raises an Error!</p>
+<p>I guess the units are Angstroem.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb_to_rotate</strong> &#8211; Structure derivative object to superimpose onto
+this object.</li>
+<li><strong>atom_types</strong> &#8211; if <tt class="docutils literal"><span class="pre">None</span></tt>, it tries to fit all atoms, but it can also
+be used to fit specific types (e.g. [&#8216;CA&#8217;], [&#8216;CA&#8217;,&#8217;N&#8217;])</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>a dictionary which contains the following keys:</p>
+<ul class="simple">
+<li>&#8216;rmsd&#8217; : root mean square deviation</li>
+<li>&#8216;rotation&#8217; : rotation matrix</li>
+<li>&#8216;translation&#8217; : translation vector</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.superimpose_given_pdb_onto_self">
+<tt class="descname">superimpose_given_pdb_onto_self</tt><big>(</big><em>pdb_to_superimpose</em>, <em>atom_types = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.superimpose_given_pdb_onto_self" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method superimposes this structure onto the given structure!
+If the number of atoms differ it raises an error!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb_to_superimpose</strong> &#8211; structure derivative object to superimpose onto
+this object</li>
+<li><strong>atom_types</strong> &#8211; if <tt class="docutils literal"><span class="pre">None</span></tt>, it tries to fit all atoms, but it can also
+be used to fit specific types (e.g. [&#8216;CA&#8217;], [&#8216;CA&#8217;,&#8217;N&#8217;])</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.superimpose_self_onto_given_pdb">
+<tt class="descname">superimpose_self_onto_given_pdb</tt><big>(</big><em>pdb_to_superimpose</em>, <em>atom_types = None</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.superimpose_self_onto_given_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method superimposes this structure onto the given structure!
+If the number of atoms differ it raises an error!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb_to_superimpose</strong> &#8211; structure derivative object to superimpose
+this object onto</li>
+<li><strong>atom_types</strong> &#8211; if <tt class="docutils literal"><span class="pre">None</span></tt>, it tries to fit all atoms, but it can also
+be used to fit specific types (e.g. [&#8216;CA&#8217;], [&#8216;CA&#8217;,&#8217;N&#8217;])</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_dxbox_dim">
+<tt class="descname">get_dxbox_dim</tt><big>(</big><em>box_mesh_size</em>, <em>extend = None</em>, <em>cubic_box = True</em>, <em>nlev = 4</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_dxbox_dim" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the dimensions of a dxbox. The calculation is
+copied from the InFile class. If there have been changes this result
+might be wrong!
+The center of the box is the geometric center of the protein if not
+otherwise specified.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_dxbox_offset">
+<tt class="descname">get_dxbox_offset</tt><big>(</big><em>box_mesh_size</em>, <em>box_dim</em>, <em>box_center</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_dxbox_offset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the offset for the given dimensions.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>box_mesh_size</strong> &#8211; [m,m,m]</li>
+<li><strong>box_dim</strong> &#8211; [x,y,z]</li>
+<li><strong>box_center</strong> &#8211; [x_c,y_c,z_c]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list box_offset: [x_o,y_o,z_o].</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_hydrophobic_potential">
+<tt class="descname">get_hydrophobic_potential</tt><big>(</big><em>box_mesh_size</em>, <em>box_dim</em>, <em>box_offset</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_hydrophobic_potential" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the hydrophobic potential.
+This method uses a simplified model for the hydrophobic potential.
+The &#8216;charges&#8217; are taken from the Kyte and Doolittle hydrophobicity
+scale. For each residue the center is calculated and the potential
+is modelled as:</p>
+<blockquote>
+<div>:math:<a href="#id1"><span class="problematic" id="id2">`</span></a>phi = sum left ( hydrophobic_charge times e^{( - distance )} right )</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>box_mesh_size</strong> &#8211; meshsize of the grid</li>
+<li><strong>box_dim</strong> &#8211; dimension of the grid</li>
+<li><strong>box_offset</strong> &#8211; offset of the grid</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Numpy array with the hydrophobic potential for each grid point.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="function">
+<dt id="Structure.Structure_Template.get_residue_center">
+<tt class="descname">get_residue_center</tt><big>(</big><em>res</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_residue_center" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subroutine of <a class="reference internal" href="#Structure.Structure_Template.get_hydrophobic_potential" title="Structure.Structure_Template.get_hydrophobic_potential"><tt class="xref py py-func docutils literal"><span class="pre">Structure_Template.get_hydrophobic_potential()</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_vdw_hull">
+<tt class="descname">get_vdw_hull</tt><big>(</big><em>box_mesh_size</em>, <em>box_dim</em>, <em>box_offset</em>, <em>vdw_radii = 2</em>, <em>increase_vdw_by = 0</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_vdw_hull" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the van der Waals hull of the protein.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>box_mesh_size</strong> &#8211; meshsize of the grid</li>
+<li><strong>box_dim</strong> &#8211; dimension of the grid</li>
+<li><strong>box_offset</strong> &#8211; offset of the grid</li>
+<li><strong>vdw_radii</strong> &#8211; atom radii, if this is not a pqr</li>
+<li><strong>increase_vdw_by</strong> &#8211; extend each radius by this value</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Numpy array with 1&#8217;s at the hull grid points and 0&#8217;s everywhere else.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_num_of_overlap_atoms_with_given_structure">
+<tt class="descname">get_num_of_overlap_atoms_with_given_structure</tt><big>(</big><em>other_structure_object</em>, <em>energy_cutoff = 1.</em>, <em>vdw_radii = 2.</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_num_of_overlap_atoms_with_given_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the number of atoms in this structure object that are
+overlapping with the given structure object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>other_structure_object</strong> &#8211; structure which might have an overlapp with
+this one</li>
+<li><strong>energy_cutoff</strong> &#8211; cutoff for the lennard jones potential to decide
+if there is an overlapp or not</li>
+<li><strong>vdw_radii</strong> &#8211; if this is pdb object there are no radii information
+available</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">counts of atoms in this structure that overlapp with
+the given structure object</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">int</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure_Template.get_contact_list">
+<tt class="descname">get_contact_list</tt><big>(</big><em>cutoff = 5.</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.get_contact_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>cutoff</strong> &#8211; if any distance between atoms from two residues is less
+than the cutoff, it is a contact</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">a list: [[...], [i,j,0], [...]] where 0 means no contact.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="Structure.Structure_Template.residue_contact">
+<tt class="descname">residue_contact</tt><big>(</big><em>res_i</em>, <em>res_j</em>, <em>cutoff</em><big>)</big><a class="headerlink" href="#Structure.Structure_Template.residue_contact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subroutine of <a class="reference internal" href="#Structure.Structure_Template.get_contact_list" title="Structure.Structure_Template.get_contact_list"><tt class="xref py py-func docutils literal"><span class="pre">Structure_Template.get_contact_list()</span></tt></a>.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.PDBFile">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">PDBFile</tt><big>(</big><em>Structure_Template</em><big>)</big><a class="headerlink" href="#Structure.PDBFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+<dl class="method">
+<dt id="Structure.PDBFile.get_pqr_structure">
+<tt class="descname">get_pqr_structure</tt><big>(</big><em>new_pqr_path = None</em>, <em>force_field = &quot;amber&quot;</em>, <em>pdb2pqr_argv = None</em>, <em>pdb2pqr_path = &quot;pdb2pqr&quot;</em>, <em>add_ions = True</em>, <em>add_chain = True</em><big>)</big><a class="headerlink" href="#Structure.PDBFile.get_pqr_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>Call pdb2pqr to replace the b-factor and the occupancy information in
+the pdb file with the charges and the vdw radii. If this pdb Object has
+no structure_path property (i.e. it is None), then an error is raised.</p>
+<p>If the pdb contains CA, ZN or SO4 ions, they will be added, if not
+stated otherwise.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>new_pqr_path</strong> &#8211; path for the new pqr file. If <tt class="docutils literal"><span class="pre">None</span></tt> is given, it
+replaces the &#8221;.pdb&#8221; with &#8221;.pqr&#8221; at the end</li>
+<li><strong>force_field</strong> &#8211; forcefield from which charges and radii should be
+taken. Default is amber</li>
+<li><strong>pdb2pqr_argv</strong> &#8211; can contain additional arguments to pdb2pqr as a
+list (e.g. [&#8216;&#8211;assign-only&#8217;], oder [&#8216;&#8211;noopt&#8217;]). If multiple
+additional arguments are given, they also have to be given as
+a list (e.g. [&#8216;&#8211;assign-only&#8217;, &#8216;&#8211;noopt&#8217;])</li>
+<li><strong>pdb2pqr_path</strong> &#8211; path to the executable of PDB2PQR</li>
+<li><strong>add_ions</strong> &#8211; add CA, ZN, SO4 ions if they are in the pdb. The CA,ZN
+and SO4 atoms should have a residue name that fits their type
+(CA, ZN, SO4).</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a PQRFile object</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PDBFile._read_file">
+<tt class="descname">_read_file</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.PDBFile._read_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads the data from the given file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PDBFile.save_to_file">
+<tt class="descname">save_to_file</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#Structure.PDBFile.save_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes the structure to a given path.
+If the structure is a lattice, it will try to calculate the
+correct connections. The Assumption of a lattice is made on the
+number of residues and the number of overall atom coordinates.
+If both numbers are equal, it is very probable that this is a lattice
+protein. This only works, if there is just one chain!</p>
+<p>Notice: We do not work with multiple models!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PDBFile._save_to_file">
+<tt class="descname">_save_to_file</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#Structure.PDBFile._save_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PDBFile._get_atom_line">
+<tt class="descname">_get_atom_line</tt><big>(</big><em>chain</em>, <em>res</em>, <em>atom</em><big>)</big><a class="headerlink" href="#Structure.PDBFile._get_atom_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the line for writing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.PQRFile">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">PQRFile</tt><big>(</big><em>Structure_Template</em><big>)</big><a class="headerlink" href="#Structure.PQRFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+<dl class="method">
+<dt id="Structure.PQRFile._read_structure">
+<tt class="descname">_read_structure</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.PQRFile._read_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads the data from the given file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PQRFile.save_to_file">
+<tt class="descname">save_to_file</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#Structure.PQRFile.save_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes the structure to a given path.</p>
+<p>Notice: We do not work with multiple models!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PQRFile._save_to_file">
+<tt class="descname">_save_to_file</tt><big>(</big><em>f</em><big>)</big><a class="headerlink" href="#Structure.PQRFile._save_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PQRFile._get_atom_line">
+<tt class="descname">_get_atom_line</tt><big>(</big><em>chain</em>, <em>res</em>, <em>atom</em><big>)</big><a class="headerlink" href="#Structure.PQRFile._get_atom_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the line for writing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.PQRFile.snap_esp_to_dxbox">
+<tt class="descname">snap_esp_to_dxbox</tt><big>(</big><em>dxbox</em>, <em>warning = True</em><big>)</big><a class="headerlink" href="#Structure.PQRFile.snap_esp_to_dxbox" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method snaps the charge for each atom of this pqr structure to a
+given dxbox. The new array contains the charge in the unit of Coulomb.</p>
+<p>If any coordinate lies outside the box an error will be printed to the
+standard output.</p>
+<p>Be carefull!!! If you use a neutral probe and you mesh size is to
+large the dipole effect is not visible!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>dxbox</strong> &#8211; a dxbox object</li>
+<li><strong>warning</strong> &#8211; either <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a numpy array with the charges in units of e at the center
+of each atom</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.latFile">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">latFile</tt><big>(</big><em>Structure_Template</em><big>)</big><a class="headerlink" href="#Structure.latFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+<dl class="method">
+<dt id="Structure.latFile._make_structure">
+<tt class="descname">_make_structure</tt><big>(</big><em>seq</em>, <em>fold</em>, <em>lattice</em>, <em>mesh_size</em><big>)</big><a class="headerlink" href="#Structure.latFile._make_structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method reads the data from the given file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.latFile.save_to_file">
+<tt class="descname">save_to_file</tt><big>(</big><em>path</em><big>)</big><a class="headerlink" href="#Structure.latFile.save_to_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method writes the structure to a given path.
+If the structure is a lattice, it will try to calculate the
+correct connections. The Assumption of a lattice is made on the
+number of residues and the number of overall atom coordinates.
+If both numbers are equal, it is very probable that this is a lattice
+protein. This only works, if there is just one chain!</p>
+<p>Notice: We do not work with multiple models!</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.latFile._get_atom_line">
+<tt class="descname">_get_atom_line</tt><big>(</big><em>chain</em>, <em>res</em>, <em>atom</em><big>)</big><a class="headerlink" href="#Structure.latFile._get_atom_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Formats the line for writing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.latFile._convert_fcc_fold">
+<tt class="descname">_convert_fcc_fold</tt><big>(</big><em>fold</em>, <em>mesh_size</em><big>)</big><a class="headerlink" href="#Structure.latFile._convert_fcc_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.latFile._convert_sc_fold">
+<tt class="descname">_convert_sc_fold</tt><big>(</big><em>fold</em>, <em>mesh_size</em><big>)</big><a class="headerlink" href="#Structure.latFile._convert_sc_fold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.entity">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">entity</tt><big>(</big><em>object</em><big>)</big><a class="headerlink" href="#Structure.entity" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class is more or less copied from biopython.</p>
+<p>Permission to use, copy, modify, and distribute this software and its
+documentation with or without modifications and for any purpose and
+without fee is hereby granted, provided that any copyright notices
+appear in all copies and that both those copyright notices and this
+permission notice appear in supporting documentation, and that the
+names of the contributors or copyright holders not be used in
+advertising or publicity pertaining to distribution of the software
+without specific prior permission.</p>
+<p>THE CONTRIBUTORS AND COPYRIGHT HOLDERS OF THIS SOFTWARE DISCLAIM ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED
+WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL THE
+CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT
+OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
+OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
+OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
+OR PERFORMANCE OF THIS SOFTWARE.</p>
+<dl class="method">
+<dt id="Structure.entity.__len__">
+<tt class="descname">__len__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.__len__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the number of children.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.entity.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the child with given id.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.entity.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a child.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.__iter__">
+<tt class="descname">__iter__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.__iter__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Iterate over children.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_level">
+<tt class="descname">get_level</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_level" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">level in hierarchy:<ul class="simple">
+<li>A - atom</li>
+<li>R - residue</li>
+<li>C - chain</li>
+<li>M - model</li>
+<li>S - structure</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.set_parent">
+<tt class="descname">set_parent</tt><big>(</big><em>entity</em><big>)</big><a class="headerlink" href="#Structure.entity.set_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parent Entity object.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.detach_parent">
+<tt class="descname">detach_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.detach_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Detach the parent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.detach_child">
+<tt class="descname">detach_child</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.entity.detach_child" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a child.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.add">
+<tt class="descname">add</tt><big>(</big><em>entity</em><big>)</big><a class="headerlink" href="#Structure.entity.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a child to the Entity.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_iterator">
+<tt class="descname">get_iterator</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_iterator" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">iterator over children</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_list">
+<tt class="descname">get_list</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_list" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a copy of the list of children</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.has_id">
+<tt class="descname">has_id</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.entity.has_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">True</span></tt> if a child with given <strong>id</strong> exists</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_parent">
+<tt class="descname">get_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_parent" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the parent Entity object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_id">
+<tt class="descname">get_id</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the id</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.entity.get_full_id">
+<tt class="descname">get_full_id</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.entity.get_full_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the full id.</p>
+<p>The full id is a tuple containing all id&#8217;s starting from
+the top object (Structure) down to the current object. A full id for
+a Residue object e.g. is something like:</p>
+<p>(&#8220;1abc&#8221;, 0, &#8220;A&#8221;, (&#8221; &#8221;, 10, &#8220;A&#8221;))</p>
+<p>This corresponds to:</p>
+<ul class="simple">
+<li>Structure with id &#8220;1abc&#8221;</li>
+<li>Model with id 0</li>
+<li>Chain with id &#8220;A&#8221;</li>
+<li>Residue with id (&#8221; &#8221;, 10, &#8220;A&#8221;)</li>
+</ul>
+<p>The Residue id indicates that the residue is not a hetero-residue
+(or a water) beacuse it has a blank hetero field, that its sequence
+identifier is 10 and its insertion code &#8220;A&#8221;.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.Structure">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">Structure</tt><big>(</big><em>Entity</em><big>)</big><a class="headerlink" href="#Structure.Structure" title="Permalink to this definition">¶</a></dt>
+<dd><p>The Structure class contains a collection of Model instances.</p>
+<dl class="method">
+<dt id="Structure.Structure.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure._sort">
+<tt class="descname">_sort</tt><big>(</big><em>m1</em>, <em>m2</em><big>)</big><a class="headerlink" href="#Structure.Structure._sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort models.</p>
+<p>This sorting function sorts the Model instances in the Structure instance.
+The sorting is done based on the model id, which is a simple int that
+reflects the order of the models in the PDB file.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>m1</strong> &#8211; model instance</li>
+<li><strong>m2</strong> &#8211; model instance</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure.get_chains">
+<tt class="descname">get_chains</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure.get_chains" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure.get_residues">
+<tt class="descname">get_residues</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure.get_residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Structure.get_atoms">
+<tt class="descname">get_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Structure.get_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.Model">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">Model</tt><big>(</big><em>Entity</em><big>)</big><a class="headerlink" href="#Structure.Model" title="Permalink to this definition">¶</a></dt>
+<dd><p>The object representing a model in a structure. In a structure
+derived from an X-ray crystallography experiment, only a single
+model will be present (with some exceptions). NMR structures
+normally contain many different models.</p>
+<dl class="attribute">
+<dt id="Structure.Model.id">
+<tt class="descname">id</tt><a class="headerlink" href="#Structure.Model.id" title="Permalink to this definition">¶</a></dt>
+<dd><p>identifiant</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.Model.serial_num">
+<tt class="descname">serial_num</tt><a class="headerlink" href="#Structure.Model.serial_num" title="Permalink to this definition">¶</a></dt>
+<dd><p>serial number</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Model._sort">
+<tt class="descname">_sort</tt><big>(</big><em>c1</em>, <em>c2</em><big>)</big><a class="headerlink" href="#Structure.Model._sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort the Chains instances in the Model instance.</p>
+<p>Chain instances are sorted alphabetically according to their
+chain id. Blank chains come last, as they often consist of waters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>c1</strong> &#8211; Chain object</li>
+<li><strong>c2</strong> &#8211; Chain object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Model.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Model.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Model.get_residues">
+<tt class="descname">get_residues</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Model.get_residues" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Model.get_atoms">
+<tt class="descname">get_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Model.get_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.Chain">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">Chain</tt><big>(</big><em>Entity</em><big>)</big><a class="headerlink" href="#Structure.Chain" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+<dl class="method">
+<dt id="Structure.Chain._sort">
+<tt class="descname">_sort</tt><big>(</big><em>r1</em>, <em>r2</em><big>)</big><a class="headerlink" href="#Structure.Chain._sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort function for residues in a chain</p>
+<p>Residues are first sorted according to their hetatm records.
+Protein and nucleic acid residues first, hetatm residues next,
+and waters last. Within each group, the residues are sorted according
+to their resseq&#8217;s (sequence identifiers). Finally, residues with the
+same resseq&#8217;s are sorted according to icode.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>r1</strong> &#8211; Residue object</li>
+<li><strong>r2</strong> &#8211; Residue object</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain._translate_id">
+<tt class="descname">_translate_id</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.Chain._translate_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>A residue id is normally a tuple (hetero flag, sequence identifier,
+insertion code). Since for most residues the hetero flag and the
+insertion code are blank (i.e. &#8221; &#8221;), you can just use the sequence
+identifier to index a residue in a chain. The _translate_id method
+translates the sequence identifier to the (&#8221; &#8221;, sequence identifier,
+&#8221; &#8221;) tuple.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>int</em>) &#8211; residue resseq</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.__getitem__">
+<tt class="descname">__getitem__</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.Chain.__getitem__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the residue with given id.</p>
+<p>The id of a residue is (hetero flag, sequence identifier, insertion code).
+If id is an int, it is translated to (&#8221; &#8221;, id, &#8221; &#8221;) by the _translate_id
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>int or string?</em>) &#8211; residue resseq</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.__delitem__">
+<tt class="descname">__delitem__</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.Chain.__delitem__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>int or string?</em>) &#8211; residue resseq</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Chain.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.get_unpacked_list">
+<tt class="descname">get_unpacked_list</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Chain.get_unpacked_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of undisordered residues.</p>
+<p>Some Residue objects hide several disordered residues
+(DisorderedResidue objects). This method unpacks them,
+ie. it returns a list of simple Residue objects.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.has_id">
+<tt class="descname">has_id</tt><big>(</big><em>id</em><big>)</big><a class="headerlink" href="#Structure.Chain.has_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>The id of a residue is (hetero flag, sequence identifier, insertion code).
+If id is an int, it is translated to (&#8221; &#8221;, id, &#8221; &#8221;) by the _translate_id
+method.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>id</strong> (<em>int or string?</em>) &#8211; residue resseq</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">1 if a residue with given id is present</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Chain.get_atoms">
+<tt class="descname">get_atoms</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Chain.get_atoms" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.Residue">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">Residue</tt><big>(</big><em>Entity</em><big>)</big><a class="headerlink" href="#Structure.Residue" title="Permalink to this definition">¶</a></dt>
+<dd><p>Represents a residue. A Residue object stores atoms.</p>
+<dl class="method">
+<dt id="Structure.Residue.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue._sort">
+<tt class="descname">_sort</tt><big>(</big><em>a1</em>, <em>a2</em><big>)</big><a class="headerlink" href="#Structure.Residue._sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sort the Atom objects.</p>
+<p>Atoms are sorted alphabetically according to their name,
+but N, CA, C, O always come first.</p>
+<p>Arguments:
+:param a1: Atom object
+:param a2: Atom object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.add">
+<tt class="descname">add</tt><big>(</big><em>atom</em><big>)</big><a class="headerlink" href="#Structure.Residue.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add an Atom object.</p>
+<p>Checks for adding duplicate atoms, and raises a
+PDBConstructionException if so.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.sort">
+<tt class="descname">sort</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.sort" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.flag_disordered">
+<tt class="descname">flag_disordered</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.flag_disordered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the disordered flag.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.is_disordered">
+<tt class="descname">is_disordered</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.is_disordered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return 1 if the residue contains disordered atoms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.get_resname">
+<tt class="descname">get_resname</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.get_resname" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.get_unpacked_list">
+<tt class="descname">get_unpacked_list</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.get_unpacked_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the list of all atoms, unpack DisorderedAtoms.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.Residue.get_segid">
+<tt class="descname">get_segid</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.Residue.get_segid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Structure.atom">
+<em class="property">class </em><tt class="descclassname">Structure.</tt><tt class="descname">atom</tt><big>(</big><em>object</em><big>)</big><a class="headerlink" href="#Structure.atom" title="Permalink to this definition">¶</a></dt>
+<dd><p>Atom object.</p>
+<p>The Atom object stores atom name (both with and without spaces),
+coordinates, B factor, occupancy, alternative location specifier
+and (optionally) anisotropic B factor and standard deviations of
+B factor and positions.</p>
+<dl class="attribute">
+<dt id="Structure.atom.name">
+<tt class="descname">name</tt><a class="headerlink" href="#Structure.atom.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) atom name (eg. &#8220;CA&#8221;). Note that spaces are normally stripped.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.coord">
+<tt class="descname">coord</tt><a class="headerlink" href="#Structure.atom.coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>(Numeric array (Float0, size 3)) atomic coordinates (x,y,z).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.bfactor">
+<tt class="descname">bfactor</tt><a class="headerlink" href="#Structure.atom.bfactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>(float) isotropic B factor.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.occupancy">
+<tt class="descname">occupancy</tt><a class="headerlink" href="#Structure.atom.occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><p>(float) occupancy (0.0-1.0).</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.altloc">
+<tt class="descname">altloc</tt><a class="headerlink" href="#Structure.atom.altloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) alternative location specifier for disordered atoms</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.fullname">
+<tt class="descname">fullname</tt><a class="headerlink" href="#Structure.atom.fullname" title="Permalink to this definition">¶</a></dt>
+<dd><p>(str) full atom name, including spaces, e.g. &#8221; CA &#8221;.
+Normally these spaces are stripped from the atom name.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Structure.atom.element">
+<tt class="descname">element</tt><a class="headerlink" href="#Structure.atom.element" title="Permalink to this definition">¶</a></dt>
+<dd><p>(uppercase string or <tt class="docutils literal"><span class="pre">None</span></tt> if unknown) atom element,
+e.g. &#8220;C&#8221; for Carbon, &#8220;HG&#8221; for mercury</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print Atom object as &lt;Atom atom_name&gt;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.__sub__">
+<tt class="descname">__sub__</tt><big>(</big><em>other</em><big>)</big><a class="headerlink" href="#Structure.atom.__sub__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate distance between two atoms.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>other</strong> &#8211; the other atom</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_serial_number">
+<tt class="descname">set_serial_number</tt><big>(</big><em>n</em><big>)</big><a class="headerlink" href="#Structure.atom.set_serial_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_bfactor">
+<tt class="descname">set_bfactor</tt><big>(</big><em>bfactor</em><big>)</big><a class="headerlink" href="#Structure.atom.set_bfactor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_coord">
+<tt class="descname">set_coord</tt><big>(</big><em>coord</em><big>)</big><a class="headerlink" href="#Structure.atom.set_coord" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_altloc">
+<tt class="descname">set_altloc</tt><big>(</big><em>altloc</em><big>)</big><a class="headerlink" href="#Structure.atom.set_altloc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_occupancy">
+<tt class="descname">set_occupancy</tt><big>(</big><em>occupancy</em><big>)</big><a class="headerlink" href="#Structure.atom.set_occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_sigatm">
+<tt class="descname">set_sigatm</tt><big>(</big><em>sigatm_array</em><big>)</big><a class="headerlink" href="#Structure.atom.set_sigatm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set standard deviation of atomic parameters.</p>
+<p>The standard deviation of atomic parameters consists
+of 3 positional, 1 B factor and 1 occupancy standard
+deviation.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>sigatm_array</strong> (<em>numeric array (length 5)</em>) &#8211; standard deviations of atomic parameters</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_siguij">
+<tt class="descname">set_siguij</tt><big>(</big><em>siguij_array</em><big>)</big><a class="headerlink" href="#Structure.atom.set_siguij" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set standard deviations of anisotropic temperature factors.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>siguij_array</strong> (<em>numeric array (length 6)</em>) &#8211; standard deviations of anisotropic temperature factors</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_anisou">
+<tt class="descname">set_anisou</tt><big>(</big><em>anisou_array</em><big>)</big><a class="headerlink" href="#Structure.atom.set_anisou" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set anisotropic B factor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>anisou_array</strong> (<em>numeric array (length 6)</em>) &#8211; anisotropic B factor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_element">
+<tt class="descname">set_element</tt><big>(</big><em>element</em><big>)</big><a class="headerlink" href="#Structure.atom.set_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set element.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_info_1">
+<tt class="descname">set_info_1</tt><big>(</big><em>info_1</em><big>)</big><a class="headerlink" href="#Structure.atom.set_info_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is just a more abstract method which I will use instead of
+&#8216;get_bfactor&#8217; and &#8216;get_occupancy&#8217;.</p>
+<ul class="simple">
+<li>pdb: occupancy</li>
+<li>pqr: charge</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_info_2">
+<tt class="descname">set_info_2</tt><big>(</big><em>info_2</em><big>)</big><a class="headerlink" href="#Structure.atom.set_info_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is just a more abstract method which I will use instead of
+&#8216;get_bfactor&#8217; and &#8216;get_occupancy&#8217;.</p>
+<ul class="simple">
+<li>pdb: b_factor</li>
+<li>pqr: vdw radius</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.flag_disorder">
+<tt class="descname">flag_disorder</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.flag_disorder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the disordered flag to 1.</p>
+<p>The disordered flag indicates whether the atom is disordered or not.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.is_disordered">
+<tt class="descname">is_disordered</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.is_disordered" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the disordered flag (1 if disordered, 0 otherwise).</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_parent">
+<tt class="descname">set_parent</tt><big>(</big><em>parent</em><big>)</big><a class="headerlink" href="#Structure.atom.set_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set the parent residue.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>parent</strong> &#8211; Residue object</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.detach_parent">
+<tt class="descname">detach_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.detach_parent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove reference to parent.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_sigatm">
+<tt class="descname">get_sigatm</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_sigatm" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">standard deviation of atomic parameters</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_siguij">
+<tt class="descname">get_siguij</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_siguij" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">standard deviations of anisotropic temperature factors</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_anisou">
+<tt class="descname">get_anisou</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_anisou" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">anisotropic B factor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_parent">
+<tt class="descname">get_parent</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_parent" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">parent residue</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_serial_number">
+<tt class="descname">get_serial_number</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_serial_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_name">
+<tt class="descname">get_name</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_name" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">atom name</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_id">
+<tt class="descname">get_id</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_id" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the id of the atom (which is its atom name)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_full_id">
+<tt class="descname">get_full_id</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_full_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the full id of the atom.</p>
+<p>The full id of an atom is the tuple
+(structure id, model id, chain id, residue id, atom name, altloc)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_coord">
+<tt class="descname">get_coord</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_coord" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">atomic coordinates</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_bfactor">
+<tt class="descname">get_bfactor</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_bfactor" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">B factor</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_occupancy">
+<tt class="descname">get_occupancy</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_occupancy" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">occupancy</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_fullname">
+<tt class="descname">get_fullname</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_fullname" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">the atom name, including leading and trailing spaces</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_altloc">
+<tt class="descname">get_altloc</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_altloc" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">alternative location specifier</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_level">
+<tt class="descname">get_level</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_level" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.transform">
+<tt class="descname">transform</tt><big>(</big><em>rot</em>, <em>tran</em><big>)</big><a class="headerlink" href="#Structure.atom.transform" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply rotation and translation to the atomic coordinates.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rot</strong> (<em>3x3 numeric array</em>) &#8211; a right multiplying rotation matrix</li>
+<li><strong>tran</strong> (<em>size 3 Numeric array</em>) &#8211; the translation vector</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">rotation</span> <span class="o">=</span> <span class="n">rotmat</span><span class="p">(</span><span class="n">pi</span><span class="p">,</span> <span class="n">Vector</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">translation</span> <span class="o">=</span> <span class="n">array</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">),</span> <span class="s">&#39;f&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">atom</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">rotation</span><span class="p">,</span> <span class="n">translation</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_info_1">
+<tt class="descname">get_info_1</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_info_1" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is just a more abstract method which I will use instead of
+&#8216;get_bfactor&#8217; and &#8216;get_occupancy&#8217;.</p>
+<ul class="simple">
+<li>pdb: occupancy</li>
+<li>pqr: charge</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_info_2">
+<tt class="descname">get_info_2</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_info_2" title="Permalink to this definition">¶</a></dt>
+<dd><p>This is just a more abstract method which I will use instead of
+&#8216;get_bfactor&#8217; and &#8216;get_occupancy&#8217;.</p>
+<ul class="simple">
+<li>pdb: bfactor</li>
+<li>pqr: radius</li>
+</ul>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_element">
+<tt class="descname">get_element</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_element" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">element</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.set_charge">
+<tt class="descname">set_charge</tt><big>(</big><em>charge</em><big>)</big><a class="headerlink" href="#Structure.atom.set_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Structure.atom.get_charge">
+<tt class="descname">get_charge</tt><big>(</big><big>)</big><a class="headerlink" href="#Structure.atom.get_charge" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Structure</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Sequence.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Sequence</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="build_cython.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">build_cython</span></tt> &#8212; Cython compilation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../_sources/packages/Structure.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="build_cython.html" title="build_cython — Cython compilation"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Sequence.html" title="Sequence — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../epitopsy.html" >epitopsy Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

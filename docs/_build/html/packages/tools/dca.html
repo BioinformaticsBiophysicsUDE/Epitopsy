@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dca — Direct Coupling Analysis operations &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="tools Package" href="../../epitopsy.tools.html" />
+    <link rel="next" title="dca_stuff — Direct Coupling Analysis routines" href="dca_stuff.html" />
+    <link rel="prev" title="calc_vol_and_surface — Calculation of Volume and Surface" href="calc_vol_and_surface.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff.html" title="dca_stuff — Direct Coupling Analysis routines"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="calc_vol_and_surface.html" title="calc_vol_and_surface — Calculation of Volume and Surface"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" accesskey="U">tools Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-dca">
+<span id="dca-direct-coupling-analysis-operations"></span><h1><a class="reference internal" href="#module-dca" title="dca: Direct Coupling Analysis operations."><tt class="xref py py-mod docutils literal"><span class="pre">dca</span></tt></a> &#8212; Direct Coupling Analysis operations<a class="headerlink" href="#module-dca" title="Permalink to this headline">¶</a></h1>
+<p>This module provides direct coupling analysis operations.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p>Direct-coupling analysis of residue co-evolution captures native
+contacts across many protein families</p>
+<blockquote class="last">
+<div>F Morcos, A Pagnani, B Lunt, A Bertolino, DS Marks, C Sander,
+R Zecchina, JN Onuchic, T Hwa, M Weigt (2011), Proc. Natl.
+Acad. Sci. 108:E1293-1301.</div></blockquote>
+</div>
+<div class="section" id="module-syntax">
+<span id="dca-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-dca"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dca.dca">
+<tt class="descclassname">dca.</tt><tt class="descname">dca</tt><big>(</big><em>inputfile</em>, <em>outputfile</em><big>)</big><a class="headerlink" href="#dca.dca" title="Permalink to this definition">¶</a></dt>
+<dd><p>Direct Coupling Analysis (DCA)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>inputfile</strong> (<em>file</em>) &#8211; file with fasta formatted sequences</li>
+<li><strong>outputfile</strong> (<em>file</em>) &#8211; file containing N(N-1)/2 rows and 4 columns</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Structure of <strong>outputfile</strong>:</p>
+<ul class="simple">
+<li>residue i (column 1)</li>
+<li>residue j (column 2)</li>
+<li>MI(i,j) (Mutual Information between i and j)</li>
+<li>DI(i,j) (Direct Information between i and j)</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.get_similarity">
+<tt class="descclassname">dca.</tt><tt class="descname">get_similarity</tt><big>(</big><em>ref</em>, <em>query</em>, <em>theta</em><big>)</big><a class="headerlink" href="#dca.get_similarity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Does not check the length of both objects.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>ref</strong> (<em>obj</em>) &#8211; iterable object which will be compared with query</li>
+<li><strong>query</strong> (<em>obj</em>) &#8211; iterable object which will be compared with ref</li>
+<li><strong>theta</strong> (<em>float</em>) &#8211; reweight sequences with identity threshold</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">0 if greater than theta, 1 if less than theta.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.return_alignment">
+<tt class="descclassname">dca.</tt><tt class="descname">return_alignment</tt><big>(</big><em>inputfile</em><big>)</big><a class="headerlink" href="#dca.return_alignment" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.Compute_True_Frequencies">
+<tt class="descclassname">dca.</tt><tt class="descname">Compute_True_Frequencies</tt><big>(</big><em>Z</em>, <em>M</em>, <em>N</em>, <em>q</em>, <em>theta</em><big>)</big><a class="headerlink" href="#dca.Compute_True_Frequencies" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.with_pc">
+<tt class="descclassname">dca.</tt><tt class="descname">with_pc</tt><big>(</big><em>Pij_true</em>, <em>Pi_true</em>, <em>pseudocount_weight</em>, <em>N</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.with_pc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.Compute_C">
+<tt class="descclassname">dca.</tt><tt class="descname">Compute_C</tt><big>(</big><em>Pij</em>, <em>Pi</em>, <em>N</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.Compute_C" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.Compute_Results">
+<tt class="descclassname">dca.</tt><tt class="descname">Compute_Results</tt><big>(</big><em>Pij</em>, <em>Pi</em>, <em>Pij_true</em>, <em>Pi_true</em>, <em>invC</em>, <em>N</em>, <em>q</em>, <em>outputfile</em><big>)</big><a class="headerlink" href="#dca.Compute_Results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.calculate_mi">
+<tt class="descclassname">dca.</tt><tt class="descname">calculate_mi</tt><big>(</big><em>i</em>, <em>j</em>, <em>P2</em>, <em>P1</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.calculate_mi" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.ReturnW">
+<tt class="descclassname">dca.</tt><tt class="descname">ReturnW</tt><big>(</big><em>invC</em>, <em>i</em>, <em>j</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.ReturnW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.bp_link">
+<tt class="descclassname">dca.</tt><tt class="descname">bp_link</tt><big>(</big><em>i</em>, <em>j</em>, <em>W_mf</em>, <em>Pi</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.bp_link" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.compute_mu">
+<tt class="descclassname">dca.</tt><tt class="descname">compute_mu</tt><big>(</big><em>i</em>, <em>j</em>, <em>W</em>, <em>Pi</em>, <em>q</em><big>)</big><a class="headerlink" href="#dca.compute_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca.compute_di">
+<tt class="descclassname">dca.</tt><tt class="descname">compute_di</tt><big>(</big><em>i</em>, <em>j</em>, <em>W</em>, <em>mu1</em>, <em>mu2</em>, <em>Pi</em><big>)</big><a class="headerlink" href="#dca.compute_di" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">dca</span></tt> &#8212; Direct Coupling Analysis operations</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="calc_vol_and_surface.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">calc_vol_and_surface</span></tt> &#8212; Calculation of Volume and Surface</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dca_stuff.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">dca_stuff</span></tt> &#8212; Direct Coupling Analysis routines</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/tools/dca.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff.html" title="dca_stuff — Direct Coupling Analysis routines"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="calc_vol_and_surface.html" title="calc_vol_and_surface — Calculation of Volume and Surface"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" >tools Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

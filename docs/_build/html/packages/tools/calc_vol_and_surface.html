@@ -1,0 +1,208 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>calc_vol_and_surface — Calculation of Volume and Surface &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="tools Package" href="../../epitopsy.tools.html" />
+    <link rel="next" title="dca — Direct Coupling Analysis operations" href="dca.html" />
+    <link rel="prev" title="Wrapper — YYYYYYY" href="Wrapper.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dca.html" title="dca — Direct Coupling Analysis operations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Wrapper.html" title="Wrapper — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" accesskey="U">tools Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-calc_vol_and_surface">
+<span id="calc-vol-and-surface-calculation-of-volume-and-surface"></span><h1><a class="reference internal" href="#module-calc_vol_and_surface" title="calc_vol_and_surface: Calculation of Volume and Surface."><tt class="xref py py-mod docutils literal"><span class="pre">calc_vol_and_surface</span></tt></a> &#8212; Calculation of Volume and Surface<a class="headerlink" href="#module-calc_vol_and_surface" title="Permalink to this headline">¶</a></h1>
+<p>This module provides direct coupling analysis operations.</p>
+<div class="section" id="module-syntax">
+<span id="calc-vol-and-surface-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-calc-vol-and-surface"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="calc_vol_and_surface.check_indices">
+<tt class="descclassname">calc_vol_and_surface.</tt><tt class="descname">check_indices</tt><big>(</big><em>indices</em>, <em>box</em>, <em>raise_error</em><big>)</big><a class="headerlink" href="#calc_vol_and_surface.check_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_vol_and_surface.process_vol">
+<tt class="descclassname">calc_vol_and_surface.</tt><tt class="descname">process_vol</tt><big>(</big><em>energy_box</em>, <em>vdw_box</em>, <em>energy_cutoff</em>, <em>result_dict</em>, <em>raise_error</em>, <em>vdw_type</em><big>)</big><a class="headerlink" href="#calc_vol_and_surface.process_vol" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is not well designed.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>probability_box</strong> &#8211; DXBox contains the energies.</li>
+<li><strong>vdw_box</strong> &#8211; flooded VDWBox.</li>
+<li><strong>energy_cutoff</strong> &#8211; count grid points with an energy &lt; limit</li>
+<li><strong>result_dict</strong> &#8211; dictionary</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">updated dictionary</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_vol_and_surface.process_surface">
+<tt class="descclassname">calc_vol_and_surface.</tt><tt class="descname">process_surface</tt><big>(</big><em>energy_box</em>, <em>surface_index</em>, <em>energy_cutoff</em>, <em>result_dict</em>, <em>vdw_type</em><big>)</big><a class="headerlink" href="#calc_vol_and_surface.process_surface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="calc_vol_and_surface.calc_vol_and_surface">
+<tt class="descclassname">calc_vol_and_surface.</tt><tt class="descname">calc_vol_and_surface</tt><big>(</big><em>pdb_path</em>, <em>energy_cutoff</em>, <em>zipped=True</em>, <em>result_path=&quot;result_data.txt&quot;</em>, <em>energy_box=None</em>, <em>counter_box=None</em>, <em>raise_error=True</em>, <em>conc=1.</em><big>)</big><a class="headerlink" href="#calc_vol_and_surface.calc_vol_and_surface" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb_path</strong> &#8211; path to the pdb file</li>
+<li><strong>energy_cutoff</strong> &#8211; positive float</li>
+<li><strong>zipped</strong> &#8211; are the matrices gzipped or not? Default is True.</li>
+<li><strong>result_path</strong> &#8211; path to which the results are to be written.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>a dictionary with following keys:</p>
+<ul class="simple">
+<li>&#8216;total_volume&#8217;</li>
+<li>&#8216;fav_volume&#8217;</li>
+<li>&#8216;unfav_volume&#8217;</li>
+<li>&#8216;neutral_volume&#8217;</li>
+<li>&#8216;total_surface&#8217;</li>
+<li>&#8216;fav_surface&#8217;</li>
+<li>&#8216;unfav_surface&#8217;</li>
+<li>&#8216;neutral_surface&#8217;</li>
+</ul>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">calc_vol_and_surface</span></tt> &#8212; Calculation of Volume and Surface</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Wrapper.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Wrapper</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="dca.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">dca</span></tt> &#8212; Direct Coupling Analysis operations</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/tools/calc_vol_and_surface.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="dca.html" title="dca — Direct Coupling Analysis operations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Wrapper.html" title="Wrapper — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" >tools Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

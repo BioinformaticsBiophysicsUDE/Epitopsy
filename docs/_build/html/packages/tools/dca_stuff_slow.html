@@ -1,0 +1,273 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>dca_stuff_slow — Direct Coupling Analysis routines &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="tools Package" href="../../epitopsy.tools.html" />
+    <link rel="next" title="estDG — YYYYYYY" href="estDG.html" />
+    <link rel="prev" title="dca_stuff — Direct Coupling Analysis routines" href="dca_stuff.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="estDG.html" title="estDG — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff.html" title="dca_stuff — Direct Coupling Analysis routines"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" accesskey="U">tools Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-dca_stuff_slow">
+<span id="dca-stuff-slow-direct-coupling-analysis-routines"></span><h1><a class="reference internal" href="#module-dca_stuff_slow" title="dca_stuff_slow: Direct Coupling Analysis routines."><tt class="xref py py-mod docutils literal"><span class="pre">dca_stuff_slow</span></tt></a> &#8212; Direct Coupling Analysis routines<a class="headerlink" href="#module-dca_stuff_slow" title="Permalink to this headline">¶</a></h1>
+<p>This module provides additional direct coupling analysis operations.</p>
+<div class="section" id="module-syntax">
+<span id="dca-stuff-slow-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-dca-stuff-slow"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="dca_stuff_slow.get_seq_map">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">get_seq_map</tt><big>(</big><em>aln</em>, <em>pdb</em>, <em>chain_id</em>, <em>pdb_seq</em>, <em>seq_res</em>, <em>pdb_res</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.get_seq_map" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find the matching sequence in the alignment and return a dictionary, which
+maps the alignment positions to the residues of the structure.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>aln</strong> &#8211; alignment</li>
+<li><strong>pdb</strong> &#8211; biopython structure object</li>
+<li><strong>chain_id</strong> &#8211; chain id of interest</li>
+<li><strong>pdb_seq</strong> &#8211; pdb sequence</li>
+<li><strong>seq_res</strong> &#8211; start and end residue ids of the aln sequence</li>
+<li><strong>pdb_res</strong> &#8211; start and end residue ids of the pdb sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a dictionary, wich maps the alignment positions on the structure.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca_stuff_slow.repair_pdb">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">repair_pdb</tt><big>(</big><em>pdb</em>, <em>chain_id</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.repair_pdb" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb</strong> &#8211; biopython structure</li>
+<li><strong>chain_id</strong> &#8211; chain, which contains the correct sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">repaired pdb object.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca_stuff_slow.get_sequence">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">get_sequence</tt><big>(</big><em>pdb</em>, <em>chain_id</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.get_sequence" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pdb</strong> &#8211; biopython structure</li>
+<li><strong>chain_id</strong> &#8211; chain, which contains the correct sequence</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list of the amino acids, which build up the sequence.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca_stuff_slow.get_res_id_aa_dict">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">get_res_id_aa_dict</tt><big>(</big><em>pdb</em>, <em>chain_id</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.get_res_id_aa_dict" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a dictionary of the first chain, which contains the residue id as
+key and the corresponding amino acid as value.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca_stuff_slow.res_res_distance">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">res_res_distance</tt><big>(</big><em>res1</em>, <em>res2</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.res_res_distance" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>res1</strong> &#8211; residue 1</li>
+<li><strong>res2</strong> &#8211; residue 2</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">minimum distance between any atoms.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="dca_stuff_slow.get_structure_map">
+<tt class="descclassname">dca_stuff_slow.</tt><tt class="descname">get_structure_map</tt><big>(</big><em>contact_map</em>, <em>dist_map</em>, <em>neighbor_map</em>, <em>pdb</em>, <em>chain_id</em>, <em>seq_map</em>, <em>min_distance=8</em>, <em>seq_distance=5</em><big>)</big><a class="headerlink" href="#dca_stuff_slow.get_structure_map" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>contact_map</strong> &#8211; add a contact</li>
+<li><strong>dist_map</strong> &#8211; add the corresponding distance</li>
+<li><strong>neighbor_map</strong> &#8211; add sequence neighbor information</li>
+<li><strong>pdb</strong> &#8211; biopython structure</li>
+<li><strong>chain_id</strong> &#8211; chain, which contains the correct sequence</li>
+<li><strong>min_distance</strong> &#8211; minimum distance between any two atoms (Morcos2011)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><p>a list containing three numpy arrays:</p>
+<ol class="arabic simple">
+<li>contact map: 0&#8217;s (no contact) and 1&#8217;s (contact), where
+a contact is defined as either a c_alpha - c_alpha distance
+less than 0.8 nm or any atom - atom distance less than 0.5 nm.</li>
+<li>min distance map: min distance between all the residues</li>
+<li>neighbor map: is the found minimal distance pair a neighbor (1)
+or not (0).</li>
+</ol>
+</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">dca_stuff_slow</span></tt> &#8212; Direct Coupling Analysis routines</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dca_stuff.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">dca_stuff</span></tt> &#8212; Direct Coupling Analysis routines</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="estDG.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">estDG</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/tools/dca_stuff_slow.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="estDG.html" title="estDG — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff.html" title="dca_stuff — Direct Coupling Analysis routines"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" >tools Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

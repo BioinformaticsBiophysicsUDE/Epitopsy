@@ -1,0 +1,289 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Distributed_Server_Optimization_Template — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Optimization Package" href="../../epitopsy.Optimization.html" />
+    <link rel="next" title="Optimizer — YYYYYYY" href="Optimizer.html" />
+    <link rel="prev" title="Distributed_Client — YYYYYYY" href="Distributed_Client.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Optimizer.html" title="Optimizer — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Distributed_Client.html" title="Distributed_Client — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" accesskey="U">Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="distributed-server-optimization-template-yyyyyyy">
+<h1><a class="reference internal" href="#module-Distributed_Server_Optimization_Template" title="Distributed_Server_Optimization_Template: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Distributed_Server_Optimization_Template</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#distributed-server-optimization-template-yyyyyyy" title="Permalink to this headline">¶</a></h1>
+<span class="target" id="module-Distributed_Server_Optimization_Template"></span><p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="distributed-server-optimization-template-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<dl class="docutils">
+<dt>How to use this optimizer:</dt>
+<dd><ol class="first last arabic simple">
+<li>supply a config file</li>
+<li>the config is supposed to contain more parameters, please add them to
+&#8216;the data_dict&#8217;</li>
+<li>modify the &#8216;score_pop&#8217; class method of CMOptimizer</li>
+<li>modify the &#8216;mutate_pop&#8217; class method of CMOptimizer</li>
+<li>supply a &#8216;run_evaluator.py&#8217; script which will be copied to all clients
+and calculates the fitness for a given individual. The script gets the
+the following input: <tt class="docutils literal"><span class="pre">unique_id</span></tt>, <tt class="docutils literal"><span class="pre">pdb_content</span></tt>, <tt class="docutils literal"><span class="pre">gene_data</span></tt>, <tt class="docutils literal"><span class="pre">data_dict</span></tt></li>
+</ol>
+</dd>
+</dl>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-distributed-server-optimization-template"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer">
+<em class="property">class </em><tt class="descclassname">Distributed_Server_Optimization_Template.</tt><tt class="descname">CMOptimizer</tt><big>(</big><em>GA_Optimizer</em>, <em>CMObject</em><big>)</big><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer" title="Permalink to this definition">¶</a></dt>
+<dd><p>Properties, which have to be specified in the config-file:</p>
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.pop_size">
+<tt class="descname">pop_size</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.pop_size" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of individuals</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.generations">
+<tt class="descname">generations</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.generations" title="Permalink to this definition">¶</a></dt>
+<dd><p>number of generations</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.mutate_pop">
+<tt class="descname">mutate_pop</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.mutate_pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>supply a function, which copies the data of each
+individual, mutates it and creates a new individual
+with the new data and returns a new population
+afterwards</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.score_pop">
+<tt class="descname">score_pop</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.score_pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>supply a function, which scores a given population</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.select_pop">
+<tt class="descname">select_pop</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.select_pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>supply a function, which selects a new pool from the
+three given arguments: parents, children, pareto_front
+a further argument is &#8216;self.minimization&#8217; because the
+selection is sensitive to minimization or maximization</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.analyze_pop">
+<tt class="descname">analyze_pop</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.analyze_pop" title="Permalink to this definition">¶</a></dt>
+<dd><p>supply a function, which analyzes a given population
+from the four given arguments: parents, children,
+pareto_front and current_generation. The result should
+be a dictionary e.g.:</p>
+<div class="highlight-python"><pre>{'gen': current_gen, 'hyper_vol_parents' : x, hyper_vol_pareto':y}</pre>
+</div>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.minimization">
+<tt class="descname">minimization</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.minimization" title="Permalink to this definition">¶</a></dt>
+<dd><p>is this a minimization or a maximization?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.init_data">
+<tt class="descname">init_data</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.init_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>list of data that is used for the initialization</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.crossover">
+<tt class="descname">crossover</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.crossover" title="Permalink to this definition">¶</a></dt>
+<dd><p>can be <tt class="docutils literal"><span class="pre">True</span></tt>, <tt class="docutils literal"><span class="pre">False</span></tt> or a function. The function works
+on the parent population, therefore it is necessary to
+create new individuals, because the parents should not
+be modified. After the crossover this population will
+be mutated. If no function is supplied and crossover is
+<tt class="docutils literal"><span class="pre">True</span></tt>, the implemented function will be used</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.crossover_frac">
+<tt class="descname">crossover_frac</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.crossover_frac" title="Permalink to this definition">¶</a></dt>
+<dd><p>fraction of the parent population, which will be
+mutated with the built in crossover</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.data_dict">
+<tt class="descname">data_dict</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.data_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>additional data, which can be used in any given function,
+a dictionary seems to be a good idea.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.run_id">
+<tt class="descname">run_id</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.run_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>can be used to create unique directory names for the same
+generation and population sizes</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.log_data">
+<tt class="descname">log_data</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.log_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>log data or not</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.print_generation">
+<tt class="descname">print_generation</tt><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.print_generation" title="Permalink to this definition">¶</a></dt>
+<dd><p>either print the current generation or not</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">score_pop</tt><big>(</big><em>unscored_pop</em>, <em>data_dict</em><big>)</big></dt>
+<dd><p>This method is used to score a population. Here the distributed computing
+is used! The actual scoring is performed by the supplied scoring script,
+which is run by the clients. For the proper function the client returns a
+list with the scores</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">mutate_pop</tt><big>(</big><em>population</em>, <em>current_generation</em>, <em>data_dict</em><big>)</big></dt>
+<dd><p>This function is used to mutate a given population.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizer.secure_run">
+<tt class="descname">secure_run</tt><big>(</big><big>)</big><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizer.secure_run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="Distributed_Server_Optimization_Template.CMOptimizerProcess">
+<em class="property">class </em><tt class="descclassname">Distributed_Server_Optimization_Template.</tt><tt class="descname">CMOptimizerProcess</tt><big>(</big><em>Process</em>, <em>CMOptimizer</em><big>)</big><a class="headerlink" href="#Distributed_Server_Optimization_Template.CMOptimizerProcess" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Distributed_Server_Optimization_Template</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Distributed_Client.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Distributed_Client</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Optimizer.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/Optimization/Distributed_Server_Optimization_Template.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Optimizer.html" title="Optimizer — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Distributed_Client.html" title="Distributed_Client — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" >Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

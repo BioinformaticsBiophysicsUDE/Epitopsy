@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>UtilityClasses — Various utility functions &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="tools Package" href="../../epitopsy.tools.html" />
+    <link rel="next" title="Wrapper — YYYYYYY" href="Wrapper.html" />
+    <link rel="prev" title="ParallelComputation — Parallel Computation" href="ParallelComputation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Wrapper.html" title="Wrapper — YYYYYYY"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ParallelComputation.html" title="ParallelComputation — Parallel Computation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" accesskey="U">tools Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-UtilityClasses">
+<span id="utilityclasses-various-utility-functions"></span><h1><a class="reference internal" href="#module-UtilityClasses" title="UtilityClasses: Various utility functions."><tt class="xref py py-mod docutils literal"><span class="pre">UtilityClasses</span></tt></a> &#8212; Various utility functions<a class="headerlink" href="#module-UtilityClasses" title="Permalink to this headline">¶</a></h1>
+<p>This module provides various utility functions.</p>
+<div class="section" id="module-syntax">
+<span id="utilityclasses-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-utilityclasses"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="UtilityClasses.Progress_bar">
+<em class="property">class </em><tt class="descclassname">UtilityClasses.</tt><tt class="descname">Progress_bar</tt><a class="headerlink" href="#UtilityClasses.Progress_bar" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class builds a nice progress bar:</p>
+<div class="highlight-python"><pre>0%                                    100%
+#                                        #
+#********                                #
+#********************                    #</pre>
+</div>
+<p>There are 50 characters between the #.</p>
+<dl class="method">
+<dt id="UtilityClasses.Progress_bar.add">
+<tt class="descname">add</tt><big>(</big><big>)</big><a class="headerlink" href="#UtilityClasses.Progress_bar.add" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="UtilityClasses.Fix_xxmer">
+<em class="property">class </em><tt class="descclassname">UtilityClasses.</tt><tt class="descname">Fix_xxmer</tt><a class="headerlink" href="#UtilityClasses.Fix_xxmer" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class fixes xxmers, where xx copies of one protein are in one pdb.</p>
+<dl class="method">
+<dt id="UtilityClasses.Fix_xxmer.hack_linenumbering">
+<tt class="descname">hack_linenumbering</tt><big>(</big><big>)</big><a class="headerlink" href="#UtilityClasses.Fix_xxmer.hack_linenumbering" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="UtilityClasses.Fix_xxmer.hack_chain_ids">
+<tt class="descname">hack_chain_ids</tt><big>(</big><big>)</big><a class="headerlink" href="#UtilityClasses.Fix_xxmer.hack_chain_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make double occuring chain ids unique!</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="UtilityClasses.ESP_Profile_Manager">
+<em class="property">class </em><tt class="descclassname">UtilityClasses.</tt><tt class="descname">ESP_Profile_Manager</tt><a class="headerlink" href="#UtilityClasses.ESP_Profile_Manager" title="Permalink to this definition">¶</a></dt>
+<dd><p>This class writes ESP-profiles to file.</p>
+<dl class="method">
+<dt id="UtilityClasses.ESP_Profile_Manager.write_profile">
+<tt class="descname">write_profile</tt><big>(</big><em>box</em>, <em>indices</em>, <em>id</em>, <em>filename</em>, <em>append = False</em><big>)</big><a class="headerlink" href="#UtilityClasses.ESP_Profile_Manager.write_profile" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>box</strong> &#8211; array with 3 dimensions</li>
+<li><strong>indices</strong> &#8211; tupel of arrays, which you get for example with <tt class="xref py py-func docutils literal"><span class="pre">Numpy.nonzero(a==1)()</span></tt></li>
+<li><strong>id</strong> &#8211; identifier for one ESP-profile in case you want to append it to an
+existing file</li>
+<li><strong>append</strong> &#8211; <tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>The formatting looks like this (seperated by \t):</p>
+<div class="highlight-python"><pre>X        [coord_1    coord_2_... coord_n]
+Y        [coord_1    coord_2_... coord_n]
+Z        [coord_1    coord_2_... coord_n]
+[ID_1]   [phi_1        phi_2 ...   phi_n]</pre>
+</div>
+</dd></dl>
+
+<dl class="method">
+<dt id="UtilityClasses.ESP_Profile_Manager.read_hull_coordinates">
+<tt class="descname">read_hull_coordinates</tt><big>(</big><em>hull_coordinates_file</em>, <em>phi_values = False</em>, <em>id = 1</em><big>)</big><a class="headerlink" href="#UtilityClasses.ESP_Profile_Manager.read_hull_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="UtilityClasses.ESP_Profile_Manager.write_hull_coordinates">
+<tt class="descname">write_hull_coordinates</tt><big>(</big><em>hull_coordinates</em>, <em>filename = 'hull_coordinates.txt'</em><big>)</big><a class="headerlink" href="#UtilityClasses.ESP_Profile_Manager.write_hull_coordinates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">UtilityClasses</span></tt> &#8212; Various utility functions</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ParallelComputation.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">ParallelComputation</span></tt> &#8212; Parallel Computation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="Wrapper.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">Wrapper</span></tt> &#8212; YYYYYYY</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/tools/UtilityClasses.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="Wrapper.html" title="Wrapper — YYYYYYY"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ParallelComputation.html" title="ParallelComputation — Parallel Computation"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" >tools Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

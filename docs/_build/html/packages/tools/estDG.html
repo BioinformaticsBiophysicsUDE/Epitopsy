@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>estDG — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="tools Package" href="../../epitopsy.tools.html" />
+    <link rel="next" title="pymol_align — Batch processing of PDB structures" href="pymol_align.html" />
+    <link rel="prev" title="dca_stuff_slow — Direct Coupling Analysis routines" href="dca_stuff_slow.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pymol_align.html" title="pymol_align — Batch processing of PDB structures"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff_slow.html" title="dca_stuff_slow — Direct Coupling Analysis routines"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" accesskey="U">tools Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-estDG">
+<span id="estdg-yyyyyyy"></span><h1><a class="reference internal" href="#module-estDG" title="estDG: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">estDG</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-estDG" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="estdg-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-estdg"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="estDG.findVolLASPro">
+<tt class="descclassname">estDG.</tt><tt class="descname">findVolLASPro</tt><big>(</big><em>counter_box</em><big>)</big><a class="headerlink" href="#estDG.findVolLASPro" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="estDG.calcDG">
+<tt class="descclassname">estDG.</tt><tt class="descname">calcDG</tt><big>(</big><em>energy_box</em>, <em>counter_box</em>, <em>Temp=310</em>, <em>conc=None</em><big>)</big><a class="headerlink" href="#estDG.calcDG" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates the binding free energy of protein to ligand in kJ/mol and
+the k_D.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>energy_box</strong> &#8211; DXBox containing the energies</li>
+<li><strong>counter_box</strong> &#8211; DXBox containing the number of possible rotations at
+each grid point</li>
+<li><strong>Temp</strong> &#8211; temperature, default 310</li>
+<li><strong>conc</strong> &#8211; concentration</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">a list containing the binding free energy of protein
+to ligand and the k_D.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="estDG.calcConc">
+<tt class="descclassname">estDG.</tt><tt class="descname">calcConc</tt><big>(</big><em>void,LASpoints,ProteinPoints,grid=[0.5,0.5,0.5]</em><big>)</big><a class="headerlink" href="#estDG.calcConc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the concentration of protein and ligand for a given LAS layer
+and the additional volume of the protein and a given volume which
+constitutes the rest of the water in which all is soluted.</p>
+<p>All has to be given in grid points, the grid defines afterwards the volume
+of each gridpoint.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="estDG.calVoidVol">
+<tt class="descclassname">estDG.</tt><tt class="descname">calVoidVol</tt><big>(</big><em>conc,LASpoints,ProteinPoints,grid=[0.5,0.5,0.5]</em><big>)</big><a class="headerlink" href="#estDG.calVoidVol" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate a void volume, from a given LAS-layer, a protein volume (both in
+grid points) and a concentration in which the protein should be soluted.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">estDG</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="dca_stuff_slow.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">dca_stuff_slow</span></tt> &#8212; Direct Coupling Analysis routines</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="pymol_align.html"
+                        title="next chapter"><tt class="docutils literal"><span class="pre">pymol_align</span></tt> &#8212; Batch processing of PDB structures</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/tools/estDG.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="pymol_align.html" title="pymol_align — Batch processing of PDB structures"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="dca_stuff_slow.html" title="dca_stuff_slow — Direct Coupling Analysis routines"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.tools.html" >tools Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

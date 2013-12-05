@@ -1,0 +1,197 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Selector — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
+    <link rel="up" title="Optimization Package" href="../../epitopsy.Optimization.html" />
+    <link rel="next" title="functions Package" href="../../epitopsy.functions.html" />
+    <link rel="prev" title="Optimizer — YYYYYYY" href="Optimizer.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../epitopsy.functions.html" title="functions Package"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="Optimizer.html" title="Optimizer — YYYYYYY"
+             accesskey="P">previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" accesskey="U">Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-Selector">
+<span id="selector-yyyyyyy"></span><h1><a class="reference internal" href="#module-Selector" title="Selector: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Selector</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-Selector" title="Permalink to this headline">¶</a></h1>
+<p>This module provides YYYYY.</p>
+<div class="section" id="module-syntax">
+<span id="selector-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
+<p>Empty.</p>
+</div>
+<div class="section" id="module-contents">
+<span id="contents-of-module-selector"></span><h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="Selector.random_tournament">
+<tt class="descclassname">Selector.</tt><tt class="descname">random_tournament</tt><big>(</big><em>parents</em>, <em>children</em>, <em>pareto_front</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.random_tournament" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.nsga_tournament">
+<tt class="descclassname">Selector.</tt><tt class="descname">nsga_tournament</tt><big>(</big><em>parents</em>, <em>children</em>, <em>pareto_front</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.nsga_tournament" title="Permalink to this definition">¶</a></dt>
+<dd><p>Replaces population using the non-dominated sorting technique from
+NSGA-II. Fill new parent population according to the best front
+respectively crowding distance within a front</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.nsga_random_tournament">
+<tt class="descclassname">Selector.</tt><tt class="descname">nsga_random_tournament</tt><big>(</big><em>parents</em>, <em>children</em>, <em>pareto_front</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.nsga_random_tournament" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.pareto_energy_tournament">
+<tt class="descclassname">Selector.</tt><tt class="descname">pareto_energy_tournament</tt><big>(</big><em>parents</em>, <em>children</em>, <em>pareto_front</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.pareto_energy_tournament" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.pool_pareto_distance_tournament">
+<tt class="descclassname">Selector.</tt><tt class="descname">pool_pareto_distance_tournament</tt><big>(</big><em>parents</em>, <em>children</em>, <em>pareto_front</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.pool_pareto_distance_tournament" title="Permalink to this definition">¶</a></dt>
+<dd><p>Docstring missing.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.who_is_fitter_random">
+<tt class="descclassname">Selector.</tt><tt class="descname">who_is_fitter_random</tt><big>(</big><em>c1</em>, <em>c2</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.who_is_fitter_random" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the fitter individual form the two candidates
+c1 and c2. In case none dominates the other, one is randomly chosen.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.who_is_fitter_max_distance_all">
+<tt class="descclassname">Selector.</tt><tt class="descname">who_is_fitter_max_distance_all</tt><big>(</big><em>c1</em>, <em>c2</em>, <em>population</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.who_is_fitter_max_distance_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the fitter individual form the two candidates
+c1 and c2. In case none dominates the other, the distance to all other
+individual is calculated and the one with the greater distance is
+chosen to increase the diversity.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="Selector.who_is_fitter_min_energy_all">
+<tt class="descclassname">Selector.</tt><tt class="descname">who_is_fitter_min_energy_all</tt><big>(</big><em>c1</em>, <em>c2</em>, <em>population</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Selector.who_is_fitter_min_energy_all" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method returns the fitter individual form the two candidates
+c1 and c2. In case none dominates the other, the distance to all other
+individual is calculated and the one with the greater distance is
+chosen to increase the diversity.</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="../../index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Selector</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="Optimizer.html"
+                        title="previous chapter"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; YYYYYYY</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="../../epitopsy.functions.html"
+                        title="next chapter">functions Package</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="../../_sources/packages/Optimization/Selector.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="../../epitopsy.functions.html" title="functions Package"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="Optimizer.html" title="Optimizer — YYYYYYY"
+             >previous</a> |</li>
+        <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.Optimization.html" >Optimization Package</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Christoph Wilms.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
