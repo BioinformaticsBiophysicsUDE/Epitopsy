@@ -37,7 +37,7 @@ def get_seq_map(aln, pdb, chain_id, pdb_seq, seq_res, pdb_res):
         pdb_res -> start and end residue ids of the pdb sequence
 
     Returns:
-        A dictionary, wich maps the alignment positions [1,N] on the structure.
+        A dictionary, which maps the alignment positions [1,N] on the structure.
     '''
     alignment_alphabet = get_alignment_alphabet()
     seq_id = pdb.id

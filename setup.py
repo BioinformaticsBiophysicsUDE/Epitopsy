@@ -25,8 +25,9 @@ cyFileNames = ['cython/CalculateInteractionEnergyCython',
     'cython/fast_dca', 
     'cython/fast_dca_float32'
 ]
-
-cythonExtensions = [Extension('epitopsy/'+cyFile, ['epitopsy/'+cyFile+'.pyx'], include_dirs=cyHeaders, extra_compile_args=['-pthread','-fPIC','-fwrapv','-O2','-Wall','-fopenmp','-fno-strict-aliasing']) for cyFile in cyFileNames]
+XtraCompileArgs = ['-shared','-pthread','-fPIC','-fwrapv','-O2','-Wall','-fopenmp','-fno-strict-aliasing']
+XtraLinkArgs = ['-shared','-pthread','-fPIC','-fwrapv','-O2','-Wall','-fopenmp','-fno-strict-aliasing']
+cythonExtensions = [Extension('epitopsy/'+cyFile, ['epitopsy/'+cyFile+'.pyx'], include_dirs=cyHeaders, extra_compile_args=XtraCompileArgs, extra_link_args=XtraLinkArgs) for cyFile in cyFileNames]
 
 
 setup(
