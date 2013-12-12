@@ -708,3 +708,30 @@ def get_ROC_data(prot_data_path):
         results[folder] = [fpr, tpr,roc_auc]
 
     return results
+
+def plotDcaMap(filename, method='di', name=None):
+    if(method not in ['mi', 'di']):
+        raise Exception('The only supported methods are mi and di. Choose one.')            
+    file = open(filename)
+    lines = file.readlines()
+    DataInfo = lines[0].split()
+    dim = int(DataInfo[2].split('=')[1])
+    MatrixDCA = np.zeros([dim,dim])
+    for line in lines[2:]:
+        a = line.split()
+        if(method=='di'):
+            MatrixDCA[int(a[0])-1,int(a[1])-1] = float(a[3])
+        if(method=='mi'):
+            MatrixDCA[int(a[0]-1),int(a[1])-1] = float(a[2])
+    fig = plt.figure(num=None, figsize=(10, 8), dpi=120, facecolor='w', edgecolor='k')
+    DCAMap = fig.add_subplot(111)
+    #plt.xlabel('Contact A')
+    #plt.xlabel('Contact B')
+    if name:
+        plt.title('DCA pair map of '+name, size=20)
+    else:
+        plt.title('DCA pair map', size=20)
+    DCAMap = imshow(MatrixDCA)
+    plt.annotate(DataInfo[2], xy=(dim/4, 2*dim/3), xytext=(dim/4, 2*dim/3), size='20', color='w')
+    plt.annotate(DataInfo[3], xy=(dim/4, 4*dim/5), xytext=(dim/4, 4*dim/5), size='20', color='w')
+    plt.colorbar()
