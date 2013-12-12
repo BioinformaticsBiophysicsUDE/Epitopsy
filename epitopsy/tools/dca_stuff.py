@@ -715,7 +715,7 @@ def plotDcaMap(filename, method='di', name=None):
     file = open(filename)
     lines = file.readlines()
     DataInfo = lines[0].split()
-    dim = int(DataInfo[2].split('=')[1])
+    dim = int(DataInfo[3].split('=')[1])
     MatrixDCA = np.zeros([dim,dim])
     for line in lines[2:]:
         a = line.split()
@@ -732,6 +732,7 @@ def plotDcaMap(filename, method='di', name=None):
     else:
         plt.title('DCA pair map', size=20)
     DCAMap = imshow(MatrixDCA)
-    plt.annotate(DataInfo[2], xy=(dim/4, 2*dim/3), xytext=(dim/4, 2*dim/3), size='20', color='w')
-    plt.annotate(DataInfo[3], xy=(dim/4, 4*dim/5), xytext=(dim/4, 4*dim/5), size='20', color='w')
+    plt.annotate(DataInfo[3], xy=(dim/4, 3*dim/6), xytext=(dim/4, 3*dim/6), size='20', color='w')
+    plt.annotate(DataInfo[4], xy=(dim/4, 4*dim/6), xytext=(dim/4, 4*dim/6), size='20', color='w')
+    plt.annotate(DataInfo[5], xy=(dim/4, 5*dim/6), xytext=(dim/4, 5*dim/6), size='20', color='w')
     plt.colorbar()
