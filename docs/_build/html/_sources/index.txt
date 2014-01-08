@@ -10,7 +10,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 4
+   :titlesonly:
 
+   quickstart
    epitopsy
 
 

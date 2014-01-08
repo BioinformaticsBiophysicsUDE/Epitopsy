@@ -25,8 +25,9 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/copybutton.js"></script>
     <link rel="top" title="epitopsy 0.1 documentation" href="#" />
-    <link rel="next" title="epitopsy Package" href="epitopsy.html" /> 
+    <link rel="next" title="Getting Started" href="quickstart.html" /> 
   </head>
   <body>
     <div class="related">
@@ -39,7 +40,7 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="epitopsy.html" title="epitopsy Package"
+          <a href="quickstart.html" title="Getting Started"
              accesskey="N">next</a> |</li>
         <li><a href="#">epitopsy 0.1 documentation</a> &raquo;</li> 
       </ul>
@@ -55,92 +56,194 @@
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="epitopsy.html">epitopsy Package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="packages/APBS.html"><tt class="docutils literal"><span class="pre">APBS</span></tt> &#8212; APBS automation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="packages/APBS.html#module-syntax">Module Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="packages/APBS.html#module-contents">Module Contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quickstart.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="overview.html">Epitopsy - an overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.epitopsy.html">Installing Epitopsy</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="packages/DXFile.html"><tt class="docutils literal"><span class="pre">DXFile</span></tt> &#8212; YYYYYYY</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="packages/DXFile.html#module-syntax">Module Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="packages/DXFile.html#module-contents">Module Contents</a></li>
+<li class="toctree-l2"><a class="reference internal" href="install.index.html">Installing third-party softwares</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="install.clustal.html">Clustal Omega &#8212; Multiple Sequence Alignment</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="packages/Sequence.html"><tt class="docutils literal"><span class="pre">Sequence</span></tt> &#8212; YYYYYYY</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="packages/Sequence.html#module-syntax">Module Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="packages/Sequence.html#module-contents">Module Contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.pdb2pqr.html">PDB2PQR &#8212; Generation of PQR files</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="packages/Structure.html"><tt class="docutils literal"><span class="pre">Structure</span></tt> &#8212; YYYYYYY</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="packages/Structure.html#module-syntax">Module Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="packages/Structure.html#module-contents">Module Contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.apbs.html">APBS &#8212; Electrostatics</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="packages/build_cython.html"><tt class="docutils literal"><span class="pre">build_cython</span></tt> &#8212; Cython compilation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="packages/build_cython.html#module-syntax">Module Syntax</a></li>
-<li class="toctree-l3"><a class="reference internal" href="packages/build_cython.html#module-contents">Module Contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.pymol.html">PyMOL &#8212; 3D molecular viewer</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="epitopsy.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="epitopsy.Optimization.html">Optimization Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="packages/Optimization/Analysis.html"><tt class="docutils literal"><span class="pre">Analysis</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/Optimization/Distributed_Client.html"><tt class="docutils literal"><span class="pre">Distributed_Client</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/Optimization/Distributed_Server_Optimization_Template.html"><tt class="docutils literal"><span class="pre">Distributed_Server_Optimization_Template</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/Optimization/Optimizer.html"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/Optimization/Selector.html"><tt class="docutils literal"><span class="pre">Selector</span></tt> &#8212; YYYYYYY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.gromacs.html">Gromacs &#8212; MD simulations</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="epitopsy.functions.html">functions Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/CalculateESPProfiles.html"><tt class="docutils literal"><span class="pre">CalculateESPProfiles</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/Calculate_Ligand_Interaction_Energy.html"><tt class="docutils literal"><span class="pre">Calculate_Ligand_Interaction_Energy</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/CreateHull.html"><tt class="docutils literal"><span class="pre">CreateHull</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/CreateHullEnsemble.html"><tt class="docutils literal"><span class="pre">CreateHullEnsemble</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/ESP_Profile_Extract_SurfacePatch.html"><tt class="docutils literal"><span class="pre">ESP_Profile_Extract_SurfacePatch</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/ESP_Profile_Extract_Volume.html"><tt class="docutils literal"><span class="pre">ESP_Profile_Extract_Volume</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/ESP_Profile_SurfacePatch.html"><tt class="docutils literal"><span class="pre">ESP_Profile_SurfacePatch</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/ScoreHull.html"><tt class="docutils literal"><span class="pre">ScoreHull</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/ScoreHullEnsemble.html"><tt class="docutils literal"><span class="pre">ScoreHullEnsemble</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/StartMD.html"><tt class="docutils literal"><span class="pre">StartMD</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/calculate_partition_function.html"><tt class="docutils literal"><span class="pre">calculate_partition_function</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/functions/depreciated_calculate_partition_function_slow.html"><tt class="docutils literal"><span class="pre">depreciated_calculate_partition_function_slow</span></tt> &#8212; YYYYYYY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.amber.html">Amber &#8212; MD simulations</a><ul class="simple">
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="epitopsy.result.html">result Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/FFT_Result.html"><tt class="docutils literal"><span class="pre">FFT_Result</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/PotentialResult.html"><tt class="docutils literal"><span class="pre">PotentialResult</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/ResultComparator.html"><tt class="docutils literal"><span class="pre">ResultComparator</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/ResultReader.html"><tt class="docutils literal"><span class="pre">ResultReader</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/ResultSet.html"><tt class="docutils literal"><span class="pre">ResultSet</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/ResultWriter.html"><tt class="docutils literal"><span class="pre">ResultWriter</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/result/SurfaceResult.html"><tt class="docutils literal"><span class="pre">SurfaceResult</span></tt> &#8212; YYYYYYY</a></li>
+<li class="toctree-l3"><a class="reference internal" href="install.sharelib.html">Sharing libraries</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="epitopsy.scoring.html">scoring Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="packages/scoring/FFTCorrelationScoring.html"><tt class="docutils literal"><span class="pre">FFTCorrelationScoring</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/scoring/PotentialScoring.html"><tt class="docutils literal"><span class="pre">PotentialScoring</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/scoring/Scoring.html"><tt class="docutils literal"><span class="pre">Scoring</span></tt> &#8212; YYYYYYY</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="epitopsy.tools.html">tools Package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/FoldX.html"><tt class="docutils literal"><span class="pre">FoldX</span></tt> &#8212; FoldX</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/HIV_analysis.html"><tt class="docutils literal"><span class="pre">HIV_analysis</span></tt> &#8212; HIV analysis operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/MDTools.html"><tt class="docutils literal"><span class="pre">MD_Tools</span></tt> &#8212; Molecular Dynamics tools</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/MathTools.html"><tt class="docutils literal"><span class="pre">MathTools</span></tt> &#8212; Mathematical tools</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/Modeller.html"><tt class="docutils literal"><span class="pre">Modeller</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/PDB_Tools.html"><tt class="docutils literal"><span class="pre">PDB_Tools</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/ParallelComputation.html"><tt class="docutils literal"><span class="pre">ParallelComputation</span></tt> &#8212; Parallel Computation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/UtilityClasses.html"><tt class="docutils literal"><span class="pre">UtilityClasses</span></tt> &#8212; Various utility functions</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/Wrapper.html"><tt class="docutils literal"><span class="pre">Wrapper</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/calc_vol_and_surface.html"><tt class="docutils literal"><span class="pre">calc_vol_and_surface</span></tt> &#8212; Calculation of Volume and Surface</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/dca.html"><tt class="docutils literal"><span class="pre">dca</span></tt> &#8212; Direct Coupling Analysis operations</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/dca_stuff.html"><tt class="docutils literal"><span class="pre">dca_stuff</span></tt> &#8212; Direct Coupling Analysis routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/dca_stuff_slow.html"><tt class="docutils literal"><span class="pre">dca_stuff_slow</span></tt> &#8212; Direct Coupling Analysis routines</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/estDG.html"><tt class="docutils literal"><span class="pre">estDG</span></tt> &#8212; YYYYYYY</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/pymol_align.html"><tt class="docutils literal"><span class="pre">pymol_align</span></tt> &#8212; Batch processing of PDB structures</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/run_dca.html"><tt class="docutils literal"><span class="pre">run_dca</span></tt> &#8212; Subroutines for Direct Coupling Analysis</a></li>
-<li class="toctree-l4"><a class="reference internal" href="packages/tools/style.html"><tt class="docutils literal"><span class="pre">style</span></tt> &#8212; Rendering styles</a></li>
+<li class="toctree-l1"><a class="reference internal" href="epitopsy.html">Epitopsy Package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="packages/APBS.html"><tt class="docutils literal"><span class="pre">APBS</span></tt> &#8212; APBS automation</a><ul class="simple">
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="packages/DXFile.html"><tt class="docutils literal"><span class="pre">DXFile</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="packages/Sequence.html"><tt class="docutils literal"><span class="pre">Sequence</span></tt> &#8212; Extension of <cite>Bio.Align</cite></a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="packages/Structure.html"><tt class="docutils literal"><span class="pre">Structure</span></tt> &#8212; Additional classes for PDB files</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="packages/build_cython.html"><tt class="docutils literal"><span class="pre">build_cython</span></tt> &#8212; Cython compilation</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epitopsy.Optimization.html">Optimization Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="packages/Optimization/Analysis.html"><tt class="docutils literal"><span class="pre">Analysis</span></tt> &#8212; Hypervolume and Pareto analysis tools</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/Optimization/Distributed_Client.html"><tt class="docutils literal"><span class="pre">Distributed_Client</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/Optimization/Distributed_Server_Optimization_Template.html"><tt class="docutils literal"><span class="pre">Distributed_Server_Optimization_Template</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/Optimization/Optimizer.html"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; Basic and advanced Pareto functions</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/Optimization/Selector.html"><tt class="docutils literal"><span class="pre">Selector</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epitopsy.functions.html">functions Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/CalculateESPProfiles.html"><tt class="docutils literal"><span class="pre">CalculateESPProfiles</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/Calculate_Ligand_Interaction_Energy.html"><tt class="docutils literal"><span class="pre">Calculate_Ligand_Interaction_Energy</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/CreateHull.html"><tt class="docutils literal"><span class="pre">CreateHull</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/CreateHullEnsemble.html"><tt class="docutils literal"><span class="pre">CreateHullEnsemble</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/ESP_Profile_Extract_SurfacePatch.html"><tt class="docutils literal"><span class="pre">ESP_Profile_Extract_SurfacePatch</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/ESP_Profile_Extract_Volume.html"><tt class="docutils literal"><span class="pre">ESP_Profile_Extract_Volume</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/ESP_Profile_SurfacePatch.html"><tt class="docutils literal"><span class="pre">ESP_Profile_SurfacePatch</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/ScoreHull.html"><tt class="docutils literal"><span class="pre">ScoreHull</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/ScoreHullEnsemble.html"><tt class="docutils literal"><span class="pre">ScoreHullEnsemble</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/StartMD.html"><tt class="docutils literal"><span class="pre">StartMD</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/calculate_partition_function.html"><tt class="docutils literal"><span class="pre">calculate_partition_function</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/functions/depreciated_calculate_partition_function_slow.html"><tt class="docutils literal"><span class="pre">depreciated_calculate_partition_function_slow</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epitopsy.result.html">result Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/FFT_Result.html"><tt class="docutils literal"><span class="pre">FFT_Result</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/PotentialResult.html"><tt class="docutils literal"><span class="pre">PotentialResult</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/ResultComparator.html"><tt class="docutils literal"><span class="pre">ResultComparator</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/ResultReader.html"><tt class="docutils literal"><span class="pre">ResultReader</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/ResultSet.html"><tt class="docutils literal"><span class="pre">ResultSet</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/ResultWriter.html"><tt class="docutils literal"><span class="pre">ResultWriter</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/result/SurfaceResult.html"><tt class="docutils literal"><span class="pre">SurfaceResult</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epitopsy.scoring.html">scoring Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="packages/scoring/FFTCorrelationScoring.html"><tt class="docutils literal"><span class="pre">FFTCorrelationScoring</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/scoring/PotentialScoring.html"><tt class="docutils literal"><span class="pre">PotentialScoring</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/scoring/Scoring.html"><tt class="docutils literal"><span class="pre">Scoring</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="epitopsy.tools.html">tools Package</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/FoldX.html"><tt class="docutils literal"><span class="pre">FoldX</span></tt> &#8212; FoldX</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/HIV_analysis.html"><tt class="docutils literal"><span class="pre">HIV_analysis</span></tt> &#8212; HIV analysis operations</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/MDTools.html"><tt class="docutils literal"><span class="pre">MD_Tools</span></tt> &#8212; Molecular Dynamics tools</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/MathTools.html"><tt class="docutils literal"><span class="pre">MathTools</span></tt> &#8212; Mathematical tools</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/Modeller.html"><tt class="docutils literal"><span class="pre">Modeller</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/PDB_Tools.html"><tt class="docutils literal"><span class="pre">PDB_Tools</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/ParallelComputation.html"><tt class="docutils literal"><span class="pre">ParallelComputation</span></tt> &#8212; Parallel Computation</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/UtilityClasses.html"><tt class="docutils literal"><span class="pre">UtilityClasses</span></tt> &#8212; Various utility functions</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/Wrapper.html"><tt class="docutils literal"><span class="pre">Wrapper</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/calc_vol_and_surface.html"><tt class="docutils literal"><span class="pre">calc_vol_and_surface</span></tt> &#8212; Calculation of Volume and Surface</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/dca.html"><tt class="docutils literal"><span class="pre">dca</span></tt> &#8212; Direct Coupling Analysis operations</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/dca_stuff.html"><tt class="docutils literal"><span class="pre">dca_stuff</span></tt> &#8212; Direct Coupling Analysis routines</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/dca_stuff_slow.html"><tt class="docutils literal"><span class="pre">dca_stuff_slow</span></tt> &#8212; Direct Coupling Analysis routines</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/estDG.html"><tt class="docutils literal"><span class="pre">estDG</span></tt> &#8212; YYYYYYY</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/pymol_align.html"><tt class="docutils literal"><span class="pre">pymol_align</span></tt> &#8212; Batch processing of PDB structures</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/run_dca.html"><tt class="docutils literal"><span class="pre">run_dca</span></tt> &#8212; Subroutines for Direct Coupling Analysis</a><ul class="simple">
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="packages/tools/style.html"><tt class="docutils literal"><span class="pre">style</span></tt> &#8212; Rendering styles</a></li>
 </ul>
 </li>
 </ul>
@@ -172,8 +275,8 @@
 </ul>
 
   <h4>Next topic</h4>
-  <p class="topless"><a href="epitopsy.html"
-                        title="next chapter">epitopsy Package</a></p>
+  <p class="topless"><a href="quickstart.html"
+                        title="next chapter">Getting Started</a></p>
   <h3>This Page</h3>
   <ul class="this-page-menu">
     <li><a href="_sources/index.txt"
@@ -206,13 +309,14 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="epitopsy.html" title="epitopsy Package"
+          <a href="quickstart.html" title="Getting Started"
              >next</a> |</li>
         <li><a href="#">epitopsy 0.1 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Christoph Wilms.
+        &copy; Copyright 2013-2014, Christoph Wilms.
+      Last updated on Jan 08, 2014.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

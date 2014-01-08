@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Optimizer — YYYYYYY &mdash; epitopsy 0.1 documentation</title>
+    <title>Optimizer — Basic and advanced Pareto functions &mdash; epitopsy 0.1 documentation</title>
     
     <link rel="stylesheet" href="../../_static/default.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
     <link rel="top" title="epitopsy 0.1 documentation" href="../../index.html" />
     <link rel="up" title="Optimization Package" href="../../epitopsy.Optimization.html" />
     <link rel="next" title="Selector — YYYYYYY" href="Selector.html" />
@@ -47,7 +48,7 @@
           <a href="Distributed_Server_Optimization_Template.html" title="Distributed_Server_Optimization_Template — YYYYYYY"
              accesskey="P">previous</a> |</li>
         <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
-          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >Epitopsy Package</a> &raquo;</li>
           <li><a href="../../epitopsy.Optimization.html" accesskey="U">Optimization Package</a> &raquo;</li> 
       </ul>
     </div>  
@@ -58,8 +59,8 @@
           <div class="body">
             
   <div class="section" id="module-Optimizer">
-<span id="optimizer-yyyyyyy"></span><h1><a class="reference internal" href="#module-Optimizer" title="Optimizer: YYYYYYYY."><tt class="xref py py-mod docutils literal"><span class="pre">Optimizer</span></tt></a> &#8212; YYYYYYY<a class="headerlink" href="#module-Optimizer" title="Permalink to this headline">¶</a></h1>
-<p>This module provides YYYYY.</p>
+<span id="optimizer-basic-and-advanced-pareto-functions"></span><h1><a class="reference internal" href="#module-Optimizer" title="Optimizer: Basic and advanced Pareto functions."><tt class="xref py py-mod docutils literal"><span class="pre">Optimizer</span></tt></a> &#8212; Basic and advanced Pareto functions<a class="headerlink" href="#module-Optimizer" title="Permalink to this headline">¶</a></h1>
+<p>This module provides basic and advanced Pareto functions.</p>
 <div class="section" id="module-syntax">
 <span id="optimizer-syntax"></span><h2>Module Syntax<a class="headerlink" href="#module-syntax" title="Permalink to this headline">¶</a></h2>
 <p>Empty.</p>
@@ -69,43 +70,216 @@
 <dl class="function">
 <dt id="Optimizer.dominates">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">dominates</tt><big>(</big><em>p</em>, <em>q</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Optimizer.dominates" title="Permalink to this definition">¶</a></dt>
-<dd><p>Does p dominate q?</p>
-</dd></dl>
-
+<dd><p>Calculate if <strong>p</strong> dominates <strong>q</strong> according to <strong>optimization_type</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+<li><strong>optimization_type</strong> (<em>str</em>) &#8211; &#8216;min&#8217; or &#8216;max&#8217;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises ValueError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">if <strong>optimization_type</strong> is not in [&#8216;min&#8217;, &#8216;max&#8217;]</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="function">
 <dt id="Optimizer._dominates_max">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">_dominates_max</tt><big>(</big><em>p</em>, <em>q</em><big>)</big><a class="headerlink" href="#Optimizer._dominates_max" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Calculate if <strong>p</strong> dominates <strong>q</strong>.
+Subroutine of <a class="reference internal" href="#Optimizer.dominates" title="Optimizer.dominates"><tt class="xref py py-func docutils literal"><span class="pre">dominates()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">JN: I don&#8217;t get the point of this piece of code. The Pareto
+optimization should take into account <em>all</em> values from the
+ensembles <strong>p</strong> and <strong>q</strong>, not only the last value. The for
+loop should feature one <tt class="docutils literal"><span class="pre">break</span></tt> statement. Some examples:
+<cite>Optimizer.dominates([9,6], [10,5], &#8216;min&#8217;)</cite> returns <tt class="docutils literal"><span class="pre">False</span></tt> and
+<cite>Optimizer.dominates([9,5], [10,5], &#8216;max&#8217;)</cite> returns <tt class="docutils literal"><span class="pre">True</span></tt>.</p>
+</div>
+<p>Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">Optimizer</span><span class="o">.</span><span class="n">dominates</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="s">&#39;max&#39;</span><span class="p">)</span>
+<span class="go">False</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Optimizer</span><span class="o">.</span><span class="n">dominates</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">],</span> <span class="p">[</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">],</span> <span class="s">&#39;min&#39;</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="Optimizer._dominates_min">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">_dominates_min</tt><big>(</big><em>p</em>, <em>q</em><big>)</big><a class="headerlink" href="#Optimizer._dominates_min" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Calculate if <strong>p</strong> is dominated by <strong>q</strong>.
+Subroutine of <a class="reference internal" href="#Optimizer.dominates" title="Optimizer.dominates"><tt class="xref py py-func docutils literal"><span class="pre">dominates()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">JN: same remark as before.</p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
 <dt id="Optimizer.is_absolutely_fitter">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">is_absolutely_fitter</tt><big>(</big><em>p</em>, <em>q</em>, <em>optimization_type</em><big>)</big><a class="headerlink" href="#Optimizer.is_absolutely_fitter" title="Permalink to this definition">¶</a></dt>
-<dd><p>Is p fitter in ALL score values than q?</p>
-</dd></dl>
-
+<dd><p>Calculate if <strong>p</strong> is fitter in ALL score values than <strong>q</strong> according to
+<strong>optimization_type</strong>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+<li><strong>optimization_type</strong> (<em>str</em>) &#8211; &#8216;min&#8217; or &#8216;max&#8217;</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bool</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Raises ValueError:</th></tr>
+<tr class="field-even field"><td>&nbsp;</td><td class="field-body"><p class="first last">if <strong>optimization_type</strong> is not in [&#8216;min&#8217;, &#8216;max&#8217;]</p>
+</td>
+</tr>
+</tbody>
+</table>
 <dl class="function">
 <dt id="Optimizer._is_bigger">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">_is_bigger</tt><big>(</big><em>p</em>, <em>q</em><big>)</big><a class="headerlink" href="#Optimizer._is_bigger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Calculate if <strong>p</strong> is fitter in ALL score values than <strong>q</strong>.
+Subroutine of <a class="reference internal" href="#Optimizer.is_absolutely_fitter" title="Optimizer.is_absolutely_fitter"><tt class="xref py py-func docutils literal"><span class="pre">is_absolutely_fitter()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">JN: the for statement could be rewritten with a <tt class="docutils literal"><span class="pre">return</span> <span class="pre">False</span></tt>
+inside the loop, instead of passing to the variable <tt class="docutils literal"><span class="pre">d</span></tt>.</p>
+</div>
 </dd></dl>
 
 <dl class="function">
 <dt id="Optimizer._is_smaller">
 <tt class="descclassname">Optimizer.</tt><tt class="descname">_is_smaller</tt><big>(</big><em>p</em>, <em>q</em><big>)</big><a class="headerlink" href="#Optimizer._is_smaller" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Calculate if <strong>q</strong> is fitter in ALL score values than <strong>p</strong>.
+Subroutine of <a class="reference internal" href="#Optimizer.is_absolutely_fitter" title="Optimizer.is_absolutely_fitter"><tt class="xref py py-func docutils literal"><span class="pre">is_absolutely_fitter()</span></tt></a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>p</strong> (<em>list</em>) &#8211; ensemble of values taken by p</li>
+<li><strong>q</strong> (<em>list</em>) &#8211; ensemble of values taken by q (same length as <strong>p</strong>)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">bool</p>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">JN: same remark as before.</p>
+</div>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="class">
 <dt id="Optimizer.SMS_EMOA">
 <em class="property">class </em><tt class="descclassname">Optimizer.</tt><tt class="descname">SMS_EMOA</tt><big>(</big><em>object</em><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA" title="Permalink to this definition">¶</a></dt>
 <dd><p>Docstring missing.</p>
+<p>Keep in mind, that this algorithm does not guarantee an ever
+increasing hypervolume, because there is at least one case, where
+the selection method leads to an decrease in hypervolume:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="c"># +                  x</span>
+<span class="c">#  +                o</span>
+<span class="c">#    +</span>
+<span class="c">#      +</span>
+<span class="c">#        +</span>
+<span class="c"># # # # # # # # # # # # # #</span>
+</pre></div>
+</div>
+<ul class="simple">
+<li><em>+</em> <img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> pareto front</li>
+<li><em>x</em> <img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> reference point</li>
+<li><em>o</em> <img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> individual, which is removed because of the
+first criterion, which uses pareto dominance</li>
+</ul>
+<p>The removal of the &#8216;o&#8217;-individual leads to a decrease of the hypervolume.
+<img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> WRONG! Hypervolume is defined by the pareto front!
+One source of a decrease in the hypervolume is a &#8216;wrong&#8217; reference
+point. This leads to jumps in the hypervolume development.</p>
 <dl class="attribute">
 <dt id="Optimizer.SMS_EMOA.pop_size">
 <tt class="descname">pop_size</tt><a class="headerlink" href="#Optimizer.SMS_EMOA.pop_size" title="Permalink to this definition">¶</a></dt>
@@ -134,9 +308,8 @@ of lists)</p>
 <dl class="attribute">
 <dt id="Optimizer.SMS_EMOA.data_dict">
 <tt class="descname">data_dict</tt><a class="headerlink" href="#Optimizer.SMS_EMOA.data_dict" title="Permalink to this definition">¶</a></dt>
-<dd><p>dictionary that is given to each &#8216;user-supplied&#8217;
-function like get_mutant. This allows sharing of special
-information.</p>
+<dd><p>dictionary that is given to each &#8216;user-supplied&#8217; function like
+get_mutant. This allows sharing of special information.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -145,12 +318,12 @@ information.</p>
 <dd><p>function that selects an individual from a given
 population and mutates it. Arguments:</p>
 <blockquote>
-<div>population
+<div>population,
 received_steps,
-submitted_steps
-data_dict</div></blockquote>
+submitted_steps,
+data_dict.</div></blockquote>
 <p>The unique has to be set to:
-&#8216;{0}_{0}&#8217;.format(received_individuals, submitted_individuals)
+<cite>&#8216;{0}_{0}&#8217;.format(received_individuals, submitted_individuals)</cite>
 <img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> otherwise it will lead to problems if one wants to restart
 a terminated optimization</p>
 </dd></dl>
@@ -158,14 +331,13 @@ a terminated optimization</p>
 <dl class="attribute">
 <dt id="Optimizer.SMS_EMOA.score_indi">
 <tt class="descname">score_indi</tt><a class="headerlink" href="#Optimizer.SMS_EMOA.score_indi" title="Permalink to this definition">¶</a></dt>
-<dd><p>score a given individual, arguments are the
-individual and data_dict</p>
+<dd><p>score a given individual, arguments are the individual and data_dict</p>
 </dd></dl>
 
 <dl class="attribute">
 <dt id="Optimizer.SMS_EMOA.optimization_type">
 <tt class="descname">optimization_type</tt><a class="headerlink" href="#Optimizer.SMS_EMOA.optimization_type" title="Permalink to this definition">¶</a></dt>
-<dd><p>min or max</p>
+<dd><p>&#8220;min&#8221; or &#8220;max&#8221;</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -196,44 +368,24 @@ data_dict. The result should be a dictionary e.g.:</p>
 <dt id="Optimizer.SMS_EMOA.print_eval_step">
 <tt class="descname">print_eval_step</tt><a class="headerlink" href="#Optimizer.SMS_EMOA.print_eval_step" title="Permalink to this definition">¶</a></dt>
 <dd><p><tt class="docutils literal"><span class="pre">True</span></tt> or <tt class="docutils literal"><span class="pre">False</span></tt></p>
-<p>Notice:
-Keep in mind, that this algorithm does not guarantee an ever
-increasing hypervolume, because there is at least one case, where
-the selection method leads to an decrease in hypervolume:</p>
-<div class="highlight-python"><pre># +                  x
-#  +                o
-#    +
-#      +
-#        +
-# # # # # # # # # # # # # #
-
-+ -&gt; pareto front
-x -&gt; reference point
-o -&gt; individual, which is removed because of the first criterion,
-     which uses pareto dominance</pre>
-</div>
-<p>The removal of the &#8216;o&#8217;-individual leads to a decrease of the hypervolume.
-<img class="math" src="../../_images/math/e12b6767375342ed57d27678e3ea1cdb97f47e15.png" alt="\rightarrow"/> WRONG! Hypervolume is defined by the pareto front!
-One source of a decrease in the hypervolume is a &#8216;wrong&#8217; reference
-point. This leads to jumps in the hypervolume development.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Optimizer.SMS_EMOA.evolve">
 <tt class="descname">evolve</tt><big>(</big><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA.evolve" title="Permalink to this definition">¶</a></dt>
 <dd><p>Start the optimization.</p>
-</dd></dl>
-
 <dl class="method">
 <dt id="Optimizer.SMS_EMOA._evolve_single">
 <tt class="descname">_evolve_single</tt><big>(</big><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA._evolve_single" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Subroutine of <a class="reference internal" href="#Optimizer.SMS_EMOA.evolve" title="Optimizer.SMS_EMOA.evolve"><tt class="xref py py-func docutils literal"><span class="pre">evolve()</span></tt></a>.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="Optimizer.SMS_EMOA._evolve_parallel">
 <tt class="descname">_evolve_parallel</tt><big>(</big><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA._evolve_parallel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Subroutine of <a class="reference internal" href="#Optimizer.SMS_EMOA.evolve" title="Optimizer.SMS_EMOA.evolve"><tt class="xref py py-func docutils literal"><span class="pre">evolve()</span></tt></a>.</p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="method">
@@ -250,18 +402,60 @@ competing individuals and remove the individual, which
 contributes less to the hypervolume</li>
 </ol>
 <p>Notice: There is no guarantee for an ever increasing hypervolume!</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>pop</strong> (<a class="reference internal" href="#Optimizer.Population" title="Optimizer.Population"><tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt></a> object) &#8211; population to study</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><strong>dummy_pop</strong> or <tt class="docutils literal"><span class="pre">None</span></tt></p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first"><a class="reference internal" href="#Optimizer.Population" title="Optimizer.Population"><tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt></a> object</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ValueError</strong> &#8211; if two individuals from <strong>pop</strong> have the same id</li>
+<li><strong>AttributeError</strong> &#8211; in case of an unknown error</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="Optimizer.SMS_EMOA._log_individual">
 <tt class="descname">_log_individual</tt><big>(</big><em>indi</em>, <em>eval_step</em><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA._log_individual" title="Permalink to this definition">¶</a></dt>
-<dd><p>This method logs a given individual.</p>
+<dd><p>Append some characteristics of an individual <strong>indi</strong> to a log file
+<strong>self.log_individual_path</strong>: <strong>self.pop_size</strong>, <strong>self.eval_steps</strong>,
+<strong>self.optimization_type</strong>, <strong>time.ctime()</strong>, <cite>indi.get_r_log_string()</cite>
+and <cite>indi.get_log_string(eval_step)</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>indi</strong> (<a class="reference internal" href="#Optimizer.Individual" title="Optimizer.Individual"><tt class="xref py py-class docutils literal"><span class="pre">Individual</span></tt></a> object) &#8211; individual to log</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><tt class="docutils literal"><span class="pre">None</span></tt></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
 <dt id="Optimizer.SMS_EMOA._log_population">
 <tt class="descname">_log_population</tt><big>(</big><em>population</em>, <em>pareto_pop</em>, <em>eval_step</em><big>)</big><a class="headerlink" href="#Optimizer.SMS_EMOA._log_population" title="Permalink to this definition">¶</a></dt>
-<dd><p>Docstring missing.</p>
+<dd><p>Append self.log_pool_path</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>pop</strong> (<a class="reference internal" href="#Optimizer.Population" title="Optimizer.Population"><tt class="xref py py-class docutils literal"><span class="pre">Population</span></tt></a> object) &#8211; population to study</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -763,7 +957,7 @@ override any data.</p>
         <div class="sphinxsidebarwrapper">
   <h3><a href="../../index.html">Table Of Contents</a></h3>
   <ul>
-<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; YYYYYYY</a><ul>
+<li><a class="reference internal" href="#"><tt class="docutils literal"><span class="pre">Optimizer</span></tt> &#8212; Basic and advanced Pareto functions</a><ul>
 <li><a class="reference internal" href="#module-syntax">Module Syntax</a></li>
 <li><a class="reference internal" href="#module-contents">Module Contents</a></li>
 </ul>
@@ -814,12 +1008,13 @@ override any data.</p>
           <a href="Distributed_Server_Optimization_Template.html" title="Distributed_Server_Optimization_Template — YYYYYYY"
              >previous</a> |</li>
         <li><a href="../../index.html">epitopsy 0.1 documentation</a> &raquo;</li>
-          <li><a href="../../epitopsy.html" >epitopsy Package</a> &raquo;</li>
+          <li><a href="../../epitopsy.html" >Epitopsy Package</a> &raquo;</li>
           <li><a href="../../epitopsy.Optimization.html" >Optimization Package</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
-        &copy; Copyright 2013, Christoph Wilms.
+        &copy; Copyright 2013-2014, Christoph Wilms.
+      Last updated on Jan 08, 2014.
       Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
     </div>
   </body>

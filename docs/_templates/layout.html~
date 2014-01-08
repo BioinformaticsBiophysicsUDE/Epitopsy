@@ -1,0 +1,6 @@
+{% extends '!layout.html' %}
+
+{% block header %}
+        <!-- your html code here -->
+    <script type="text/javascript" src="../_static/copybutton.js"></script>
+{% endblock %}

@@ -1,14 +1,14 @@
 
-:mod:`Optimizer` --- YYYYYYY
-======================================================
+:mod:`Optimizer` --- Basic and advanced Pareto functions
+========================================================
 
 .. module:: Optimizer
-   :synopsis: YYYYYYYY.
+   :synopsis: Basic and advanced Pareto functions.
 .. moduleauthor:: Christoph Wilms <christoph.wilms@uni-due.de>
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
 
 
-This module provides YYYYY.
+This module provides basic and advanced Pareto functions.
 
 
 .. _Optimizer-syntax:
@@ -25,32 +25,140 @@ Module Contents
 
 .. function:: dominates(p, q, optimization_type)
 
-    Does p dominate q?
+    Calculate if **p** dominates **q** according to **optimization_type**.
 
-.. function:: _dominates_max(p, q)
+    :param p: ensemble of values taken by p
+    :type p: list
+    :param q: ensemble of values taken by q (same length as **p**)
+    :type q: list
+    :param optimization_type: 'min' or 'max'
+    :type optimization_type: str
 
-    Docstring missing.
+    :returns: ``True`` or ``False``
+    :rtype: bool
+    :raise ValueError: if **optimization_type** is not in ['min', 'max']
 
-.. function:: _dominates_min(p, q)
+    .. function:: _dominates_max(p, q)
 
-    Docstring missing.
+        Calculate if **p** dominates **q**.
+        Subroutine of :func:`dominates`.
+
+        :param p: ensemble of values taken by p
+        :type p: list
+        :param q: ensemble of values taken by q (same length as **p**)
+        :type q: list
+
+        :returns: ``True`` or ``False``
+        :rtype: bool
+
+        .. warning::
+
+            JN: I don't get the point of this piece of code. The Pareto
+            optimization should take into account *all* values from the
+            ensembles **p** and **q**, not only the last value. The for
+            loop should feature one ``break`` statement. Some examples:
+            `Optimizer.dominates([9,6], [10,5], 'min')` returns ``False`` and
+            `Optimizer.dominates([9,5], [10,5], 'max')` returns ``True``.
+
+        Example::
+
+            >>> Optimizer.dominates([1,2,3], [6,7,8], 'max')
+            False
+            >>> Optimizer.dominates([1,2,3], [6,7,8], 'min')
+            True
+
+    .. function:: _dominates_min(p, q)
+
+        Calculate if **p** is dominated by **q**.
+        Subroutine of :func:`dominates`.
+
+        :param p: ensemble of values taken by p
+        :type p: list
+        :param q: ensemble of values taken by q (same length as **p**)
+        :type q: list
+
+        :returns: ``True`` or ``False``
+        :rtype: bool
+
+        .. warning::
+
+            JN: same remark as before.
 
 .. function:: is_absolutely_fitter(p, q, optimization_type)
 
-    Is p fitter in ALL score values than q?
+    Calculate if **p** is fitter in ALL score values than **q** according to
+    **optimization_type**.
 
-.. function:: _is_bigger(p, q)
+    :param p: ensemble of values taken by p
+    :type p: list
+    :param q: ensemble of values taken by q (same length as **p**)
+    :type q: list
+    :param optimization_type: 'min' or 'max'
+    :type optimization_type: str
 
-    Docstring missing.
+    :returns: ``True`` or ``False``
+    :rtype: bool
+    :raise ValueError: if **optimization_type** is not in ['min', 'max']
 
-.. function:: _is_smaller(p, q)
+    .. function:: _is_bigger(p, q)
 
-    Docstring missing.
+        Calculate if **p** is fitter in ALL score values than **q**.
+        Subroutine of :func:`is_absolutely_fitter`.
+
+        :param p: ensemble of values taken by p
+        :type p: list
+        :param q: ensemble of values taken by q (same length as **p**)
+        :type q: list
+
+        :returns: ``True`` or ``False``
+        :rtype: bool
+
+        .. note::
+
+            JN: the for statement could be rewritten with a ``return False``
+            inside the loop, instead of passing to the variable ``d``.
+
+    .. function:: _is_smaller(p, q)
+
+        Calculate if **q** is fitter in ALL score values than **p**.
+        Subroutine of :func:`is_absolutely_fitter`.
+
+        :param p: ensemble of values taken by p
+        :type p: list
+        :param q: ensemble of values taken by q (same length as **p**)
+        :type q: list
+
+        :returns: ``True`` or ``False``
+        :rtype: bool
+
+        .. note::
+
+            JN: same remark as before.
 
 .. class:: SMS_EMOA(object)
 
     Docstring missing.
 
+    Keep in mind, that this algorithm does not guarantee an ever
+    increasing hypervolume, because there is at least one case, where
+    the selection method leads to an decrease in hypervolume::
+
+    # +                  x
+    #  +                o
+    #    +
+    #      +
+    #        +
+    # # # # # # # # # # # # # #
+
+    * *+* :math:`\rightarrow` pareto front
+    * *x* :math:`\rightarrow` reference point
+    * *o* :math:`\rightarrow` individual, which is removed because of the
+      first criterion, which uses pareto dominance
+
+    The removal of the 'o'-individual leads to a decrease of the hypervolume.
+    :math:`\rightarrow` WRONG! Hypervolume is defined by the pareto front!
+    One source of a decrease in the hypervolume is a 'wrong' reference
+    point. This leads to jumps in the hypervolume development.
 
     .. attribute:: pop_size
 
@@ -71,33 +179,31 @@ Module Contents
 
     .. attribute:: data_dict
 
-        dictionary that is given to each 'user-supplied'
-        function like get_mutant. This allows sharing of special
-        information.
+        dictionary that is given to each 'user-supplied' function like
+        get_mutant. This allows sharing of special information.
 
     .. attribute:: get_mutant
 
         function that selects an individual from a given
         population and mutates it. Arguments:
 
-            population
+            population,
             received_steps,
-            submitted_steps
-            data_dict
+            submitted_steps,
+            data_dict.
 
         The unique has to be set to:
-        '{0}_{0}'.format(received_individuals, submitted_individuals)
+        `'{0}_{0}'.format(received_individuals, submitted_individuals)`
         :math:`\rightarrow` otherwise it will lead to problems if one wants to restart
         a terminated optimization
 
     .. attribute:: score_indi
 
-        score a given individual, arguments are the
-        individual and data_dict
+        score a given individual, arguments are the individual and data_dict
 
     .. attribute:: optimization_type
 
-        min or max
+        "min" or "max"
 
     .. attribute:: run_id
 
@@ -120,39 +226,17 @@ Module Contents
 
         ``True`` or ``False``
 
-        Notice:
-        Keep in mind, that this algorithm does not guarantee an ever
-        increasing hypervolume, because there is at least one case, where
-        the selection method leads to an decrease in hypervolume::
-
-            # +                  x
-            #  +                o
-            #    +
-            #      +
-            #        +
-            # # # # # # # # # # # # # #
-
-            + -> pareto front
-            x -> reference point
-            o -> individual, which is removed because of the first criterion,
-                 which uses pareto dominance
-
-        The removal of the 'o'-individual leads to a decrease of the hypervolume.
-        :math:`\rightarrow` WRONG! Hypervolume is defined by the pareto front!
-        One source of a decrease in the hypervolume is a 'wrong' reference
-        point. This leads to jumps in the hypervolume development.
-
     .. method:: evolve()
 
         Start the optimization.
 
-    .. method:: _evolve_single()
+        .. method:: _evolve_single()
 
-        Docstring missing.
+            Subroutine of :func:`evolve`.
 
-    .. method:: _evolve_parallel()
+        .. method:: _evolve_parallel()
 
-        Docstring missing.
+            Subroutine of :func:`evolve`.
 
     .. method:: select_pop(pop)
 
@@ -168,13 +252,32 @@ Module Contents
 
         Notice: There is no guarantee for an ever increasing hypervolume!
 
+        :param pop: population to study
+        :type pop: :class:`Population` object
+
+        :return: **dummy_pop** or ``None``
+        :rtype: :class:`Population` object
+        :raises ValueError: if two individuals from **pop** have the same id
+        :raises AttributeError: in case of an unknown error
+
     .. method:: _log_individual(indi, eval_step)
 
-        This method logs a given individual.
+        Append some characteristics of an individual **indi** to a log file
+        **self.log_individual_path**: **self.pop_size**, **self.eval_steps**,
+        **self.optimization_type**, **time.ctime()**, `indi.get_r_log_string()`
+        and `indi.get_log_string(eval_step)`.
+
+        :param indi: individual to log
+        :type indi: :class:`Individual` object
+
+        :return: ``None``
 
     .. method:: _log_population(population, pareto_pop, eval_step)
 
-        Docstring missing.
+        Append self.log_pool_path
+
+        :param pop: population to study
+        :type pop: :class:`Population` object
 
     .. method:: _write_population(population, eval_step, filename)
 

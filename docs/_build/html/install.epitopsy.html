@@ -1,0 +1,196 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Installing Epitopsy &mdash; epitopsy 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/copybutton.js"></script>
+    <link rel="top" title="epitopsy 0.1 documentation" href="index.html" />
+    <link rel="up" title="Getting Started" href="quickstart.html" />
+    <link rel="next" title="Installing third-party softwares" href="install.index.html" />
+    <link rel="prev" title="Epitopsy - an overview" href="overview.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.index.html" title="Installing third-party softwares"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Epitopsy - an overview"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="quickstart.html" accesskey="U">Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="installing-epitopsy">
+<span id="install-index"></span><h1>Installing Epitopsy<a class="headerlink" href="#installing-epitopsy" title="Permalink to this headline">¶</a></h1>
+<p>Epitopsy requires following softwares and modules to run:</p>
+<blockquote>
+<div><ul class="simple">
+<li><a class="reference external" href="http://biopython.org/wiki/Biopython">Biopython</a> (&gt;= 1.6.0)</li>
+<li><a class="reference external" href="http://www.python.org/">Python</a> (&gt;= 2.7.4)</li>
+<li><a class="reference external" href="http://cython.org/">Cython</a> (&gt;= 0.18.0)</li>
+<li><a class="reference external" href="http://www.numpy.org/">Numpy</a> (&gt;= 1.7.0)</li>
+</ul>
+</div></blockquote>
+<p>If you have a local copy of <a class="reference external" href="https://store.continuum.io/cshop/anaconda/">Anaconda</a>, then everything is already present.</p>
+<p>Depending on your operating system, you may still need additional softwares to properly install Epitopsy.</p>
+<div class="section" id="installation-procedure">
+<h2>Installation procedure<a class="headerlink" href="#installation-procedure" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="for-the-impatients">
+<h3>For the impatients<a class="headerlink" href="#for-the-impatients" title="Permalink to this headline">¶</a></h3>
+<p>Open a shell and type:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>Downloads/
+mkdir temp; <span class="nb">cd </span>temp/
+git clone <span class="k">$(</span>whoami<span class="k">)</span>@132.252.170.160:/home/ohl/pythonProjects/epitopsy
+<span class="nb">cd </span>epitopsy/
+python setup.py install
+conda package -u
+<span class="nb">cd</span> ..; rm -rf temp/
+</pre></div>
+</div>
+</div>
+<div class="section" id="step-by-step-installation">
+<h3>Step-by-step installation<a class="headerlink" href="#step-by-step-installation" title="Permalink to this headline">¶</a></h3>
+<p>You need <a class="reference external" href="http://git-scm.com/">Git</a> to be installed, if not, type in your
+shell:</p>
+<div class="highlight-bash"><div class="highlight"><pre>sudo apt-get install git
+</pre></div>
+</div>
+<p>Then move to a temporary directory and get a local copy of the installation
+package from Magd:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>Documents/
+mkdir temp
+<span class="nb">cd </span>temp/
+git clone <span class="k">$(</span>whoami<span class="k">)</span>@132.252.170.160:/home/ohl/pythonProjects/epitopsy
+</pre></div>
+</div>
+<p>Move to the install directory and compile the Cython code:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd </span>epitopsy/
+python setup.py install
+</pre></div>
+</div>
+<p>Add the compiled package to your Anaconda development kit:</p>
+<div class="highlight-bash"><div class="highlight"><pre>conda package -u
+</pre></div>
+</div>
+<p>Remove the installation files:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nb">cd</span> ..
+rm -rf temp/
+</pre></div>
+</div>
+<p>You are now ready to use Epitopsy in your Python interpreter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">epitopsy</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Installing Epitopsy</a><ul>
+<li><a class="reference internal" href="#installation-procedure">Installation procedure</a><ul>
+<li><a class="reference internal" href="#for-the-impatients">For the impatients</a></li>
+<li><a class="reference internal" href="#step-by-step-installation">Step-by-step installation</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="overview.html"
+                        title="previous chapter">Epitopsy - an overview</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="install.index.html"
+                        title="next chapter">Installing third-party softwares</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/install.epitopsy.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="install.index.html" title="Installing third-party softwares"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="overview.html" title="Epitopsy - an overview"
+             >previous</a> |</li>
+        <li><a href="index.html">epitopsy 0.1 documentation</a> &raquo;</li>
+          <li><a href="quickstart.html" >Getting Started</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013-2014, Christoph Wilms.
+      Last updated on Jan 08, 2014.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

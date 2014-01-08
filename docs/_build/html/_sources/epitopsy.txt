@@ -1,4 +1,4 @@
-epitopsy Package
+Epitopsy Package
 ================
 
 .. toctree::
