@@ -3,6 +3,7 @@ import gzip
 import shutil
 import collections
 import warnings
+import matplotlib.pyplot as plt
 
 import numpy as np
 import pandas as pd
@@ -726,12 +727,18 @@ def plotDcaMap(filename, method='di', name=None):
     fig = plt.figure(num=None, figsize=(10, 8), dpi=120, facecolor='w', edgecolor='k')
     DCAMap = fig.add_subplot(111)
     #plt.xlabel('Contact A')
-    #plt.xlabel('Contact B')
+    cdict = {
+      'red'  :  ( (0.0, 1.0, 1.0), (0.2, 0.0, 0.0), (1.0, 0.5, .5)),
+      'green':  ( (0.0, 1.0, 1.0), (0.2, 0.5, 0.5), (1.0, 0.0, 0.0)),
+      'blue' :  ( (0.0, 1.0, 1.0), (0.2, 1.0, 1.0), (1.0, 0.0, 0.0))
+    }
+
+    cm = matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 1024)
     if name:
         plt.title('DCA pair map of '+name, size=20)
     else:
         plt.title('DCA pair map', size=20)
-    DCAMap = imshow(MatrixDCA)
+    DCAMap = imshow(MatrixDCA, cmap=cm)
     plt.annotate(DataInfo[3], xy=(dim/4, 3*dim/6), xytext=(dim/4, 3*dim/6), size='20', color='w')
     plt.annotate(DataInfo[4], xy=(dim/4, 4*dim/6), xytext=(dim/4, 4*dim/6), size='20', color='w')
     plt.annotate(DataInfo[5], xy=(dim/4, 5*dim/6), xytext=(dim/4, 5*dim/6), size='20', color='w')
