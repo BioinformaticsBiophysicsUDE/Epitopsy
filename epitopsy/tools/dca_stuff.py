@@ -615,6 +615,16 @@ def get_di_pair_matrix(i,j):
     return matrix_aa
 
 def format_object(obj, n_chars):
+    '''
+    Helper function that adds whitspaces to obj such that the total length 
+    of the string is n_chars long
+    Args:
+        obj -> Object (int, float, str)
+        n_chars -> total length of the new string
+
+    Returns:
+        string of length n_chars
+    '''
     obj_str = str(obj)
     n_chars_obj = len(obj_str)
     n_whitespace = n_chars - n_chars_obj
@@ -711,6 +721,16 @@ def get_ROC_data(prot_data_path):
     return results
 
 def plotDcaMap(filename, method='di', name=None):
+    '''
+    A heatmap of the dca map is plotted.
+    Args:
+        filename -> location and name of the file
+        method -> Mutual information[mi] or Direct information[di]
+        name -> (optional) Name that will be displayed in the title of the plot
+
+    Returns:
+        None.
+    '''
     if(method not in ['mi', 'di']):
         raise Exception('The only supported methods are mi and di. Choose one.')            
     file = open(filename)
