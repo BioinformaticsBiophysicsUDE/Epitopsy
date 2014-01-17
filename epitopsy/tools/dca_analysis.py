@@ -121,8 +121,8 @@ class DcaAnalysis(object):
     
         returns: list of in order of strongest candidates.
         '''
-        if self.bindings:
-            return self.bindings
+        #if self.bindings.size():
+        #    return self.bindings
         if method == 'di':
             data = self.di_data
         elif method == 'mi':
@@ -131,3 +131,11 @@ class DcaAnalysis(object):
         best_di = data.reshape(-1).argsort()
         self.bindings = np.array([(int(floor(i/data.shape[0])),i%data.shape[0]) for i in best_di[::-1]])
         return self.bindings
+    
+    def show_bindings(self, num=20):
+        fig = plt.figure(num=None, figsize=(12, 10), dpi=120,
+                        facecolor='w', edgecolor='k')
+        fig.add_subplot(111)
+        scatter(self.bindings[0:num].T[0],self.bindings[0:num].T[1], 
+                c=[self.di_data[x[0],x[1]] for x in self.bindings[0:num]], s=15)
+        colorbar()

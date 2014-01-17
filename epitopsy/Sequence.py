@@ -151,3 +151,34 @@ def get_almost_conserved_columns(aln, cutoff=0.95):
             cons_list.append(i+1)
 
     return cons_list
+
+def uniprot_mapping(fromtype, totype, identifier):
+    """Takes an identifier, and types of identifier
+    (to and from), and calls the UniProt mapping service.
+    To get the right identifiers, visit 
+    http://www.uniprot.org/faq/28#conversion.
+
+    Args: 
+        fromtype -> type of current identifier
+        totype -> needed identifier type
+        identifier -> protein identifier
+
+    Returns:
+        protein identifier of type specified in totype
+    """
+    base = 'http://www.uniprot.org'
+    tool = 'mapping'
+    params = {'from':fromtype,
+    'to':totype,
+    'format':'tab',
+    'query':identifier,
+    }
+    #urllib turns the dictionary params into an encoded url suffix
+    data = urllib.urlencode(params)
+    #construct the UniProt URL
+    url = base+'/'+tool+'?'+data
+    #and grab the mapping
+    response = urllib2.urlopen(url)
+    #response.read() provides tab-delimited output of the mapping
+    ConvertedId = response.read().split("\n")[1]
+    return ConvertedId.split("\t")[1]
