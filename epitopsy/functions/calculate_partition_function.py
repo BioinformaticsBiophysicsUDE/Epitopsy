@@ -31,7 +31,8 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
         box_type=["esp", "vdw"],
         write_top_hits=False,
         explicit_sampling=False,
-        zipped=False):
+        zipped=False,
+        pdb2pqr_argv=None):
     '''
     This function calculates the difference in gibbs free energy in units
     of kbT.
@@ -102,6 +103,11 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
     else:
         LAS_energy_path.rstrip(".gz")
         energy_path.rstrip(".gz")
+    
+    if not explicit_sampling in [True,False]:
+        raise ValueError("Unkown input for 'explicit_sampling' = {0}".format(explicit_sampling))
+    if not use_pdb2pqr in [True,False]:
+        raise ValueError("Unkown input for 'use_pdb2pqr' = {0}".format(use_pdb2pqr))
 
     # remove old energy files, otherwise it may cause errors when the
     # calculation terminates and an old energy file is still there
@@ -119,7 +125,7 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
     vdw_radii_list = []
     # check vdw
     for atom in ligand_struct.get_all_atoms():
-        if atom.get_info_2() != 0:
+        if atom.get_info_2() != 0: # atom.get_info_2() returns the vdw radius
             vdw_radii_list.append(1)
         else:
             vdw_radii_list.append(0)
@@ -196,17 +202,18 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
     '''
     if use_pdb2pqr is True:
         pqr_path = None
-    elif use_pdb2pqr is False:
-        pqr_path = pdb_path.replace('.pdb', '.pqr')
     else:
-        raise ValueError("Unkown input for 'use_pdb2pqr'!")
+        pqr_path = pdb_path.replace('.pdb', '.pqr')
+#    else:
+#        raise ValueError("Unkown input for 'use_pdb2pqr'!") # JN: moved to the top of the method
 
     dxbox_dict = apbs.get_dxbox(pdb_path=pdb_path, mesh_size=mesh_size,
                                 pqr_path=pqr_path, box_dim=box_dim,
                                 box_center=box_center,
                                 box_type=box_type,
                                 cubic_box=cubic_box,
-                                temperature=Temperature, ph=ph)
+                                temperature=Temperature, ph=ph,
+                                pdb2pqr_argv=pdb2pqr_argv)
 
     espbox = dxbox_dict['esp']
     vdwbox = dxbox_dict['vdw']
@@ -219,18 +226,18 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
     '''
     Flood the van der waals box, because it can sometimes happen that there
     are cavities inside the protein and we do not want to fit our ligand to
-    these positions as they are not physical accssible.
+    these positions as they are not physical accessible.
     '''
     vdwbox.flood()
 
     '''
-    Create a list of independet rotations using a golden section algorithm.
+    Create a list of independent rotations using a golden section algorithm.
     '''
     angle_stack = MathTools.get_euler_angles_for_equal_distributed_rotation(
         number_of_rotations)
 
     '''
-    Set the interior of the protein to a negative value, so that overlapp
+    Set the interior of the protein to a negative value, so that overlap
     between the ligand and the protein is forbidden.
     '''
     vdwbox.prepare_for_geometric_matching(interior=-15)
@@ -244,7 +251,9 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
     counter_matrix = np.zeros(espbox.box.shape)
 
     '''
-    Object, which calculate the FFT scoring
+    Store the FFT of the VDW surface and the FFT of the ESP (electrostatic
+    potential) in two matrices shape_scoring and esp_scoring. They will be
+    correlated to the FFT of the ligand VDW surface and ESP.
     '''
     shape_scoring = FFT_correlation_scoring(vdwbox.box)
     esp_scoring = FFT_correlation_scoring(espbox.box)
@@ -285,7 +294,7 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
 
             interaction_energy += np.exp(-new_interaction_energy)
 
-        elif explicit_sampling == False:
+        else:
             # move the ligand to the center 0,0,0
             current_ligand_clone.translate(-
                 current_ligand_clone.determine_geometric_center())
@@ -340,8 +349,8 @@ def calculate_interaction_energy(pdb_path, ligand_path, mesh_size,
                 combined_result.find_scores(combined_distance, phi, theta, psi,
                                             num_of_best_scores, espbox)
 
-        else:
-            raise ValueError("Unkown input for 'explicit_sampling' = {0}".format(explicit_sampling))
+#        else:
+#            raise ValueError("Unkown input for 'explicit_sampling' = {0}".format(explicit_sampling)) # JN: moved to the top of the method
 
         progress_bar.add()
 

@@ -1,84 +1,105 @@
+"""
+.. module:: dca_analysis
+    :synopsis: A module for analysing dca data.
+    :platform: Unix, (Windows)
+.. moduleauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
+.. sectionauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
+"""
+
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib
 
-class DcaAnalysis(object) :
+class DcaAnalysis(object):
     '''
-    This class performs multiple operations, 
+    This class performs multiple operations,
     visualisations and analysis tools on the dca data.
     '''
-    def __init__(self,filename):
-        self.info, self.miData, self.diData = self.__read_in(filename)
+    def __init__(self, filename):
+        '''Initialises the class by loading all information from the
+        specified file.
+
+        :param filename: path and name of the file.
+        :type filename: str.
+        :returns: None.
+
+        '''
+        self.info, self.mi_data, self.di_data = self.__read_in(filename)
 
     def __read_in(self, filename):
+        '''Reads in the parameters (N, M, Meff, q, pCount, x) and the data
+
+        :param filename: path and name of the file.
+        :type  filename: str.
+        :returns: tuple -- (info, Mutual information, Direct information)
+
         '''
-        Reads in the parameters (N, M, Meff, q, pCount, x) and the dca data.
-        
-        Args:
-            filename -> path and name of the file
-        
-        Returns:
-            A tuple: info, Mutual information, Direct information
-        '''
-        with open(filename) as file:
-            lines = file.readlines()
-        DataInfo = lines[0].split()
-        info = {'seqlen': int(DataInfo[3].split('=')[1]),
-	    			'M': int(DataInfo[4].split('=')[1]),
-	    			'Meff': round(float(DataInfo[5].split('=')[1])),
-	    			'q': int(DataInfo[6].split('=')[1]),
-	    			'pCount': float(DataInfo[7].split('=')[1]),
-	    			'x': float(DataInfo[8].split('=')[1])
+        with open(filename) as filedata:
+            lines = filedata.readlines()
+        datainfo = lines[0].split()
+        info = {'seqlen': int(datainfo[3].split('=')[1]),
+                    'M': int(datainfo[4].split('=')[1]),
+                    'Meff': round(float(datainfo[5].split('=')[1])),
+                    'q': int(datainfo[6].split('=')[1]),
+                    'pCount': float(datainfo[7].split('=')[1]),
+                    'x': float(datainfo[8].split('=')[1])
                 }
-        miData = np.zeros([info['seqlen'],info['seqlen']])
-        diData = np.zeros([info['seqlen'],info['seqlen']])
+        # Create square matrices with seqlen dimension
+        mi_data = np.zeros([info['seqlen'], info['seqlen']])
+        di_data = np.zeros([info['seqlen'], info['seqlen']])
         for line in lines[2:]:
-            a = line.split()
-            miData[int(a[0])-1,int(a[1])-1] = float(a[2])
-            diData[int(a[0])-1,int(a[1])-1] = float(a[3])
-        return info, miData, diData
-    
-    def pltHeatMap(self, name=None):
+            inf = line.split()
+            mi_data[int(inf[0])-1, int(inf[1])-1] = float(inf[2])
+            di_data[int(inf[0])-1, int(inf[1])-1] = float(inf[3])
+        return info, mi_data, di_data
+
+    def heatmap(self, name=None):
+        '''Generates a heat map of the direct information data.
+
+        :param name: (optional) Name is displayed as title of plot
+        :type  name: str.
+
+        :Returns: None.
+
         '''
-        Generates a heat map of the direct information data.
-        
-        Args:
-            name -> (optional) Name is displayed as title of plot
-            
-        Returns:
-            None.
-        '''
-        fig = plt.figure(num=None, figsize=(10, 8), dpi=120, facecolor='w', edgecolor='k')
+        fig = plt.figure(num=None, figsize=(10, 8), dpi=120,
+                        facecolor='w', edgecolor='k')
         fig.add_subplot(111)
         # Encoding of the values to colors in the heat map
         cdict = {
-          'red'  :  ( (0.0, 1.0, 1.0), (0.2, 0.0, 0.0), (1.0, 0.5, .5)),
-          'green':  ( (0.0, 1.0, 1.0), (0.2, 0.5, 0.5), (1.0, 0.0, 0.0)),
-          'blue' :  ( (0.0, 1.0, 1.0), (0.2, 1.0, 1.0), (1.0, 0.0, 0.0))
+          'red'  :((0.0, 1.0, 1.0), (0.2, 0.0, 0.0), (1.0, 0.5, 0.5)),
+          'green':((0.0, 1.0, 1.0), (0.2, 0.5, 0.5), (1.0, 0.0, 0.0)),
+          'blue' :((0.0, 1.0, 1.0), (0.2, 1.0, 1.0), (1.0, 0.0, 0.0))
         }
         # colorbar object
-        cm = matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 1024)
+        colmap = matplotlib.colors.LinearSegmentedColormap('my_colormap', cdict, 1024)
         if name:
             plt.title('DCA pair map of '+name, size=20)
         else:
             plt.title('DCA pair map', size=20)
-        heatmap = imshow(self.diData, cmap=cm)
+        plt.imshow(self.di_data, cmap=colmap)
         # Parameters are placed inside the plot
         plt.annotate("N = "+str(self.info['seqlen']), xy=(self.info['seqlen']/4, 3*self.info['seqlen']/6), xytext=(self.info['seqlen']/4, 3*self.info['seqlen']/6), size='20', color='r')
         plt.annotate("M = "+str(self.info['M']), xy=(self.info['seqlen']/4, 4*self.info['seqlen']/6), xytext=(self.info['seqlen']/4, 4*self.info['seqlen']/6), size='20', color='r')
         plt.annotate("Meff = "+str(self.info['Meff']), xy=(self.info['seqlen']/4, 5*self.info['seqlen']/6), xytext=(self.info['seqlen']/4, 5*self.info['seqlen']/6), size='20', color='r')
         plt.colorbar()
-    
-    def freqHist(self, method='di'):
-        '''Returns a histogram that shows the 
+
+    def freq_hist(self, method='di'):
+        '''Returns a histogram that shows the
         frequency of the values of the Direct information.
+
+        :param method: (optional) Name of method ('di' or 'mi').
+        :type  method: str.
+        :returns: None.
+
         '''
         if method == 'di':
-            a = self.diData.reshape(-1)
+            data = self.di_data.reshape(-1)
         elif method == 'mi':
-            a = self.miData.reshape(-1)
+            data = self.mi_data.reshape(-1)
         else:
             raise Exception('No valid method specified.')
-        hist, bin_edges = np.histogram(a[nonzero(a)], bins=100)
+        hist, bin_edges = np.histogram(data[np.nonzero(data)], bins=100)
         width = 0.7 * (bin_edges[1] - bin_edges[0])
         center = (bin_edges[:-1] + bin_edges[1:]) / 2
         plt.bar(center, hist, align='center', width=width)

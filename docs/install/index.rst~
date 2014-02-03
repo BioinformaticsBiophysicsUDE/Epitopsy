@@ -1,0 +1,18 @@
+********************************
+Installing third-party softwares
+********************************
+
+Various softwares can be accessed from Biopython when Epitopsy is loaded.
+The following pages describe the installation procedure for each of them.
+Unless otherwise stated, all compilations were achieved on Ubuntu 13.10.
+
+.. toctree::
+
+    install.clustal
+    install.pdb2pqr
+    install.apbs
+    install.pymol
+    install.vmd
+    install.gromacs
+    install.amber
+    install.sharelib

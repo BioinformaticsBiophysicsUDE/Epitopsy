@@ -1,0 +1,145 @@
+*************************************
+FFTW --- Fast Fourier Transform Tools
+*************************************
+
+Some features of Epitopsy require a local copy of FFTW to run
+(namely :mod:`FFTCorrelationScoring`).
+
+pyFFTW v0.9.2 (`homepage <https://pypi.python.org/pypi/pyFFTW>`_,
+`documentation <http://hgomersall.github.io/pyFFTW/>`_) supersedes anfft v0.2.
+FFTW v3 (`homepage <http://www.fftw.org/>`_,
+`documentation <http://www.fftw.org/fftw3_doc/>`_) is required.
+
+.. highlight:: bash
+
+Installation procedure
+======================
+
+In order to compile pyFFTW 0.9.2, FFTW 3 has to be installed first, either
+manually from the standard source code, or from the dev repository (easier).
+
+For the impatients
+------------------
+
+Open a shell and type::
+
+    sudo apt-get install libfftw3-dev
+    cd $HOME/Downloads
+    wget https://pypi.python.org/packages/source/p/pyFFTW/pyFFTW-0.9.2.tar.gz
+    tar xfz pyFFTW-0.9.2.tar.gz
+    cd pyFFTW-0.9.2
+    python setup.py build_ext --inplace
+    mv ./pyfftw/ $HOME/.anaconda/lib/python2.7/site-packages/pyfftw/
+    cd ..; rm -rf pyFFTW-0.9.2/ pyFFTW-0.9.2.tar.gz
+
+
+Step-by-step installation
+-------------------------
+
+FFTW 3
+~~~~~~
+
+From the standard source code
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+.. seealso::
+
+    A more complete procedure can be found on the `official installation webpage
+    <http://www.fftw.org/fftw3_doc/Installation-on-Unix.html#Installation-on-Unix>`_.
+
+Get the source of FFTW 3.3.3 (md5=0a05ca9c7b3bfddc8278e7c40791a1c2) and prepare the build::
+
+    cd $HOME/Downloads
+    wget http://www.fftw.org/fftw-3.3.3.tar.gz # use ftp://ftp.fftw.org/pub/fftw/fftw-3.3.3.tar.gz if the first server is unavailable
+    tar xvfz fftw-3.3.3.tar.gz
+    cd fftw-3.3.3/
+    ./configure # --prefix=%HOME/bin/ if you lack root privileges
+    make
+    make check
+    
+The `make check` command should print this message:
+
+.. code-block:: none
+
+    ---------------------------------------------------
+            FFTW transforms passed basic tests!
+    ---------------------------------------------------
+
+Now proceed to the installation::
+
+    sudo make install
+    sudo -k
+    make installcheck
+
+Check with ``find /usr/local/lib/ -type f -name *fftw*`` that the following
+files were correctly created:
+
+.. code-block:: none
+
+    ./libfftw3.la   ./libfftw3.a   ./pkgconfig/fftw3.pc
+
+You can now remove the install files and the archive::
+
+    make clean
+    make distclean
+    cd ..; rm -rf fftw-3.3.3/ fftw-3.3.3.tar.gz
+
+Do the necessary to make FFTW 3 accessible to gcc.
+
+.. note::
+
+    JN: How?
+
+From the dev repository
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Proceed to the installation of the fftw3-dev package::
+
+    sudo apt-get install libfftw3-dev
+
+pyFFTW
+~~~~~~
+
+Download the sources of pyFFTW 0.9.2 (md5=34fcbc68afb8ebe5f040a02a8d20d565)
+and build the module::
+
+    cd $HOME/Downloads
+    wget https://pypi.python.org/packages/source/p/pyFFTW/pyFFTW-0.9.2.tar.gz
+    tar xvfz pyFFTW-0.9.2.tar.gz
+    cd pyFFTW-0.9.2
+    python setup.py build_ext --inplace
+
+If the fftw3-dev was not correctly installed, gcc wil return an error of the
+type: "fatal error: fftw3.h: No such file or directory". The Python module is
+built in the current directory and should be moved to your Anaconda library::
+
+    mv ./pyfftw/ $HOME/.anaconda/lib/python2.7/site-packages/pyfftw/
+
+The shell command ``python -c "import pyfftw"`` should run without displaying
+an error. You may now remove the installation files and the archive::
+
+    cd ..
+    rm -rf pyFFTW-0.9.2/ pyFFTW-0.9.2.tar.gz
+
+Uninstallation
+--------------
+
+To remove the standard installation of FFTW 3.3.3, this procedure should work::
+
+    cd $HOME/Downloads
+    wget http://www.fftw.org/fftw-3.3.3.tar.gz # use ftp://ftp.fftw.org/pub/fftw/fftw-3.3.3.tar.gz if the first server is unavailable
+    tar xfz fftw-3.3.3.tar.gz
+    cd fftw-3.3.3/
+    ./configure # --prefix=%HOME/bin/ if you did not install it in /usr/local/include/
+    sudo make uninstall
+    cd ..; rm -rf fftw-3.3.3/ fftw-3.3.3.tar.gz
+
+To remove FFTW 3 from the dev repository::
+
+    sudo apt-get remove libfftw3-dev
+
+To remove pyFFTW 0.9.2::
+
+    rm -rf $HOME/.anaconda/lib/python2.7/site-packages/pyfftw/
+
+

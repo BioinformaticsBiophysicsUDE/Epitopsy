@@ -1,6 +1,6 @@
 
 :mod:`Distributed_Server_Optimization_Template` --- YYYYYYY
-======================================================
+===========================================================
 
 .. module:: Distributed_Server_Optimization_Template
    :synopsis: YYYYYYYY.

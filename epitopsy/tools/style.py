@@ -46,7 +46,7 @@ style["pymol_align"] = os.path.join(os.getenv("HOME"),"workspace",
         "epitopsyPython","src","epitopsy","tools","pymol_align.py")
 style["energy_box_file_path"] = "gibbs_free_energy.dx"
 style["counter_box_file_path"] = "counter_matrix.dx.gz"
-# ligand accssible surface
+# ligand accessible surface
 style["LAS_box_file_path"] = "gibbs_free_energy_LAS.dx"
 style["plot_box_file_path"] = style["LAS_box_file_path"]
 

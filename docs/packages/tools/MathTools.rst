@@ -8,7 +8,7 @@
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
 
 
-This module provides Mathematical tools.
+This module provides a set of mathematical functions used by other modules.
 
 
 .. _MathTools-syntax:
@@ -77,25 +77,39 @@ Module Contents
     of rotations!
 
 
-.. function:: fix_grid_size(box_dim)
+.. function:: fix_grid_size(box_dim, nlev = 4)
 
-    Fix the grid size.
+    Due to a multilevel approach APBS requires the grid to be of certain
+    sizes. For a short explanation of the underlying mathematics, please 
+    see `nlev <http://www.poissonboltzmann.org/apbs/user-guide/running-apbs/input-files/elec-input-file-section/elec-keywords/nlev>`_
+    and `dime <http://www.poissonboltzmann.org/apbs/user-guide/running-apbs/input-files/elec-input-file-section/elec-keywords/dime>`_.
+    The dimensions are corrected to the immediately higher compliant value.
 
-    :param box_dim: list with dimensions of an APBS box
+    :param box_dim: dimensions of the APBS box (Angstroems)
+    :type  box_dim: np.array
+    :param nlev: depth of the multilevel hierarchy used by the multigrid solver
+    :type  nlev: int
 
-    :returns: a numpy array with fixed grid dimensions.
+    :returns: (np.array) box dimensions corrected to respect APBS
+        specifications
+
+    Example::
+
+        >>> MathTools.fix_grid_size([10.5,10.5,20.7])
+        array([33, 33, 33])
 
 
-.. function:: calculate_valid_dimension(c, nlev=4)
+.. function:: calculate_valid_dimension(c, nlev = 4)
 
-    Due to a multilevel approach APBS requires the grid to be of certain sizes.
-    (See APBS manual for more information.)
+    Return a compliant grid size *n* for any particular value
+    of **c** and **nlev** according to:
 
-    Self method ensures, that chosen grid dimensions meet these requirements.
-    Current grid dimensions will be enlarged accordingly.
+        :math:`n = c \cdot 2^{nlev + 1} + 1`
 
     :param c: test grid dimension
-    :param nlev: number of levels
+    :type  c: int
+    :param nlev: depth of the multilevel hierarchy used by the multigrid solver
+    :type  nlev: int
 
-    :returns: integer number which has the correct dimension
+    :returns: (int) a grid dimension respecting APBS specifications
 

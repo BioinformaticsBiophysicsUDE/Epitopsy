@@ -12,12 +12,10 @@ This module provides direct coupling analysis operations.
 
 
 .. seealso::
-        
-    Direct-coupling analysis of residue co-evolution captures native 
-    contacts across many protein families
-        F Morcos, A Pagnani, B Lunt, A Bertolino, DS Marks, C Sander,
-        R Zecchina, JN Onuchic, T Hwa, M Weigt (2011), Proc. Natl.
-        Acad. Sci. 108:E1293-1301.
+
+    Morcos, F. *et al.* *Direct-coupling analysis of residue co-evolution
+    captures native contacts across many protein families*, *Proc. Natl. Acad.
+    Sci.* **2011**, *108*, 1293-1301.
 
 
 .. _dca-syntax:

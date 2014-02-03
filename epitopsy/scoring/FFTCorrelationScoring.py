@@ -11,6 +11,7 @@ from epitopsy.cython import FFTCorrelationScoringCython
 from epitopsy.scoring.Scoring import Scoring
 from epitopsy.DXFile import DXBox
 import anfft
+import pyfftw
 
 class FFT_correlation_scoring(Scoring):
     '''
@@ -39,14 +40,15 @@ class FFT_correlation_scoring(Scoring):
         Maybe zero-padding is necessary, it could be done with:
         fftn(signal_matrix, [next pow of 2, next pow of 2, next pow of 2])
         """
+#        return pyfftw.interfaces.numpy_fft.fftn(signal_matrix, threads=4)
         return anfft.fftn(signal_matrix)
-#        return np.fft.ifftn(signal_matrix)
-
         return np.fft.fftn(signal_matrix)
+#        return np.fft.ifftn(signal_matrix)
 
     def do_ifft(self, signal_matrix):
+#        return pyfftw.interfaces.numpy_fft.ifftn(signal_matrix, threads=4)
         return anfft.ifftn(signal_matrix)
-#        return np.fft.ifftn(signal_matrix)
+        return np.fft.ifftn(signal_matrix)
 
     def do_fftshift(self, signal_matrix):
         """

@@ -1,0 +1,357 @@
+
+:mod:`calculate_partition_function` --- Grid-based protein-ligand affinity screening
+====================================================================================
+
+.. module:: calculate_partition_function
+   :synopsis: Grid-based protein-ligand affinity screening.
+.. moduleauthor:: Christoph Wilms <christoph.wilms@uni-due.de>
+.. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
+
+
+This module provides a function to probe the surface of a protein with a
+ligand, and return the area of space around the protein where the ligand
+has the highest probability of being present (in solution).
+
+.. note::
+
+    In order to run :func:`calculate_interaction_energy()`, following
+    dependencies must be present on the system:
+
+    * either anfft or FFTW3 (see :doc:`../../install/fftw`),
+    * PyMOL v1.6.0.0 or superior (see :doc:`../../install/pymol`),
+    * APBS (see :doc:`../../install/apbs`),
+    * optionally, PDB2PQR (see :doc:`../../install/pdb2pqr`)
+
+
+..  /========================================================================\
+    |                 Insert unicode aliases in reST files                   |
+    |========================================================================|
+    |                                                                        |
+    | Find a special character in charmap, take its code (example: with      |
+    | "U+00C5", take "00C5") and grep it from the reST parser libraries:     |
+    |                                                                        |
+    |   $> (cd /usr/share/docutils/parsers/rst/include; grep "00C5" *)       |
+    |   isolat1.txt      |Aring|  unicode: U+000C5 LETTER A WITH RING ABOVE  |
+    |   xhtml1-lat1.txt  |Aring|  unicode: U+000C5 LETTER A WITH RING ABOVE  |
+    |                                                                        |
+    | Include "isolat1.txt" in the reST file:                                |
+    |                                                                        |
+    |   .. include:: <isolat1.txt>                                           |
+    |                                                                        |
+    | Insert the special character somewhere:                                |
+    |                                                                        |
+    |   Below 0.40 |Aring|, the calculation will slow down.                  |
+    \________________________________________________________________________/
+
+
+.. include:: <isolat1.txt>
+.. include:: <mmlalias.txt>
+.. include:: <isogrk1.txt>
+.. |_| unicode:: 0xA0 
+   :trim:
+
+.. _calculate_partition_function-syntax:
+
+Module Syntax
+-------------
+
+Following files have to be gathered in the same directory before the
+calculation starts:
+
+* protein.pdb
+* protein.pqr (only if you don't use PDB2PQR within Biopython)
+* ligand.pqr
+* ligand.mol2
+
+To start the Epitopsy calculation::
+
+    >>> from epitopsy.Structure import PDBFile
+    >>> from epitopsy.tools.style import style
+    >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
+    >>> m = 0.65 # mesh size = grid resolution
+    >>> calculate_interaction_energy(fixed_pdb_path = "sonic.pdb", # your pdb file
+    ...     ligand_pqr_path = "lig.pqr", # you must provide a mol2 file as well!
+    ...     mesh_size = [m,m,m],         # your grid resolution
+    ...     number_of_rotations = 150,   # 150 is sufficient
+    ...     extend = None,               # extension in every direction (in |Aring|s)
+    ...     use_pdb2pqr = True,          # if False, please provide a file "sonic.pqr"
+    ...     center_pdb=True,             # centers the pdb to (0,0,0), set to True if use_pdb2pqr is True, False otherwise
+    ...     box_type=["esp","vdw"],      # always use at least ["esp","vdw"], others can be added
+    ...     cubic_box = True,            # cubic boxes are memory-consuming
+    ...     zipped=False)                # PyMOL can't read zipped files yet
+
+Following files are generated in the same directory:
+
+* sonic.in (APBS input file)
+* io.mc (APBS log file, showing the calculation progress)
+* result_data.txt (various variables on the calculation)
+* sonic_esp.dx (electrostatic potential)
+* sonic_vdw.dx (van der Waals surface)
+* gibbs_free_energy.dx (ligand probability of presence around the protein)
+* counter_matrix.dx.gz
+
+The most important file is :file:`gibbs_free_energy.dx`. It can be displayed
+as a negative isosurface in PyMOL using the APBS Tools2 plugin. The isosurface
+represents the probability of presence of the ligand around the protein. To
+tender the picture in PyMOL::
+
+    >>> reinitialize
+    >>> load protein.pdb, protein
+    >>> load gibbs_free_energy.dx, protein_gibbs
+    >>> # display
+    >>> cmd.bg_color('white')
+    >>> cmd.hide('lines', 'protein')
+    >>> cmd.show('cartoon', 'protein')
+    >>> cmd.show('spheres', "protein and elem CA+ZN")
+    >>> cmd.color('yellow', 'protein and not elem CA+ZN')
+    >>> # APBS
+    >>> cmd.isosurface('negative', 'protein_gibbs', -2)
+    >>> cmd.color('gray50', 'negative')
+    >>> cmd.set("transparency", 0.5, 'negative')
+
+Which results in:
+
+.. figure:: ../../_static/figures/0.25Angstroem-SHH-heparin.jpg
+    :height: 1181px
+    :width: 2000 px
+    :scale: 40 %
+    :alt: Rendering of PDB file 3M1N in cartoon representation with a grey
+          cloud around its positively-charged residues (Lys and Arg).
+    :align: center
+
+    **Probability of presence of heparin around Sonic Hedgehog.**
+
+    Negative potential isosurface for Sonic Hedgehog (PDB: 3M1N) probed by a
+    heparine dissacharid (PDB: 1HPN, charges assigned by *ab initio*
+    computation with the HF/6-31G** method) at 0.40 |Aring| grid resolution.
+    Since heparin features a net negative charge of -3, the areas around Lys
+    and Arg are the most probable sites for heparin docking. This picture
+    clearly highlights the Cardin-Weintraub motif on the N-terminus of Sonic
+    Hedgehog, as well as a secondary docking site on the globular domain.
+
+.. note::
+
+    PyMOL v1.5.0.1 (with plugin APBS Tools2, APBS v1.4.0, FFTW v3.0, on Ubuntu
+    13.10) can crash the OS when rendering positive or negative *isosurfaces*
+    (but *molecular surface* remains unaffected). The issue is fixed in the
+    v1.6.0.0 release of PyMOL. You may want to upgrade your PyMOL installation
+    as well as your Biopython pymol module (see :doc:`../../install/pymol`)
+    before proceeding with the isosurface rendering in PyMOL.
+
+Mathematical approach
+---------------------
+
+This module uses APBS to calculate the affinity of a ligand for a protein
+molecular surface. The calculation takes into account electrostatics
+interactions and desolvation energies. Contrary to MD simulations, which use
+an explicit solvent model and a stochastic approach, Epitopsy uses an implicit
+solvent model and covers the whole space available around the protein on
+discretized grid points.
+
+Probability of all states at position :math:`\vec{r}`:
+
+    :math:`p(r) = \frac{1}{Z} \sum_i^N e^{\left ( \frac{-E_i}{k_B T} \right )}`
+
+Probability of all states at position :math:`\vec{r}` in solution (with :math:`E_i = 0` for all rotations):
+
+    :math:`p(r_{solv}) = \frac{1}{Z} \sum_i^N e^{\left ( \frac{-E_i}{k_B T} \right )} = \frac{N}{Z}`
+
+Dissociation constant:
+
+    :math:`K = \frac{\displaystyle p(r)}{\displaystyle p(r_{solv})} = \frac{1}{N} \sum_i^N e^{\left ( \frac{-E_i}{k_B T} \right )}`
+
+Gibbs free energy:
+
+    :math:`\Delta G = - k_B T ln(K)`
+
+Use an infinite reference in solution, for which the probability of
+all rotations is given as
+
+    :math:`p(\vec{r}_{solv}) = \frac{1}{Z_K} \sum_i^N exp^{\left ( \frac{-E_i}{k_B T} \right ) } = \frac{N}{Z_K}`
+
+The ratio of the probabilty around the protein and the one in solution
+yields a equilibrium constant K
+
+    :math:`K = \frac{\displaystyle p(\vec{r})}{\displaystyle p(\vec{r}_{solv})}`
+
+This enable us to calculate the difference in Gibbs free energy
+
+    :math:`\Delta G(solv \rightarrow prot) = - k_B T ln(K)`
+
+Algorithm
+---------
+
+A fixed and rigib protein (**pdb_path**) is centered in a DXBox slightly larger than its maximal radius, optionally extended by the user (**extend**), and filled with implicit water at a defined temperature (**Temperature**) and pH (**ph**). The DXBox volume is discretized in a grid of resolution **mesh_size**. A rigid ligand (**ligand_path**) is introduced at the center of the DXBox and rotated **number_of_rotations** times around its geometrical center. For
+
+Benchmarking
+------------
+
+A mesh size of 0.40 |Aring| usually give satisfactory results. A mesh size of
+0.50 |Aring| or above will generate artifacts in the form of small bubbles
+(hey disappear above 5.00 |Aring|, but the picture will be crude).
+At a resolution of 0.40 |Aring|, each .dx file will require between 300 and
+400 Mio of free disk space (each experiment generates at least three .dx
+files). The function :func:`calculate_interaction_energy()` should not be run
+below 0.25 |Aring|, since the volume of data generated is proportional to the
+inverse of the grid resolution at the power 3.
+
+For high grid resolution (**mesh_size** > 1.0 |Aring|), the calculation can
+be executed in a matter of minutes, but for a grid resolution of 0.50 |_|
+|Aring| or less, the execution time will increase rapidly (Figure |_| 3,
+graph a), especially for the Numpy implementation of FFT. We recommend using
+anfft for automated analyzes, even if it has been superseded by pyFFTW, since
+it runs 5 |_| min faster at 0.40 |_| |Aring| (Figure |_| 3, graph b). For more
+casual use of Epitopsy, pyFFTW can be used instead.
+
+The 3-dimensional DFT has a complexity of |THgr|\ (n\ :sup:`6`\ ), which can
+be brought down to |THgr|\ (n\ :sup:`3`\.log(n\ :sup:`3`\ )) using a FFT
+algorithm. According to our benchmarking on PDB: 3M1N, the execution time is
+approximately proportional to the inverse of the grid resolution at the
+power 3 in the working range 0.25 |_| |leq| |_| **mesh_size** |_| |leq| |_|
+2.0 |_| |Aring| (Figure |_| 3, graph c). For **mesh_size** |_| |geq| 2.0 |_|
+|Aring|, the calculation is too approximative to be exploited, and for
+**mesh_size** |_| |leq| 0.20 |_| |Aring|, the gain in refinement doesn't bring
+much valuable information (and the APBS calculation consumes too much memory).
+The picture quality is already sufficient at 0.40 |_| |Aring|, hence the
+inverse power 3 model can be used as a rule of thumb when planing the execution
+time of your experiments.
+
+The anfft and Numpy calculations are identical until the 7\ :sup:`th` decimal
+position. In two simulations at a resolution of 0.50 |_| |Aring|, a 100 |_|
+MiB :file:`gibbs_free_energy.dx` file was generated by Numpy and anfft,
+with only 44 non-matching lines over 2'396'366 lines (compare the non-matching
+lines in :download:`anfft.dx <../../_static/files/anfft.dx>` and
+:download:`numpy.dx <../../_static/files/numpy.dx>`; files obtained with
+``grep -Fxvf numpy.dx anfft.dx``).
+
+.. figure:: ../../_static/figures/benchmarking.*
+    :target: ../../_static/figures/benchmarking.pdf
+    :width: 1200 px
+    :alt: Benchmarking three FFT algorithms. Numpy is clearly the slowest one,
+          anfft and pyfftw are quite close, anfft being the quicker.
+    :align: center
+
+    **Figure 3**: Implementation of three FFT algorithms: Numpy (blue, on 1
+    core), pyFFTW (green, on 4 cores), anfft (red, on 4 cores). Benchmarking
+    on the Intel Core 2 Quad Processor Q9650 (4 cores, 3.00 GHz) with PDB:
+    3M1N and a heparin disaccharid as probe.
+    (**a**) Numpy lacks multiprocessing capabilities and runs slowly. PyFFTW
+    v0.9.2 and anfft v0.2 (compiled both with FFTW v3.3.3) give better results.
+    (**b**) Zoom with a power model fitted on the data. The orange curve shows
+    the absolute difference in execution time.
+    (**c**) Linearization of the data using a power model (only linear for the
+    subset {0.25 |_| |leq| |_| **mesh_size** |_| |leq| |_| 2.0 |_| |Aring|}.
+
+.. The Numpy calculation does not support multi-threading! Using a 4- or 8-core CPU is
+   a waste of resources; always prefer using a dual-core CPU for casual use of
+   :func:`calculate_interaction_energy()`. There are some situations where you
+   still might prefer to use 4- and 8-core CPUs, though: you may have a library
+   of different proteins to screen against the same ligand,
+   or a library of mutations on a protein, or a library of the same protein in
+   different conformations / multimerization states. Each process can be affected
+   to a core in this situation. If you don't have a queueing manager on your
+   system to confine each process to a signle core, you'll have to write a bash
+   script to automatically delay the starting time of each process (~10 min),
+   since the APBS calculation (first step of the Epitopsy computation) is fully
+   parallelized and will take 100% of your CPU resources.
+
+
+
+..      Benchmarking on the Intel Core 2 Quad Processor Q9650 (4 cores,
+        3.00 GHz) with PDB: 3M1N and a disaccharid of heparin as ligand:
+
+        * mesh_size: [0.25 0.25 0.25], box_dim: [385 385 385],
+          rotations: 150, total time elapsed (APBS+Epitopsy): 232 min,
+          Epitopsy alone: 193 min
+        * mesh_size: [0.50 0.50 0.50], box_dim: [193 193 193],
+          rotations: 150, total time elapsed (APBS+Epitopsy): 116 min,
+          Epitopsy alone: 111 min
+        * mesh_size: [1.00 1.00 1.00], box_dim: [97 97 97],
+          rotations: 150, total time elapsed (APBS+Epitopsy): 8 min,
+          Epitopsy alone: 7 min
+        * mesh_size: [5.00 5.00 5.00], box_dim: [33 33 33],
+          rotations: 150, total time elapsed (APBS+Epitopsy): 15 s,
+          Epitopsy alone: 5 s
+
+
+.. _contents-of-module-calculate_partition_function:
+
+Module Contents
+---------------
+
+.. function:: calculate_interaction_energy(pdb_path, ligand_path, mesh_size, number_of_rotations=150, Temperature=310., extend=None, ph=None, use_pdb2pqr=True, cubic_box=True, center_pdb=False, box_center=[0, 0, 0], box_dim=None, box_type=["esp", "vdw"], write_top_hits=False, explicit_sampling=False, zipped=False)
+
+    Generate 3 files:
+
+    * the difference in Gibbs free energy in units of :math:`k_bT` for each
+      grid point (:file:`gibbs_free_energy.dx`),
+    * the list all ligand rotations which did not resulted in a collision with
+      the protein for each grid point (:file:`counter_matrix.dx.gz`)
+    * the ligand accessible surface (:file:`gibbs_free_energy_LAS.dx`).
+
+    If the first two files already exist in the working directory, they are
+    deleted. If the DXbox dimensions in **box_dim** are not given, they are
+    automatically calculated using the maximal protein diameter in each
+    direction. If **extend** is ``None``, it will be set to the protein
+    diameter + 2 |Aring|s for safety.
+
+    If **use_pdb2pqr** is ``True``, PDB2PQR is called to generate a PQR file
+    from the protein PDB file, otherwise the user should supply a PQR file in
+    the working directory, using the same but with the extension '.pdb'
+    changed to '.pqr'.
+
+    APBS is called to generate all DXfiles listed in **box_type**.
+    :class:`epitopsy.cython.FFTCorrelationScoringCython` is called to compute
+    the FFT of these DXfiles. If **write_top_hits** is ``True``, a list of the
+    highest scoring ligand orientations are written in the working directory.
+
+
+    :param pdb_path: path to the fixed pdb file
+    :type  pdb_path: str
+    :param ligand_path: path to the ligand PQR file; the PDB file has to be
+        in the same folder, with the same name, but ending with '.pdb'.
+    :type  ligand_path: str
+    :param mesh_size: grid mesh size in all three dimensions [mx,my,mz]
+    :type  mesh_size: array
+    :param number_of_rotations: how many different orientations for the ligand?
+    :type  number_of_rotations: int
+    :param Temperature: temperature for the electrostatic potential calculations
+    :type  Temperature: float
+    :param extend: extend the box dimensions by this factor
+    :type  extend: float
+    :param ph: can be used to calculate the pqr for a specific pH (optional)
+    :type  ph: float
+    :param use_pdb2pqr: use pdb2pqr to generate the PQR from **pdb_path**;
+        if ``False``, a PQR with the same name, but ending with '.pqr' has
+        to be in the same folder
+    :type  use_pdb2pqr: bool
+    :param cubic_box: use a cubic box if ``True`` (optional)
+    :type  cubic_box: bool
+    :param center_pdb: if ``True`` the pdb will be centered at box_center,
+        default is ``False``
+    :type  center_pdb: bool
+    :param box_center: center of the apbs calculations, default is [0,0,0]
+    :type  box_center: array
+    :param box_dim: dimension of the box, default is ``None`` and it is
+        calculated automatically
+    :type  box_dim:
+    :param box_type: types of boxes APBS should write to disk. We need at least
+        ["esp","vdw"], "smol" is optional (["esp","vdw","smol"])
+    :type  box_type: list
+    :param write_top_hits: write the top scoring conformations
+    :type  write_top_hits: bool
+    :param explicit_sampling: if ``True`` it does not use FFT correlation for
+        the detection of overlapping orienations. This option does
+        not work with write_top_hits. Default is ``False``
+    :type  explicit_sampling: bool
+    :param zipped: if ``True`` all dxboxes will be gzipped, if ``False``, the
+        energy matrix and the LAS surface are not zipped. Default is ``False``
+
+    :returns: the energy, and some '.dx' files in the current working directory
+    :raises AttributeError: if **ligand_path** has no vdw information, or if
+        the protein in **pdb_path** has a chain break
+    :raises ValueError: if **explicit_sampling** or **use_pdb2pqr** is not a
+        boolean
+
+
+

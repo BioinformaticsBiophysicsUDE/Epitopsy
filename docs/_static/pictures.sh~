@@ -1,0 +1,7 @@
+
+awk < pdf2jpg.log 'BEGIN { ORS="" } { print "convert -background white -alpha deactivate -quality 80 -density " $2 " -scale " $3 "% " $1 ".pdf " $1 ".jpg" ; printf("%c", "") }' | xargs --null -n 1 echo
+
+#$(while IFS=' ' read -r line; do echo $(echo $line | awk '{split($0,myArray," "); print " convert -background white -alpha deactivate -quality 80 -density " myArray[2] " -scale " myArray[3] "% " myArray[1] ".pdf " myArray[1]".jpg"}'); done < pdf2jpg.log)
+
+
+#while IFS=' ' read -r -a myArray; do convert -background white -alpha deactivate -quality 80 -density ${myArray[1]} -scale ${myArray[2]}% ${myArray[0]} "${myArray[0]%.pdf}.jpg"; done < pdf2jpg.log

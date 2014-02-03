@@ -5,7 +5,7 @@
 SPHINXOPTS    =
 SPHINXBUILD   = sphinx-build
 PAPER         =
-BUILDDIR      = _build/
+BUILDDIR      = /home/$(shell  whoami )/Desktop/_build
 
 # Internal variables.
 PAPEROPT_a4     = -D latex_paper_size=a4
@@ -46,6 +46,10 @@ html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
+
+pictures:
+	@cd _static; awk < pdf2jpg.log '{ print "-background white -alpha deactivate -quality 80 -density " \
+	             $$2 " -scale " $$3 "% " $$1 ".pdf " $$1 ".jpg" }' | xargs -n 12 convert; cd ..
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml

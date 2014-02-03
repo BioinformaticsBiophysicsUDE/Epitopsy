@@ -147,12 +147,13 @@ def get_neighbor_angle_set(n_rotations, max_dist):
     return angle_set
 
 
-def fix_grid_size(box_dim):
+def fix_grid_size(box_dim, nlev=4):
     '''
     Fix the grid size.
 
     Args:
         box_dim -> list with dimensions of an APBS box
+        nlev -> depth of the multilevel hierarchy
 
     Returns:
         A numpy array with fixed grid dimensions.
@@ -167,7 +168,7 @@ def fix_grid_size(box_dim):
 
         Args:
             c -> Test grid dimension.
-            nlev -> ?
+            nlev -> depth of the multilevel hierarchy
 
         Returns:
             Integer number that has the correct dimension.
@@ -178,9 +179,9 @@ def fix_grid_size(box_dim):
     fixed_dimension = []
     for i in range(len(box_dim)):
         c = 0
-        while(box_dim[i] > calculate_valid_dimension(c)):
+        while(box_dim[i] > calculate_valid_dimension(c,nlev)):
             c = c + 1
-        fixed_dimension.append(calculate_valid_dimension(c))
+        fixed_dimension.append(calculate_valid_dimension(c,nlev))
 
     return np.array(fixed_dimension)
 

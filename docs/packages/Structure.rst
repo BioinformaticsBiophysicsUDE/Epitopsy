@@ -11,31 +11,12 @@
 
 This module provides additional classes for the handling of PDB files.
 Following classes are part or derivatives of the original biopython software
-(`official site <http://biopython.org/wiki/Biopython>`_):
+(`homepage <http://biopython.org/wiki/Biopython>`_):
 :class:`entity`, :class:`Structure`, :class:`Model`,
 :class:`Chain`, :class:`Residue` and :class:`atom`.
-They are therefore covered by their original Biopython license:
-
-
-    Biopython license agreement.
-
-    Permission to use, copy, modify, and distribute this software and its
-    documentation with or without modifications and for any purpose and
-    without fee is hereby granted, provided that any copyright notices
-    appear in all copies and that both those copyright notices and this
-    permission notice appear in supporting documentation, and that the
-    names of the contributors or copyright holders not be used in
-    advertising or publicity pertaining to distribution of the software
-    without specific prior permission.
-
-    THE CONTRIBUTORS AND COPYRIGHT HOLDERS OF THIS SOFTWARE DISCLAIM ALL
-    WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL THE
-    CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT
-    OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
-    OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
-    OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
-    OR PERFORMANCE OF THIS SOFTWARE.
+They are therefore covered by their original Biopython license
+(:ref:`read <BioLicense>`, or
+:download:`download <../_static/licenses/biopython.txt>`).
 
 .. _Structure-syntax:
 
@@ -376,7 +357,7 @@ Main file class
     .. method:: rotateX(degree)
 
         :param degree: angle for rotation around the x axis (in degrees)
-        :type degree: float
+        :type  degree: float
 
         :returns: ``None``
 
@@ -399,7 +380,7 @@ Main file class
     .. method:: rotateZ(degree)
 
         :param degree: angle for rotation around the z axis (in degrees)
-        :type degree: float
+        :type  degree: float
 
         :returns: ``None``
 
@@ -408,11 +389,11 @@ Main file class
         Apply euler angle rotation to the structure.
 
         :param phi: euler angle for rotation
-        :type phi: float
+        :type  phi: float
         :param theta: euler angle for rotation
-        :type theta: float
+        :type  theta: float
         :param psi: euler angle for rotation
-        :type psi: float
+        :type  psi: float
 
         :returns: ``None``
 
@@ -435,7 +416,8 @@ Main file class
 
     .. method:: determine_geometric_center()
 
-        :returns: a vector pointing to the geometric center of the structure
+        :returns: (np.array) a vector pointing to the geometric center of the
+            whole structure
 
         Example::
 
@@ -445,15 +427,16 @@ Main file class
 
     .. method:: determine_center_of_extremes_of_atoms(atoms)
 
-        :param atoms: list of :class:`atom` objects
+        :param atoms: a list of atoms
+        :type  atoms: :class:`atom`
 
-        :returns: a vector pointing to the geometric center of the coordination
-            extremes of the given atom coordinates
+        :returns: (np.array) a vector pointing to the geometric center of the
+            coordination extremes of the given atom coordinates
 
     .. method:: determine_center_of_extremes()
 
-        :returns: a vector pointing to the geometric center of the coordination
-            extremes of this structure
+        :returns: (np.array) a vector pointing to the geometric center of the
+            coordination extremes of the whole structure
 
         Example::
 
@@ -463,11 +446,11 @@ Main file class
 
     .. method:: determine_max_diameter(atoms = None)
 
-        :param atoms: a list of atoms (optional), or all
-          atoms of the structure if ``None``
-        :type atoms: :class:`Structure.atom` object
+        :param atoms: a list of atoms, or all
+            atoms of the structure if ``None``
+        :type  atoms: :class:`atom`
 
-        :returns: a float number of the maximum diameter (Angstrom)
+        :returns: (float) the maximum diameter in Angstroem
 
         Example::
 
@@ -848,19 +831,54 @@ Main file class
 
     .. method:: get_dxbox_dim(box_mesh_size, extend = None, cubic_box = True, nlev = 4)
 
-        Return the dimensions of a dxbox. The calculation is
-        copied from :class:`InFile`. If there have been changes this result
-        might be wrong!
-        The center of the box is the geometric center of the protein if not
-        otherwise specified.
+        Return the dimensions of a DXbox. The edges are calculated using the
+        protein maximal diameter in each direction, **extend** if given,
+        and the grid resolution **box_mesh_size**, using the formula:
+
+        :math:`a[i] = \frac{\displaystyle protein\_diameter[i] +
+        2 \cdot extend[i]}{\displaystyle box\_mesh\_size[i]}`
+
+        with *i* = {x,y,z} the coordinates. If **cubic_box** is ``True``,
+        all edges have the same length. The lengths are rounded up to the
+        next value of *n* calculated with **nlev** according to the formula:
+
+        :math:`n = c \cdot 2^{nlev + 1} + 1`
+
+        with `nlev <http://www.poissonboltzmann.org/apbs/user-guide/running-apbs/input-files/elec-input-file-section/elec-keywords/nlev>`_
+        the multilevel hierarchy of the calculation. See `dime
+        <http://www.poissonboltzmann.org/apbs/user-guide/running-apbs/input-files/elec-input-file-section/elec-keywords/dime>`_
+        for an explanation of this parameter.
+
+        The center of the box is the geometric center of
+        the protein if not otherwise specified.
+
+        .. note:
+
+            Chris: The calculation is copied from :class:`InFile`. If there
+            have been changes this result might be wrong!
+
+        :param box_mesh_size: resolution of the grid (Angstroems)
+        :type  box_mesh_size: np.array
+        :param extend: extension of the box dimensions (Angstroems) (optional)
+        :type  extend: float
+        :param cubix_box: use a cubic box if ``True`` (optional)
+        :type  cubic_box: bool
+        :param nlev: depth of the multilevel hierarchy used by the multigrid
+            solver (optional)
+        :type  nlev: int
+
+        :returns: (np.array) dimensions of the DXbox
 
     .. method:: get_dxbox_offset(box_mesh_size, box_dim, box_center)
 
         Returns the offset for the given dimensions.
 
-        :param box_mesh_size: [m,m,m]
-        :param box_dim: [x,y,z]
-        :param box_center: [x_c,y_c,z_c]
+        :param box_mesh_size: dimensions of the mesh (Angstroems)
+        :type  box_mesh_size: array
+        :param box_dim: dimensions of the box (Angstroems)
+        :type  box_dim: array
+        :param box_center: center of the box (Angstroems)
+        :type  box_center: array
 
         :returns: a list box_offset: [x_o,y_o,z_o].
 
@@ -920,7 +938,7 @@ Main file class
 
         Find steric contacts between residues of a protein. A contact is found
         when the interatomic distance of at least two atoms taken from two
-        different residues *i* and *j* is inferior to **cutoff* (Angstroem).
+        different residues *i* and *j* is inferior to **cutoff** (Angstroem).
 
         :param cutoff: interatomic distance
         :type cutoff: float
