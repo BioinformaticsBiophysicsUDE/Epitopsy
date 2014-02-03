@@ -4,6 +4,7 @@ import numpy as np
 
 from Bio import AlignIO, SeqIO, Seq, SeqRecord, pairwise2
 from Bio.SubsMat import MatrixInfo as matlist
+import urllib, urllib2
 
 alignment_alphabet = {'-':1, 'A':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8,
                       'I':9, 'K':10, 'L':11, 'M':12, 'N':13, 'P':14, 'Q':15,
