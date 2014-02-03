@@ -1,14 +1,26 @@
 """
+<<<<<<< HEAD
 .. module:: dca_analysis
     :synopsis: A module for analysing dca data.
     :platform: Unix, (Windows)
 .. moduleauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
 .. sectionauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
+=======
+.. moduleauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
+.. module:: dca_analysis
+    :platform: Unix, (Windows)
+    :synopsis: A module for analysing dca data.
+
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
 """
 
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib
+<<<<<<< HEAD
+=======
+import math
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
 
 class DcaAnalysis(object):
     '''
@@ -25,6 +37,10 @@ class DcaAnalysis(object):
 
         '''
         self.info, self.mi_data, self.di_data = self.__read_in(filename)
+<<<<<<< HEAD
+=======
+        self.bindings = None
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
 
     def __read_in(self, filename):
         '''Reads in the parameters (N, M, Meff, q, pCount, x) and the data
@@ -57,10 +73,17 @@ class DcaAnalysis(object):
         '''Generates a heat map of the direct information data.
 
         :param name: (optional) Name is displayed as title of plot
+<<<<<<< HEAD
         :type  name: str.
 
         :Returns: None.
 
+=======
+        :type  name: str
+
+        Returns:
+            None.
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
         '''
         fig = plt.figure(num=None, figsize=(10, 8), dpi=120,
                         facecolor='w', edgecolor='k')
@@ -84,13 +107,21 @@ class DcaAnalysis(object):
         plt.annotate("Meff = "+str(self.info['Meff']), xy=(self.info['seqlen']/4, 5*self.info['seqlen']/6), xytext=(self.info['seqlen']/4, 5*self.info['seqlen']/6), size='20', color='r')
         plt.colorbar()
 
+<<<<<<< HEAD
     def freq_hist(self, method='di'):
+=======
+    def freq_hist(self, method='di', cutoff=None):
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
         '''Returns a histogram that shows the
         frequency of the values of the Direct information.
 
         :param method: (optional) Name of method ('di' or 'mi').
         :type  method: str.
+<<<<<<< HEAD
         :returns: None.
+=======
+        returns: None.
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
 
         '''
         if method == 'di':
@@ -99,7 +130,49 @@ class DcaAnalysis(object):
             data = self.mi_data.reshape(-1)
         else:
             raise Exception('No valid method specified.')
+<<<<<<< HEAD
         hist, bin_edges = np.histogram(data[np.nonzero(data)], bins=100)
         width = 0.7 * (bin_edges[1] - bin_edges[0])
         center = (bin_edges[:-1] + bin_edges[1:]) / 2
         plt.bar(center, hist, align='center', width=width)
+=======
+
+        if cutoff:
+            hist, bin_edges = np.histogram(data[ data > cutoff], bins=100)
+        else:
+            hist, bin_edges = np.histogram(data[np.nonzero(data)], bins=100)
+        width = 0.7 * (bin_edges[1] - bin_edges[0])
+        center = (bin_edges[:-1] + bin_edges[1:]) / 2
+        plt.bar(center, hist, align='center', width=width)
+        
+    def binding_candidates(self, cutoff=0.1, method='di'):
+        '''The best candidates of binding sites are displayed in
+        order from best to worse. The lower bound is the cutoff, if used.
+
+        :param method: (optional) Name of method ('di' or 'mi').
+        :type  method: str.
+            
+        :param cutoff: lower bound for best candidates.
+        :type cutoff: float.
+    
+        returns: list of in order of strongest candidates.
+        '''
+        #if self.bindings.size():
+        #    return self.bindings
+        if method == 'di':
+            data = self.di_data
+        elif method == 'mi':
+            data = self.mi_data
+        
+        best_di = data.reshape(-1).argsort()
+        self.bindings = np.array([(int(math.floor(i/data.shape[0])),i%data.shape[0]) for i in best_di[::-1]])
+        return self.bindings
+    
+    def show_bindings(self, num=20):
+        fig = plt.figure(num=None, figsize=(12, 10), dpi=120,
+                        facecolor='w', edgecolor='k')
+        fig.add_subplot(111)
+        plt.scatter(self.bindings[0:num].T[0],self.bindings[0:num].T[1], 
+                c=[self.di_data[x[0],x[1]] for x in self.bindings[0:num]], s=15)
+        plt.colorbar()
+>>>>>>> 0f0ad41322cb54feaa281c43d8e28ccadd17fe40
