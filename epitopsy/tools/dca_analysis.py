@@ -38,13 +38,15 @@ class DcaAnalysis(object):
         '''
         with open(filename) as filedata:
             lines = filedata.readlines()
-        datainfo = lines[0].split()
-        info = {'seqlen': int(datainfo[3].split('=')[1]),
-                    'M': int(datainfo[4].split('=')[1]),
-                    'Meff': round(float(datainfo[5].split('=')[1])),
-                    'q': int(datainfo[6].split('=')[1]),
-                    'pCount': float(datainfo[7].split('=')[1]),
-                    'x': float(datainfo[8].split('=')[1])
+        begin = lines[0].find('N=') # parameters begin here
+        datainfo = lines[0][begin:].split()
+        info = {'seqlen': int(datainfo[0].split('=')[1]),
+                    'M': int(datainfo[1].split('=')[1]),
+                    'Meff': round(float(datainfo[2].split('=')[1])),
+                    'q': int(datainfo[3].split('=')[1]),
+                    'pCount': float(datainfo[4].split('=')[1]),
+                    'x': float(datainfo[5].split('=')[1]),
+                    'method': lines[0][5:begin-1]
                 }
         # Create square matrices with seqlen dimension
         mi_data = np.zeros([info['seqlen'], info['seqlen']])
