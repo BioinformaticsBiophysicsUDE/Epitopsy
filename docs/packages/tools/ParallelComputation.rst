@@ -26,7 +26,7 @@ Module Contents
 .. class:: ConsumeRotation(multiprocessing.Process)
 
     This class is derived from :class:`multiprocessing.Process`.
-    I use this class for the :function:`processRotation` function
+    I use this class for the :func:`processRotation` function
     of the :class:`ParallelCombinationRotator` class.
 
     .. method:: run()

@@ -23,13 +23,6 @@ Empty.
 Module Contents
 ---------------
 
-There is no function in this module.
-
-.. _FoldX-objects:
-
-FoldX Objects
--------------
-
 .. class:: FoldX()
 
    The :class:`FoldX` class supports the following methods and attributes:
@@ -78,7 +71,7 @@ FoldX Objects
     .. method:: _make_FoldX_pdb_List(pdb_name)
 
         :param pdb_name: refers to a structure that should be mutated
-        and analyzed without '.pdb'!
+           and analyzed without '.pdb'!
 
     .. method:: _extract_FoldX_ddG()
 

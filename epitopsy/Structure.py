@@ -1182,7 +1182,7 @@ class Structure_Template(object):
 
 
         box_dim = np.ceil(box_dim / box_mesh_size)
-        box_dim = MathTools.fix_grid_size(box_dim)
+        box_dim = MathTools.fix_grid_size(box_dim, nlev)
 
         return box_dim
 

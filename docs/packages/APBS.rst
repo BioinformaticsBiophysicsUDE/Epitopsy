@@ -25,7 +25,12 @@ Module Contents
 
 .. class:: APBSWrapper
 
-    Docstring missing.
+    Wrapper for the APBS software.
+
+    :var APBSPath: path to the APBS executable
+    :var PDB2PQRPath: path to the PDB2PQR executable
+    :var binding_energy: binding energy
+    :var debye_length: iterable of the Debye length
 
     .. method:: runPDB2PQR(pdb_path, pqr_path, force_field = 'amber', pdb2pqr_argv = None)
 
@@ -33,24 +38,32 @@ Module Contents
         in the pdb file with the charges and the vdw radii.
 
         :param pdb_path: path to the pdb file
+        :type pdb_path: str
         :param pqr_path: path for the new pqr file
+        :type pqr_path: path for the new pqr file
         :param ph: pH at for which the charges should be calculated. Default is
             ``None``, which is close to a pH of 7
+        :type ph: float
         :param force_field: forcefield from which charges and radii should be
             taken. Default is "amber"
-        :param pdb2pqr_argv: Can contain additional arguments to pdb2pqr as a
-            list (e.g. ['--assign-only'], oder ['--noopt']). If multiple
-            additional arguments are given, they also have to be given as
-            a list (e.g. ['--assign-only', '--noopt']).
+        :type force_field: str
+        :param pdb2pqr_argv: additional arguments for pdb2pqr, must be stored
+            in a list, even if there is only one argument (e.g.
+            ['--assign-only'], ['--assign-only', '--noopt']).
+        :type pdb2pqr_argv: list
 
         :returns: ``None``
 
     .. method:: runAPBS(apbsInParameters, inFilename)
 
         :param apbsInParameters: contains all neccessary parameters
+        :type apbsInParameters: :class:`InFile` object
         :param inFilename: name of the inputfile for apbs
+        :type inFilename: str
 
         :returns: ``None``
+        :raises NameError: if PQR file not found
+        :raises AttributeError: if error while parsing input file to apbs
 
     .. method:: get_dxbox(pdb_path, mesh_size, **kwds)
 
@@ -58,101 +71,137 @@ Module Contents
         Be careful with absolute paths!
 
         :param pdb_path: path to the structure
+        :type pdb_path: str
         :param mesh_size: grid dimensions
-        
-        :param pqr_path: if ``None`` is supplied, it uses pdb2pqr to
-            calculate one (optional)
+        :type mesh_size:
+        :param pqr_path: alternative path to pdb2pqr (optional)
+        :type pqr_path: str
         :param box_dim: if box dimensions and a box center are supplied, it
             will not use the pdb for the construction of the
             box. Furthermore it is not possible to extend a
             box, if the box properties are supplied (optional)
-        :param box_center: determine the center of the box. If ``None`` is
-            supplied, it calculates the center of the pqr file (optional)
-        :param extend: Extend grid by the given number of Angstroms (optional)
+        :type box_dim:
+        :param box_center: determine the center of the box (optional),
+            calculate the center of the pqr file if ``None``
+        :type box_center:
+        :param extend: extend grid by the given number of Angstroms (optional)
+        :type extend: float
         :param box_type: specify the returned objects: 'esp', 'vdw', 'smol' (optional)
+        :type box_type: str
         :param cubic_box: if the box is generated from the pqr file, it can
             be made to be cubic (optional)
-        :param close_boundaries: if ``True`` it uses another algorithm for the
-            boundary conditions of the box which
-            yields better results but is slower (optional)
-        :param temperatur: the temperature in Kelvin (optional)
+        :type cubic_box: bool
+        :param close_boundaries: use another algorithm for the boundary
+            conditions of the box if ``True`` (optional), yields better
+            results but is slower
+        :type close_boundaries: bool
+        :param temperature: the temperature in Kelvin (optional)
+        :type temperature: float
         :param ph: the pH (optional)
+        :type ph: float
 
-        :returns: a dictionary with DXBox objects, which keys are the requested
-            box types
+        :returns: a dictionary of :class:`DXFile.DXBox` objects, with box
+            types as keys
+        :raises ValueError: if no file named **pqr_path**
 
     .. method:: get_binding_energy(complex_pqr_path, ligand_pqr_path, fixed_pqr_path, box_mesh_size, extend = None, **kwds)
 
-        Binding energy is in kJ/mol.
-        Obtain the change in total polar solvation energy by:
+        Run APBS on the complex, protein and ligand structures and extract the
+        binding energy (in kJ/mol) from the APBS output, according to the
+        following equation:
 
-            :math:`dG\_bind = comp\_solv - fixed\_solv - ligand\_solv`
+            :math:`\Delta_{bind,solv}G = \Delta_{solv}G_{complex} - \Delta_{solv}G_{protein} - \Delta_{solv}G_{ligand}`
 
-        It gives the total polar solvation energy which includes both the
-        reaction field and coulombic contributions.
-        Positive values are favorable.
+        The total polar solvation energy includes both the reaction field and
+        the coulombic contributions. Positive values are favorable.
 
-        **kwds is used to set the options of the infile for the apbs calculation.
+        \*\*kwds is used to set the options of the infile for the apbs calculation.
 
-        :param complex_pqr_path: path of the complex of ligand and fixed protein
+        :param complex_pqr_path: path of the complex
+        :type complex_pqr_path: str
         :param ligand_pqr_path: path of the isolated ligand
-        :param fixed_pqr_path: path of the isolated fixed protein
+        :type ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type fixed_pqr_path: str
         :param box_mesh_size: specify the mesh size of the grid in Angstroem
+        :type box_mesh_size: array
         :param extend: increase the box dimensions
+        :type extend: float
 
-        :returns: binding energy
-        :rtype: float
+        :returns: (float) binding energy in kJ/mol
 
     .. method:: get_binding_energy_long(complex_pqr_path, ligand_pqr_path, fixed_pqr_path, box_mesh_size, extend = None, **kwds)
 
-        Binding energy is in kJ/mol:
+        Run APBS on the complex, protein and ligand structures and extract the
+        total binding energy (in kJ/mol) from the APBS output, according to
+        the following equation:
 
-            :math:`solvation\_energy = (complex\_solv - complex\_ref) - (ligand\_solv - ligand\_ref) - (fixed\_solv - fixed\_ref)`
+            :math:`\Delta_{bind,solv}G = \left( \Delta_{solv}G_{complex} - \Delta G^{ref}_{complex} \right) - \left( \Delta_{solv}G_{protein} - \Delta G^{ref}_{protein} \right) - \left( \Delta_{solv}G_{ligand} - \Delta G^{ref}_{ligand} \right)`
 
-            :math:`coulomb\_energy = frac{complex\_coulomb - ligand\_coulomb - fixed\_coulomb}{pdie}`
+            :math:`\Delta_{coul}G = \frac{\Delta_{coul}G_{complex} - \Delta_{coul}G_{protein} -\Delta_{coul}G_{ligand}}{\epsilon_{p}}`
 
-            :math:`binding\_energy = solvation\_energy + coulomb\_energy`
+            :math:`\Delta_{bind}G = \Delta_{bind,solv}G + \Delta_{coul}G`
 
-        Positive values are favorable.
+        Where
+        :math:`\Delta_{bind,solv}G` is the binding energy in water,
+        :math:`\Delta_{coul}G` is the electrostatic contribution,
+        :math:`\Delta_{bind}G` is the total binding energy.
+        :math:`\Delta_{solv}G_i` is the solvation energy of the specy *i*
+        in water (:math:`\epsilon_s = 79`),
+        :math:`\Delta G^{ref}_i` is the free energy of the specy *i* in a
+        reference medium (:math:`\epsilon_p = 2`),
+        :math:`\Delta_{coul}G_i` is the coulombic free energy of the specy *i*
+        in a reference medium (:math:`\epsilon_p = 2`).
 
-        **kwds is used to set the options of the infile for the apbs calculation.
+        Positive values of :math:`\Delta_{bind}G` are favorable.
 
-        :param complex_pqr_path: path of the complex of ligand and fixed protein
+        \*\*kwds is used to set the options of the infile for the apbs calculation.
+
+        :param complex_pqr_path: path of the complex
+        :type complex_pqr_path: str
         :param ligand_pqr_path: path of the isolated ligand
-        :param fixed_pqr_path: path of the isolated fixed protein
+        :type ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type fixed_pqr_path: str
         :param box_mesh_size: specify the mesh size of the grid in Angstroem
+        :type box_mesh_size: array
         :param extend: increase the box dimensions
+        :type extend: float
 
-        :returns: binding energy
-        :rtype: float
+        :returns: (float) total binding energy in kJ/mol
 
     .. method:: get_dissociation_energy(complex_pqr_path, ligand_pqr_path, fixed_pqr_path, box_mesh_size, extend = None, **kwds)
 
-        Dissociation energy is in kJ/mol.
-        Obtain the change in total polar solvation energy by:
+        Run APBS on the complex, protein and ligand structures and extract the
+        dissociation energy (in kJ/mol) from the APBS output, according to the
+        following equation:
 
-            :math:`dG\_diss = - \left ( comp\_solv - fixed\_solv - ligand\_solv \right )`
+            :math:`\Delta_{diss,solv}G = - \left( \Delta_{solv}G_{complex} - \Delta_{solv}G_{protein} - \Delta_{solv}G_{ligand} \right)`
 
-        It gives the total polar solvation energy which includes both the
-        reaction field and coulombic contributions.
+        The total polar solvation energy includes both the reaction field and
+        the coulombic contributions. Positive values are favorable.
 
-        **kwds is used to set the options of the infile for the apbs
-        calculation.
+        \*\*kwds is used to set the options of the infile for the apbs calculation.
 
-        :param complex_pqr_path: path of the complex of ligand and fixed protein
+        :param complex_pqr_path: path of the complex
+        :type complex_pqr_path: str
         :param ligand_pqr_path: path of the isolated ligand
-        :param fixed_pqr_path: path of the isolated fixed protein
+        :type ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type fixed_pqr_path: str
         :param box_mesh_size: specify the mesh size of the grid in Angstroem
+        :type box_mesh_size: array
         :param extend: increase the box dimensions
+        :type extend: float
 
-        :returns: dissociation energy
-        :rtype: float
+        :returns: (float) dissociation energy in kJ/mol
 
 .. function:: get_coulomb_energy(protein_pqr_path)
 
     :param protein_pqr_path: path to the pqr of the protein
+    :type protein_pqr_path: str
 
-    :returns: energy in kJ/mol
+    :returns: (float) energy in kJ/mol
 
 .. class:: InFile
 
@@ -160,6 +209,10 @@ Module Contents
     Only the most basic parameters are covered here,  intended for the
     generation of basic grids holding information of electrostatic
     potential and/or the van-der-Waals surface
+
+    :raises ValueError: if **ligand_pqr_path** or **fixed_pqr_path** is ``None``
+    :raises ValueError: if unknown argument **calculation_type**
+    :raises AttributeError: if both **box_dim** and **extend** parameters are provided
 
     .. attribute:: pqr_path
 
@@ -215,25 +268,37 @@ Module Contents
         needs to be supplied if the calculation is a
         binding energy calculation
 
-    .. method::  setGridCenter(center)
+    .. method:: setGridCenter(center)
 
-        Docstring missing.
+        :setter: Sets grid geometrical center (in Angstroems)
+        :type: array of dimension 3
 
-    .. method::  setGridSize(size)
+    .. method:: setGridSize(size)
 
-        Docstring missing.
+        :setter: Sets grid size (in Angstroems)
+        :type: array of dimension 3
 
-    .. method::  setMeshSize(meshSize)
+    .. method:: setMeshSize(meshSize)
 
-        Docstring missing.
+        :setter: Sets mesh size (in Angstroems)
+        :type: array of dimension 3
 
-    .. method::  generateFromPDB(pdb, padding, cubicBox)
+    .. method:: generateFromPDB(pdb, padding, cubicBox)
 
-        Docstring missing.
+        :returns: ``None``
 
     .. method::  generateFromPDB2(pdb, padding, minDiameter, cubicBox)
 
-        Docstring missing.
+        .. note::
+
+            Chris: TODO
+
+            Use method to determine geometric center of protein-associated
+            atoms only! Same goes for determination of coordinate extremes.
+            Only use protein-associated atoms! ???
+
+        :returns: ``None``
+        :raises NameError: if grid size mesh sizes <=  0.0
 
     .. method:: calculateValidDimension(c)
 
@@ -251,40 +316,48 @@ Module Contents
 
         Docstring missing.
 
+        :returns: ``None``
+
     .. method:: write(file_path)
 
         Docstring missing.
 
+        :returns: ``None``
+
     .. method:: write_potential(file_path)
 
-        This is the function that writes an infile for the calculation of
-        potential grids.
+        Write an infile for the potential grid calculation.
 
         :param file_path: path to the new infile
 
         :returns: ``None``
+        :raises NameError: if error in consistency check
 
     .. method:: write_binding_energy(file_path)
 
-        This is the function that writes an infile for binding energy
-        calculations.
+        Write an infile for the total binding energy calculation.
 
         :param file_path: path to the new infile
+        :type file_path: str
 
         :returns: ``None``
+        :raises NameError: if error in consistency check
 
     .. method:: write_binding_energy_long(file_path)
 
-        This is the function that writes an infile for binding energy
-        calculations.
+        Write an infile for the total binding energy calculation.
 
         :param file_path: path to the new infile
+        :type file_path: str
 
         :returns: ``None``
+        :raises NameError: if error in consistency check
 
     .. method:: checkInFile()
 
         Checks the information in the infile, java leftover ... pointless!
+
+        :return: ``False`` if an error was encountered, ``True`` otherwise
 
     .. method:: set_options(apbs_input_dict)
 
@@ -293,4 +366,10 @@ Module Contents
         will raise an error.
         The given values of the dictionary are not checked for validation.
         If some options are not given the default values will be used.
+
+        :param apbs_input_dict: list of instructions for APBS
+        :type apbs_input_dict: dict
+
+        :return: ``None``
+        :raises AttributeError: if unknown key
 

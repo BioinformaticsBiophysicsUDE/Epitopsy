@@ -23,7 +23,7 @@ This script is called from cmd::
 Each structure **path_to_N.pdb** will be aligned on **path_to_ref.py**
 and saved in the working directory under the name **query_N.pdb**.
 
-.. _contents-of-module-dca_stuff:
+.. _contents-of-module-pymol_align:
 
 Module Contents
 ---------------

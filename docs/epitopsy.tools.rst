@@ -17,6 +17,7 @@ tools Package
     packages/tools/Wrapper
     packages/tools/calc_vol_and_surface
     packages/tools/dca
+    packages/tools/dca_analysis
     packages/tools/dca_stuff
     packages/tools/dca_stuff_slow
     packages/tools/estDG

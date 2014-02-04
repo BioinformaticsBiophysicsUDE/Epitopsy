@@ -124,9 +124,9 @@ Module Contents
     :param cons_list: list of conserved columns, which should not be looked at
       [1,...,N]
 
-    :returns: a list [i_pdb, j_pdb, value], where *_seq refers to the coupled
-      sequence positions and value is either DI or MI. Sequence positions
-      are in the range [1,N].
+    :returns: a list [i_pdb, j_pdb, value], where \*_seq refers to the coupled
+       sequence positions and value is either DI or MI. Sequence positions
+       are in the range [1,N].
     
 .. function:: read_dca(di_path, method)
 

@@ -162,13 +162,16 @@ class APBSWrapper:
                 # this could somehow happen
                 # if the given path is None, calculate it
                 pqr_path = pdb_path.replace('.pdb', '.pqr')
+                pdb2pqr_argv = []
 
+                if 'pdb2pqr_argv' in kwds:
+                    pdb2pqr_argv = kwds['pdb2pqr_argv']
                 if ph is None:
-                    pqr = pdb.get_pqr_structure(pqr_path)
+                    pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
                     pqr.save_to_file(pqr_path)
                 else:
-                    pqr = pdb.get_pqr_structure(pqr_path,
-                            pdb2pqr_argv=["--with-ph={0}".format(ph)])
+                    pdb2pqr_argv.append("--with-ph={0}".format(ph))
+                    pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
                     pqr.save_to_file(pqr_path)
 
             else:
@@ -178,11 +181,15 @@ class APBSWrapper:
 
         else:
             pqr_path = pdb_path.replace('.pdb', '.pqr')
+            pdb2pqr_argv = []
+            if 'pdb2pqr_argv' in kwds:
+                pdb2pqr_argv = kwds['pdb2pqr_argv']
             if ph is None:
-                pqr = pdb.get_pqr_structure(pqr_path)
+                pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
                 pqr.save_to_file(pqr_path)
             else:
-                pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=["--with-ph={0}".format(ph)])
+                pdb2pqr_argv.append("--with-ph={0}".format(ph))
+                pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
                 pqr.save_to_file(pqr_path)
 
         template_in = InFile(pqr_path = pqr_path,
@@ -208,7 +215,7 @@ class APBSWrapper:
         box_dict = {}
 
         for item in template_in.box_type:
-            filename = "{0}_{1}-PE0.dx".format(pqr_path.replace('.pqr', ''), item)
+            filename = "{0}_{1}.dx".format(pqr_path.replace('.pqr', ''), item)
             box_dict[item] = DXReader().parse(filename, item)
 
         return box_dict
