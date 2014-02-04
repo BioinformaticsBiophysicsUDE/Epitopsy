@@ -980,9 +980,9 @@ PDB object
 
     This class is used for all reading/writing operations on PDB files.
 
-    .. warning::
+    .. note::
 
-        where are all the ``self`` gone?
+        Check ``self``.
 
     .. method:: get_pqr_structure(new_pqr_path = None, force_field = "amber", pdb2pqr_argv = ``None``, pdb2pqr_path = "pdb2pqr", add_ions = True, add_chain = True)
 

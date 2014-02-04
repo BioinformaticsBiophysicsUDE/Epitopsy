@@ -831,16 +831,16 @@ Main file class
 
     .. method:: get_dxbox_dim(box_mesh_size, extend = None, cubic_box = True, nlev = 4)
 
-        Return the dimensions of a dxbox. The edges are calculated using the
-        protein maximal diameter in each direction, the **extend** if given,
+        Return the dimensions of a DXbox. The edges are calculated using the
+        protein maximal diameter in each direction, **extend** if given,
         and the grid resolution **box_mesh_size**, using the formula:
 
         :math:`a[i] = \frac{\displaystyle protein\_diameter[i] +
         2 \cdot extend[i]}{\displaystyle box\_mesh\_size[i]}`
 
-        with i = {x,y,z} the coordinates. If **cubic_box** is ``True``,
-        all edges have the same length. The edges are rounded up to the
-        next value of n calculated with nlev = 4 according to the formula:
+        with *i* = {x,y,z} the coordinates. If **cubic_box** is ``True``,
+        all edges have the same length. The lengths are rounded up to the
+        next value of *n* calculated with **nlev** according to the formula:
 
         :math:`n = c \cdot 2^{nlev + 1} + 1`
 
@@ -852,22 +852,22 @@ Main file class
         The center of the box is the geometric center of
         the protein if not otherwise specified.
 
-
         .. note:
 
             Chris: The calculation is copied from :class:`InFile`. If there
             have been changes this result might be wrong!
 
-        :param box_mesh_size: dimensions of the mesh (Angstroems)
-        :type  box_mesh_size: array
-        :param extend: extension of the box dimensions (Angstroems, optional)
+        :param box_mesh_size: resolution of the grid (Angstroems)
+        :type  box_mesh_size: np.array
+        :param extend: extension of the box dimensions (Angstroems) (optional)
         :type  extend: float
         :param cubix_box: use a cubic box if ``True`` (optional)
         :type  cubic_box: bool
-        :param nlev: APBS parameter (optional)
+        :param nlev: depth of the multilevel hierarchy used by the multigrid
+            solver (optional)
         :type  nlev: int
 
-        :returns: (array) dimensions of the DXbox
+        :returns: (np.array) dimensions of the DXbox
 
     .. method:: get_dxbox_offset(box_mesh_size, box_dim, box_center)
 
