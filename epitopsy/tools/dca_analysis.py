@@ -26,6 +26,7 @@ class DcaAnalysis(object):
 
         '''
         self.info, self.mi_data, self.di_data = self.__read_in(filename)
+
         self.bindings = None
 
     def __read_in(self, filename):
@@ -38,13 +39,15 @@ class DcaAnalysis(object):
         '''
         with open(filename) as filedata:
             lines = filedata.readlines()
-        datainfo = lines[0].split()
-        info = {'seqlen': int(datainfo[3].split('=')[1]),
-                    'M': int(datainfo[4].split('=')[1]),
-                    'Meff': round(float(datainfo[5].split('=')[1])),
-                    'q': int(datainfo[6].split('=')[1]),
-                    'pCount': float(datainfo[7].split('=')[1]),
-                    'x': float(datainfo[8].split('=')[1])
+        begin = lines[0].find('N=') # parameters begin here
+        datainfo = lines[0][begin:].split()
+        info = {'seqlen': int(datainfo[0].split('=')[1]),
+                    'M': int(datainfo[1].split('=')[1]),
+                    'Meff': round(float(datainfo[2].split('=')[1])),
+                    'q': int(datainfo[3].split('=')[1]),
+                    'pCount': float(datainfo[4].split('=')[1]),
+                    'x': float(datainfo[5].split('=')[1]),
+                    'method': lines[0][5:begin-1]
                 }
         # Create square matrices with seqlen dimension
         mi_data = np.zeros([info['seqlen'], info['seqlen']])
@@ -86,6 +89,7 @@ class DcaAnalysis(object):
         plt.annotate("Meff = "+str(self.info['Meff']), xy=(self.info['seqlen']/4, 5*self.info['seqlen']/6), xytext=(self.info['seqlen']/4, 5*self.info['seqlen']/6), size='20', color='r')
         plt.colorbar()
 
+
     def freq_hist(self, method='di', cutoff=None):
         '''Returns a histogram that shows the
         frequency of the values of the Direct information.
@@ -93,6 +97,7 @@ class DcaAnalysis(object):
         :param method: (optional) Name of method ('di' or 'mi').
         :type  method: str.
         :returns: None.
+
         '''
         if method == 'di':
             data = self.di_data.reshape(-1)
