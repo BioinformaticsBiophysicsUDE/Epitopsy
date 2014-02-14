@@ -1,0 +1,8 @@
+
+dl.docutils {
+    text-align: left;
+    -moz-column-count:3; /* Firefox */
+    -webkit-column-count:3; /* Safari and Chrome */
+    column-count:3;
+}
+

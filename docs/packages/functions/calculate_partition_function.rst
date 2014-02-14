@@ -47,6 +47,7 @@ has the highest probability of being present (in solution).
 .. include:: <isolat1.txt>
 .. include:: <mmlalias.txt>
 .. include:: <isogrk1.txt>
+.. |kbT| replace:: k\ :sub:`B`\ T 
 .. |_| unicode:: 0xA0 
    :trim:
 
@@ -93,7 +94,7 @@ Following files are generated in the same directory:
 The most important file is :file:`gibbs_free_energy.dx`. It can be displayed
 as a negative isosurface in PyMOL using the APBS Tools2 plugin. The isosurface
 represents the probability of presence of the ligand around the protein. To
-tender the picture in PyMOL::
+render the picture in PyMOL::
 
     >>> reinitialize
     >>> load protein.pdb, protein
@@ -197,8 +198,8 @@ files). The function :func:`calculate_interaction_energy()` should not be run
 below 0.25 |Aring|, since the volume of data generated is proportional to the
 inverse of the grid resolution at the power 3.
 
-For high grid resolution (**mesh_size** > 1.0 |Aring|), the calculation can
-be executed in a matter of minutes, but for a grid resolution of 0.50 |_|
+For high grid resolution (**mesh_size** > 1.0 |_| |Aring|), the calculation
+can be executed in a matter of minutes, but for a grid resolution of 0.50 |_|
 |Aring| or less, the execution time will increase rapidly (Figure |_| 3,
 graph a), especially for the Numpy implementation of FFT. We recommend using
 anfft for automated analyzes, even if it has been superseded by pyFFTW, since
@@ -216,7 +217,10 @@ power 3 in the working range 0.25 |_| |leq| |_| **mesh_size** |_| |leq| |_|
 much valuable information (and the APBS calculation consumes too much memory).
 The picture quality is already sufficient at 0.40 |_| |Aring|, hence the
 inverse power 3 model can be used as a rule of thumb when planing the execution
-time of your experiments.
+time of your experiments. Don't forget the additional calculatiom required at
+the beginning by APBS to generate the electrostatic potential around the
+protein. This calculation can't be multi-threaded and took approximately
+5 |_| min at 0.50 |_||Aring| and 40 |_| min at 0.25 |_| |Aring| on our system.
 
 The anfft and Numpy calculations are identical until the 7\ :sup:`th` decimal
 position. In two simulations at a resolution of 0.50 |_| |Aring|, a 100 |_|
@@ -244,36 +248,6 @@ lines in :download:`anfft.dx <../../_static/files/anfft.dx>` and
     (**c**) Linearization of the data using a power model (only linear for the
     subset {0.25 |_| |leq| |_| **mesh_size** |_| |leq| |_| 2.0 |_| |Aring|}.
 
-.. The Numpy calculation does not support multi-threading! Using a 4- or 8-core CPU is
-   a waste of resources; always prefer using a dual-core CPU for casual use of
-   :func:`calculate_interaction_energy()`. There are some situations where you
-   still might prefer to use 4- and 8-core CPUs, though: you may have a library
-   of different proteins to screen against the same ligand,
-   or a library of mutations on a protein, or a library of the same protein in
-   different conformations / multimerization states. Each process can be affected
-   to a core in this situation. If you don't have a queueing manager on your
-   system to confine each process to a signle core, you'll have to write a bash
-   script to automatically delay the starting time of each process (~10 min),
-   since the APBS calculation (first step of the Epitopsy computation) is fully
-   parallelized and will take 100% of your CPU resources.
-
-
-
-..      Benchmarking on the Intel Core 2 Quad Processor Q9650 (4 cores,
-        3.00 GHz) with PDB: 3M1N and a disaccharid of heparin as ligand:
-
-        * mesh_size: [0.25 0.25 0.25], box_dim: [385 385 385],
-          rotations: 150, total time elapsed (APBS+Epitopsy): 232 min,
-          Epitopsy alone: 193 min
-        * mesh_size: [0.50 0.50 0.50], box_dim: [193 193 193],
-          rotations: 150, total time elapsed (APBS+Epitopsy): 116 min,
-          Epitopsy alone: 111 min
-        * mesh_size: [1.00 1.00 1.00], box_dim: [97 97 97],
-          rotations: 150, total time elapsed (APBS+Epitopsy): 8 min,
-          Epitopsy alone: 7 min
-        * mesh_size: [5.00 5.00 5.00], box_dim: [33 33 33],
-          rotations: 150, total time elapsed (APBS+Epitopsy): 15 s,
-          Epitopsy alone: 5 s
 
 
 .. _contents-of-module-calculate_partition_function:
@@ -285,7 +259,7 @@ Module Contents
 
     Generate 3 files:
 
-    * the difference in Gibbs free energy in units of :math:`k_bT` for each
+    * the difference in Gibbs free energy in units of :math:`k_BT` for each
       grid point (:file:`gibbs_free_energy.dx`),
     * the list all ligand rotations which did not resulted in a collision with
       the protein for each grid point (:file:`counter_matrix.dx.gz`)
@@ -295,7 +269,7 @@ Module Contents
     deleted. If the DXbox dimensions in **box_dim** are not given, they are
     automatically calculated using the maximal protein diameter in each
     direction. If **extend** is ``None``, it will be set to the protein
-    diameter + 2 |Aring|s for safety.
+    diameter + 2 |Aring| for safety.
 
     If **use_pdb2pqr** is ``True``, PDB2PQR is called to generate a PQR file
     from the protein PDB file, otherwise the user should supply a PQR file in
@@ -355,5 +329,21 @@ Module Contents
     :raises ValueError: if **explicit_sampling** or **use_pdb2pqr** is not a
         boolean
 
+    Example::
+
+        >>> from epitopsy.Structure import PDBFile
+        >>> from epitopsy.tools.style import style
+        >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
+        >>> m = 0.65 # mesh size = grid resolution
+        >>> calculate_interaction_energy(fixed_pdb_path = "sonic.pdb", # your pdb file
+        ...     ligand_pqr_path = "lig.pqr", # you must provide a mol2 file as well!
+        ...     mesh_size = [m,m,m],         # your grid resolution
+        ...     number_of_rotations = 150,   # 150 is sufficient
+        ...     extend = None,               # extension in every direction (in |Aring|s)
+        ...     use_pdb2pqr = True,          # if False, please provide a file "sonic.pqr"
+        ...     center_pdb=True,             # centers the pdb to (0,0,0), set to True if use_pdb2pqr is True, False otherwise
+        ...     box_type=["esp","vdw"],      # always use at least ["esp","vdw"], others can be added
+        ...     cubic_box = True,            # cubic boxes are memory-consuming
+        ...     zipped=False)                # PyMOL can't read zipped files yet
 
 

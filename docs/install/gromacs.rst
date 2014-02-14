@@ -38,6 +38,29 @@ Step-by-step installation
     Before upgrading to another version of Gromacs, always remove the old
     version with ``sudo rm -rf /usr/local/gromacs`` first.
 
+To compile CMake if not already installed::
+
+    cd $HOME/Downloads/
+    wget http://www.cmake.org/files/v2.8/cmake-2.8.12.2.tar.gz
+    tar xfz cmake-2.8.11.2.tar.gz
+    cd cmake-2.8.11.2
+    ./configure # --prefix=/home/user/bin/cmake-2.8.11.2
+    make
+    sudo make install
+    cd ..
+    rm -rf cmake-2.8.12.2/ cmake-2.8.12.2.tar.gz
+
+..  To compile FFTW if not already present on your machine, open a shell and type::
+    cd $HOME/Downloads/
+    wget ftp://ftp.fftw.org/pub/fftw/fftw-3.3.3.tar.gz
+    tar xfz fftw-3.3.3.tar.gz
+    cd fftw-3.3.3
+    ./configure # sudo ./configure # --prefix=/home/user/bin/fftw  --enable-float (for single precision)
+    make
+    make install
+    cd ..
+    rm -rf fftw-3.3.3 fftw-3.3.3.tar.gz
+
 You may follow the `official Gromacs installation procedure
 <http://www.gromacs.org/Documentation/Installation_Instructions>`_ to get
 started. It should answer all your questions. Here is the

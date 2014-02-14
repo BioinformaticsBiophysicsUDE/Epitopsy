@@ -6,11 +6,11 @@ Goals
 =====
 
 Epitopsy is a Python package designed to extend the reach of the `Biopython
-<http://biopython.org/wiki/Biopython>`_ environment. Epitopsy supports
-additional file formats (PQR, lattice protein representation) and additional
+<http://biopython.org/wiki/Biopython>`_ environment. It offers support for
+additional file formats (PQR, lattice protein representation), for additional
 third party softwares (APBS, Clustal Omega, PDB2PQR, *etc.*, see :doc:`the
-list <install/third-party>`), and implements various algorithms relevant to
-the field of bioinformatics (see for example :doc:`Direct Coupling Analysis
+list <install/third-party>`) and for recent techniques developed in the field
+of bioinfomatics (see for example :doc:`Direct Coupling Analysis
 <packages/tools/dca>` or :doc:`Shape Complementarity Docking
 <packages/functions/calculate_partition_function>`).
 
@@ -25,14 +25,14 @@ The Epitopsy project started in 2006 with the diploma thesis of J. Nikolaj
 Dybowski at the Center of Advanced European Studies and Research (CAESAR).
 The original programming language was Java, but the project was ported to
 Python in 2011 thanks to the efforts of Christoph Wilms, during his time as
-a *Ph.D.* student at the Centre for Medical Biotechnology (Zentrum für
+a PhD student at the Centre for Medical Biotechnology (Zentrum für
 Medizinische Biotechnologie, ZMB), Faculty of Biology -- University of
 Duisburg-Essen.
 
 The code was extended in 2012 by integrating features from the `Biopython
 <http://biopython.org/wiki/Biopython>`_ package and implementing new
 techniques found in the scientific literature. The project is currently
-maintained by Ludwig Ohl and Jean-Noël Grad, *Ph.D.* students at the ZMB.
+maintained by Ludwig Ohl and Jean-Noël Grad, PhD students at the ZMB.
 
 Technical aspects
 =================

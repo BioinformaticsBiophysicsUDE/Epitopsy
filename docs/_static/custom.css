@@ -1,0 +1,19 @@
+dl.docutils {
+    -moz-column-count:3; /* Firefox */
+    -webkit-column-count:3; /* Safari and Chrome */
+    column-count:3;
+}
+
+dl.docutils>dt {
+    text-align: center;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+dl.docutils>dd {
+    text-align: center;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-top: 0px;
+}
+

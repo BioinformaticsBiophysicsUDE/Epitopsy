@@ -140,6 +140,8 @@ Module Contents
     :param result_dict: dictionary
 
     :returns: updated dictionary
+    
+
 
 .. function:: process_surface(energy_box, surface_index, energy_cutoff, result_dict, vdw_type)
 

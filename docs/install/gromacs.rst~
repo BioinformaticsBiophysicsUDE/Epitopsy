@@ -38,6 +38,18 @@ Step-by-step installation
     Before upgrading to another version of Gromacs, always remove the old
     version with ``sudo rm -rf /usr/local/gromacs`` first.
 
+To compile FFTW if not already present on your machine, open a shell and type::
+
+    cd $HOME/Downloads/
+    wget ftp://ftp.fftw.org/pub/fftw/fftw-3.3.3.tar.gz
+    tar xfz fftw-3.3.3.tar.gz
+    cd fftw-3.3.3
+    ./configure # sudo ./configure # --prefix=/home/user/bin/fftw  --enable-float (for single precision)
+    make
+    make install
+    cd ..
+    rm -rf fftw-3.3.3 fftw-3.3.3.tar.gz
+
 You may follow the `official Gromacs installation procedure
 <http://www.gromacs.org/Documentation/Installation_Instructions>`_ to get
 started. It should answer all your questions. Here is the
@@ -88,8 +100,8 @@ pdb2gmx. The structure is relaxed in vacuum, solubilized and neutralized,
 minimized in solution, then minimized in the NVT and NPT ensembles, and
 eventually used in the production MD.
 
-.. image:: ../_static/GROMACS.*
-   :target: ../_static/GROMACS.pdf
+.. image:: ../_static/figures/GROMACS.*
+   :target: ../_static/figures/GROMACS.pdf
    :width: 789 px
    :height: 2800 px
    :scale: 80 %

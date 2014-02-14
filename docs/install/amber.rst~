@@ -73,24 +73,47 @@ The shell command ``$AMBERHOME/update_amber --version`` should output this:
 You should now source the location of Amber executables in your
 :file:`.bashrc` file::
 
-    echo -e "\n# added by $(whoami) on $(date) to source amber executables" >> $HOME/.bashrc
-    echo "\nexport AMBERHOME=$HOME/amber12" >> $HOME/.bashrc
+    echo -e "\n# added by $(whoami) on $(date) to source Amber12 and AmberTools 13 binaries" >> $HOME/.bashrc
+    echo "export AMBERHOME=$HOME/amber12" >> $HOME/.bashrc
+    echo 'export PATH="$HOME/.amber12/AmberTools/bin/:$PATH"' >> $HOME/.bashrc
 
-Amber workflow chart
-====================
+Amber Flowchart
+===============
 
-Below is a worflow chart for a typical Amber simulation. Starting with a
-protein sequence file :file:`prot.fasta`, a .lib file is generated in Xleap
-as well as a .rst file (atomic coordinates) and a .top file (topology).
-The structure is minimized by sander, heated and used in the production MD.
+Below is a flowchart for a typical Amber simulation with a single protein.
+Starting with a protein sequence file :file:`prot.fasta`, a .lib file is
+generated in Xleap as well as a .rst file (atomic coordinates) and a .top
+file (topology). The structure is minimized by sander, heated and used in the
+production MD.
 
-.. image:: ../_static/figures/AMBER.jpg
+.. figure:: ../_static/figures/AMBER.*
    :target: ../_static/figures/AMBER.pdf
    :width: 556 px
    :height: 1448 px
    :scale: 80 %
-   :alt: Workflow chart listing all input and output files for Xleap and sander
+   :alt: Flowchart listing all input and output files for Xleap and sander
    :align: center
+   
+   Legend:
+   
+   .pdb
+       PDB coordinates
+   .lib
+       LIB coordinates
+   .inpcrd
+       input coordinates
+   .prmtop
+       topology file
+   .in
+       Amber instructions
+   .frcmod
+       forcefield modifications
+   .mdcrd
+       trajectory
+   .rst
+       RST coordinates
+   .out
+       log file
 
 
 .. highlight:: python

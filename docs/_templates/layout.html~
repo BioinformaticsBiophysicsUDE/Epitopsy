@@ -1,6 +1,4 @@
 {% extends '!layout.html' %}
 
-{% block header %}
-        <!-- your html code here -->
-    <script type="text/javascript" src="../_static/copybutton.js"></script>
-{% endblock %}
+{% set script_files = script_files + ["_static/copybutton.js"] %}
+
