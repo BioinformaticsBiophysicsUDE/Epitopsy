@@ -50,7 +50,7 @@ cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
     for x in range(xdim):
         for y in range(ydim):
             for z in range(zdim):
-                # use absolute value of shape_correlation, so that it is
+                # use absolute value of shape_corellation, so that it is
                 # in the
                 # range(-shape_correlation_cutoff, shape_correlation_cutoff)
                 if abs_c(shape_correlation[x,y,z]) < shape_correlation_cutoff:

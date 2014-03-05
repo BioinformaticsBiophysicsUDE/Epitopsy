@@ -4,7 +4,6 @@ Created on 10.01.2012
 @author: chris
 '''
 import os
-import sys
 import re
 import gzip
 
@@ -120,40 +119,7 @@ class DXBox:
         else:
             return None
 
-    def setDimensions(self, dim, y = 0, z = 0):
-        if isinstance(dim, list):
-            self.box_dim = dim
-        else:
-            self.box_dim = [dim, y, z]
-
-    def  getDimensions(self):
-        return self.box_dim
-
-    def getMaxSideLength(self):
-        if self.box_dim is not None:
-            return max(self.box_dim)
-        else:
-            return None
-
-    # I switched the variables compared to Niko,  because that way
-    # I just need one function
-    def makeCubic(self, fillInValue, sidelength = 'noValue'):
-        if sidelength == 'noValue':
-            sidelength = self.getMaxSideLength()
-        self.enlargeBox([sidelength, sidelength, sidelength], fillInValue)
-
-    def enlargeBox(self, dim, fillInValue):
-        '''
-        This method enlarges the box.
-        '''
-        raise AttributeError('Not implemented')
-
     def has_same_size_as(self, other_dxbox):
-        if isinstance(other_dxbox, DXBox):
-            dim = other_dxbox.getDimensions()
-        else:
-            raise AttributeError('Given object is not a DXBox!')
-
         return self.box_dim == other_dxbox.box_dim
 
     def translate(self, dx, dy = 0, dz = 0):
@@ -179,97 +145,6 @@ class DXBox:
         # shift in z-direction
         self.box = np.roll(self.box, dz, 2)
 
-    def getNodesByValue(self, value):
-        '''
-        * Gets a list of all nodes which hold the given numerical value.
-        '''
-        print('Use np.nonzero(self.box == value)!')
-
-    '''
-     * Gets a list of all nodes which holds one of the given numerical values.
-     * @param value array with values to searched for
-     * @return Vector-List of all nodes with one of the supplied values
-    '''
-
-    def getNodesWithoutValue(self, value):
-        '''
-         * Gets a list of all nodes which DO NOT hold the given numerical value.
-         * @param value value to NOT searche for
-         * @return Vector-List of all nodes without supplied value
-        '''
-        print('Use np.nonzero(self.box != value)!')
-
-
-    def multiply(self, factor_dxbox):
-        if self.has_same_size_as(factor_dxbox):
-            self.box = self.box * factor_dxbox.box
-        else:
-            print("Box sizes mismatch!!!")
-
-    def subtract(self, substrahend_dxbox):
-        if self.has_same_size_as(substrahend_dxbox):
-            self.box = self.box - substrahend_dxbox.box
-        else:
-            print("Box sizes mismatch!!!")
-
-    def determineEpitopeNodes(self, nodes, atoms, meshSize, radius):
-        '''
-        * Method takes a list of nodes and returns these which are
-        * epitope-associated.
-        * Nodes which reside within the supplied distance from at least
-        * one of the supplied residues are considered epitope-associated.
-        * <p>
-        * Alogrithm:
-        * compare every surface-associated node to every atom of every
-        * epitope-associated residue:
-        * If this node is within a given range of an atom,  it is
-        * epitope-associated and added to the list.
-        * @param nodes Vector-list of epitope candidate nodes
-        * @param atoms Vector-list atoms which describe the epitope
-        * @param meshSize Array with mesh spacing of this grid.
-        * @param radius Radius of atoms within which nodes are considered epitope-associated
-        * @return Vector-list of epitope-associated nodes
-        *****
-        Remark: I don't know what Niko is doing here exactly,  but I'll
-        find that out ... eventually ;)
-        *****
-        '''
-        # node list from e.g. self.getNodesWithoutValue(...)
-        # -> simple 2d-list
-        tolerableDistance = 15
-        epitopeNodes = []
-        atomVectors = []
-        # cast as array,  dont't know the return type yet
-        epitopeCenter = np.array()
-        # TODO: check if this works
-        for i in atoms.size():
-            atomVectors.append(i.getCoords())
-        centerNodeX = np.ceil(self.getDimensionX() / 2)
-        centerNodeY = np.ceil(self.getDimensionY() / 2)
-        centerNodeZ = np.ceil(self.getDimensionZ() / 2)
-        # TODO: don't know what jama of java does here
-        gridCenterNode = np.array([centerNodeX, centerNodeY, centerNodeZ])
-        meshDim = np.array(meshSize)
-        nodeID = 0
-        # TODO: len or size,  don't know yet
-        while nodeID < len(nodes):
-            nodePositionVector = np.dot((nodes[i] - gridCenterNode), meshDim)
-            nodeHighlighted = False
-            tooFarAway = False
-            atomID = 0
-            while atomID < len(atomVectors) and not(nodeHighlighted) and not(tooFarAway):
-                diffVector = epitopeCenter - nodePositionVector
-                if np.sqrt(np.dot(diffVector, diffVector)) <= tolerableDistance:
-                    currentAtomCoord = np.array(atomVectors[atomID])
-                    diffVector2 = currentAtomCoord - nodePositionVector
-                    if np.sqrt(np.dot(diffVector2, diffVector2)):
-                        epitopeNodes.append(nodes[nodeID])
-                        nodeHighlighted = True
-                    atomID = atomID = 1
-                else:
-                    tooFarAway = True
-            nodeID = nodeID + 1
-        return epitopeNodes
 
     def count_nodes_with_value(self, value):
         '''
@@ -284,22 +159,6 @@ class DXBox:
 
         return len(box_coord[0])
 
-
-    def getUniqueValues(self):
-        '''
-        Returns unique values within this grid.
-        *****
-        Remark: Nikos code is very complex here (with thresshold and so on),
-        so I don't know if I miss something,  though the name of the function
-        is very clear
-        '''
-        unique = []
-        for x in range(self.getDimensionX()):
-            for y in range(self.getDimensionY()):
-                for z in range(self.getDimensionZ()):
-                    if not(self.box[x][y][z] in unique):
-                        unique.append(self.box[x][y][z])
-        return unique
 
     def getRotateBox(self, theta, phi, psi, fillInValue):
         '''
@@ -700,76 +559,11 @@ class VDWBox(DXBox):
         self.score_of_surface = 2.0
         DXBox.__init__(self, box, box_mesh_size, box_offset)
 
-    def assignNodeIDs(self):
-        self.applySurfaceScore(self.SURFACE_ID_VALUE)
-        self.applyPeptideScore(self.INNER_ID_VALUE)
-        self.applySolventScore(self.SOLVENT_ID_VALUE)
-
-    def applyPeptideScore(self, score):
-        """
-         * Applies a given score to peptide.
-         * Method will retrieve actual peptide(peptide nodes without solvent access) if surface- and peptide score are identical.
-         * If surface-score is different from peptide score(peptide nodes are thus distinguishable from others) given score
-         * is applied to those.
-         * @param score
-        """
-        if self.peptideScore != score:
-            peptideNodes = []
-            if self.surfaceScore == self.peptideScore:
-                peptideNodes = self.determineActualInnerPeptideNodes()
-            else:
-                peptideNodes = self.getPeptideNodes()
-            self.setElementsRange(peptideNodes, score)
-            self.peptideScore = score
-
-    def applySolventScore(self, score):
-        if self.solventScore != score:
-            for x in range(self.dimensionX):
-                for y in range(self.dimensionY):
-                    for z in range(self.dimensionZ):
-                        if self.getElement(x, y, z) == self.solventScore:
-                            self.setElement(score, x, y, z)
-
-    def applySurfaceScore(self, score):
-        """
-         * Applies a given score to surface.
-         * Method will retrieve actual surface(peptide nodes with solvent access) if surface- and peptide score are identical.
-         * If surface-score is different from peptide score(surface nodes are thus distinguishable from others) given score
-         * is applied to those.
-         * @param score
-        """
-        if self.surfaceScore != score:
-            surfaceNodes = []
-            if self.surfaceScore == self.peptideScore:
-                surfaceNodes = self.determineActualSurfaceNodes()
-            else:
-                surfaceNodes = self.getSurfaceNodes()
-            self.setElementsRange(surfaceNodes, score)
-            self.surfaceScore = score
-            if self.epitopeScore == self.surfaceScore:
-                self.epitopeScore = score
-
     def clone(self):
         cp = VDWBox(self.box.copy(), self.box_mesh_size, self.box_offset)
         cp.peptideScore = self.peptideScore
         cp.solventScore = self.solventScore
         return cp
-
-    def createPotentialArea(self, areaWidth):
-        """
-         * Artificially enlarges the protein surface into surrounding solvent. Then sets score within original and
-         * artificial surface to 1. Everything else is set to 0.
-         * @param areaWidth
-        """
-        self.assignNodeIDs()
-        self.applySurfaceScore(1.0)
-        self.smoothSurface(areaWidth, 1.0)
-        self.applySolventScore(0.0)
-        self.applyPeptideScore(0.0)
-
-    def enlargeBox(self, dim):
-        # TODO: Does this work? probably not ;)
-        DXBox.enlargeBox(self, dim, self.solventScore)
 
     def determineActualInnerPeptideNodes(self):
         """
@@ -914,23 +708,6 @@ class VDWBox(DXBox):
         self.box[surface_points] = 1
         # done!
 
-    def getPeptideNodes(self):
-        """
-         * This method return a vector containing all nodes with peptide score.
-         * @return
-        """
-        self.getNodesByValue(self.peptideScore)
-
-    def getSolventNodes(self):
-        self.getNodesByValue(self.solventScore)
-
-    def getSurfaceNodes(self):
-        """
-         * This method returns a Vector containing all nodes with surface score.
-         * @return
-        """
-        self.getNodesByValue(self.surfaceScore)
-
     def extendSurface(self, iterations):
         """
          * Method to artificially enlarge the protein surface into surrounding solvent.
@@ -978,55 +755,3 @@ class VDWBox(DXBox):
         print("{0} nodes markes as epitope associated".format(len(epitopeNodes)))
         self.setElementsRange(epitopeNodes, score)
         self.epitopeScore = score
-
-    def invertScore(self):
-        """
-         * Method to invert scores of protein/peptide and solvent.
-        """
-        for x in range(self.dimensionX):
-            for y in range(self.dimensionY):
-                for z in range(self.dimensionZ):
-                    if self.getElement(x, y, z) == self.peptideScore:
-                        self.setElement(self.solventScore, x, y, z)
-                    elif self.getElement(x, y, z) == self.solventScore:
-                        self.setElement(self.peptideScore, x, y, z)
-        dummy = self.peptideScore
-        self.peptideScore = self.solventScore
-        self.solventScore = dummy
-    def getRotatedBox(self, theta, phi, psi):
-        rb = VDWBox(DXBox().getRotatedBox (self, theta, phi, psi, self.solventScore), self.getDimensions(), self.getMeshSize(), self.getOffset())
-        rb.solventScore = self.solventScore
-        rb.peptideScore = self.peptideScore
-        rb.surfaceScore = self.surfaceScore
-        rb.epitopeScore = self.epitopeScore
-        rb.setDimensions(self.getDimensions())
-        return rb
-    def setRotatedNode(self, rb, x, y, z, value):
-        rb[x][y][z] = rb[x][y][z] + value
-    """
-     * Method to alter score for a larger set of nodes.
-     * @param value
-    """
-    def setElementsRange(self, nodes, value):
-        for node in nodes:
-            self.setElement(value, node)
-    def smoothSurface(self, iterations, gradient = 1.0):
-        if iterations > 0:
-            if self.surfaceScore == self.peptideScore:
-                currentNodeSet = self.determineActualSurfaceNodes()
-            else:
-                currentNodeSet = self.getSurfaceNodes()
-            if self.epitopeScore != self.surfaceScore:
-                currentNodeSet = list(np.array(currentNodeSet) + np.array(self.getNodesByValue(self.epitopeScore)))
-            # smooth surface for n times OR until smoothing value is gets lower than molecules interior value
-            for i in range(iterations):
-                newNodeSet = []
-                for node in currentNodeSet:
-                    neighbors = self.getNeighborList(node, 1)
-                    for neighbor in neighbors:
-                        element = self.getElement(neighbor)
-                        if element == self.solventScore:
-                            nodeValue = self.getElement(node)
-                            self.setElement(round(nodeValue / gradient, 2), neighbor)
-                            newNodeSet.append(neighbor)
-                currentNodeSet = newNodeSet

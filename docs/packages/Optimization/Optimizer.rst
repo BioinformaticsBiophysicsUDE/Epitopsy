@@ -51,12 +51,12 @@ Module Contents
         :returns: ``True`` or ``False``
         :rtype: bool
 
-        .. warning::
+        .. note::
 
-            JN: I don't get the point of this piece of code. The Pareto
-            optimization should take into account *all* values from the
-            ensembles **p** and **q**, not only the last value. The for
-            loop should feature one ``break`` statement. Some examples:
+            JN: check if the Pareto optimization should not rather take
+            into account *all* values from the
+            ensembles **p** and **q**, instead of only the last value. The for
+            loop should feature one ``break`` statement. Namely:
             `Optimizer.dominates([9,6], [10,5], 'min')` returns ``False`` and
             `Optimizer.dominates([9,5], [10,5], 'max')` returns ``True``.
 
@@ -80,7 +80,7 @@ Module Contents
         :returns: ``True`` or ``False``
         :rtype: bool
 
-        .. warning::
+        .. note::
 
             JN: same remark as before.
 

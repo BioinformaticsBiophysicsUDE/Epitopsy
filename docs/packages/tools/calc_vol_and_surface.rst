@@ -1,14 +1,19 @@
 
-:mod:`calc_vol_and_surface` --- Calculation of Volume and Surface
-=================================================================
+:mod:`calc_vol_and_surface` --- Calculation of Favorable Volumes and Surfaces
+=============================================================================
 
 .. module:: calc_vol_and_surface
-   :synopsis: Calculation of Volume and Surface.
+   :synopsis: Calculation of Favorable Volumes and Surfaces.
 .. moduleauthor:: Christoph Wilms <christoph.wilms@uni-due.de>
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
 
 
-This module provides direct coupling analysis operations.
+This module is used by
+:func:`calculate_partition_function.calculate_interaction_energy`
+to determine the favorable (resp. unfavorable) regions of space around a
+protein with regards to the ligand used as probe. Similarly, favorable
+(resp. unfavorable) regions of the protein surface are determined. The results
+of this calculation can be used to predict the results of an Alanine scan.
 
 
 .. include:: <mmlalias.txt>
@@ -66,42 +71,42 @@ Module Contents
     following calculations (with *t* being **energy_cutoff**):
 
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    |            key             |          value (formula)        |                      description                              |
+    |            Key             |          Value (formula)        |                        Description                            |
     +============================+=================================+===============================================================+
-    | normal_total_volume        | :math:`V = V_+ + V_- + V_0`     | total number of grid points outside the protein (int)         |
+    | normal_total_volume        | :math:`V = V_+ + V_- + V_0`     | Total number of grid points outside the protein (int)         |
     |                            |                                 |                                                               |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_neutral_volume      | :math:`V_0 = \sum_i^V         \ | number of neither favorable or unfavorable grid               |
+    | normal_neutral_volume      | :math:`V_0 = \sum_i^V         \ | Number of neither favorable or unfavorable grid               |
     |                            | [+t \leq \Delta G_i \leq -t]`   | points outside the protein (int)                              |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_fav_volume          | :math:`V_+ = \sum_i^V         \ | number of favorable grid points outside the protein (int)     |
+    | normal_fav_volume          | :math:`V_+ = \sum_i^V         \ | Number of favorable grid points outside the protein (int)     |
     |                            | [\Delta G_i < -t]`              |                                                               |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_unfav_volume        | :math:`V_- = \sum_i^V         \ | number of unfavorable grid points outside the protein (int)   |
+    | normal_unfav_volume        | :math:`V_- = \sum_i^V         \ | Number of unfavorable grid points outside the protein (int)   |
     |                            | [\Delta G_i > +t]`              |                                                               |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_fav_volume_score    | :math:`wV_+ = \sum_i^V        \ | summation of the Gibbs free energy over all favorable grid    |
+    | normal_fav_volume_score    | :math:`wV_+ = \sum_i^V        \ | Summation of the Gibbs free energy over all favorable grid    |
     |                            | \Delta G_i [\Delta G_i < -t]`   | points outside the protein (float, < 0, in units of |kbT|)    |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_unfav_volume_score  | :math:`wV_- = \sum_i^V        \ | summation of the Gibbs free energy over all unfavorable grid  |
+    | normal_unfav_volume_score  | :math:`wV_- = \sum_i^V        \ | Summation of the Gibbs free energy over all unfavorable grid  |
     |                            | \Delta G_i [\Delta G_i > +t]`   | point outside the protein (float, > 0, in units of |kbT|)     |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_total_surface       | :math:`S = A_+ + A_- + V_0`     | total number of grid points on the protein surface (int)      |
+    | normal_total_surface       | :math:`S = A_+ + A_- + V_0`     | Total number of grid points on the protein surface (int)      |
     |                            |                                 |                                                               |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_neutral_surface     | :math:`A_0 = \sum_i^S         \ | number of neither favorable or unfavorable grid points on     |
+    | normal_neutral_surface     | :math:`A_0 = \sum_i^S         \ | Number of neither favorable or unfavorable grid points on     |
     |                            | [+t \leq \Delta G_i \leq -t]`   | the protein surface (int)                                     |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_fav_surface         | :math:`A_+ = \sum_i^S         \ | number of favorable grid points on the protein surface (int)  |
+    | normal_fav_surface         | :math:`A_+ = \sum_i^S         \ | Number of favorable grid points on the protein surface (int)  |
     |                            | [\Delta G_i < -t]`              |                                                               |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_unfav_surface       | :math:`A_- = \sum_i^S         \ | number of unfavorable grid points on the protein surface      |
+    | normal_unfav_surface       | :math:`A_- = \sum_i^S         \ | Number of unfavorable grid points on the protein surface      |
     |                            | [\Delta G_i > +t]`              | (int)                                                         |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_fav_surface_score   | :math:`wA_+ = \sum_i^S        \ | summation of the Gibbs free energy over all favorable grid    |
+    | normal_fav_surface_score   | :math:`wA_+ = \sum_i^S        \ | Summation of the Gibbs free energy over all favorable grid    |
     |                            | \Delta G_i [\Delta G_i < -t]`   | points on the protein surface (float, < 0, in units of |kbT|) |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
-    | normal_unfav_surface_score | :math:`wA_- = \sum_i^S        \ | summation of the Gibbs free energy over all unfavorable grid  |
+    | normal_unfav_surface_score | :math:`wA_- = \sum_i^S        \ | Summation of the Gibbs free energy over all unfavorable grid  |
     |                            | \Delta G_i [\Delta G_i > +t]`   | points on the protein surface (float, > 0, in units of |kbT|) |
     +----------------------------+---------------------------------+---------------------------------------------------------------+
 

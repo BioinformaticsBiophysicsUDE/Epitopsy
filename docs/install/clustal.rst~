@@ -10,19 +10,24 @@ releases of Clustal, including ClustalX, ClustalW, ClustalW2 and Clustal
 Omega. For non-challenging MSAs, running a local copy of the Clustal software
 can be more efficient than using the online website.
 
-Clustal can be invoked in the Python shell at any time using the subprocess
-module::
+All Clustal releases can be run from the shell, but when Biopython is used
+extensively, it may prove useful to integrate such MSAs in the python shell
+itself. Clustal can be invoked at any time using the subprocess module::
 
-    >>> import subprocess
+    >>> import os, subprocess
+    >>> env = os.environ.copy()
+    >>> env['LD_LIBRARY_PATH'] = "/usr/local/lib"
     >>> seq = "/path/seq.fasta"
     >>> msa = "/path/msa.fasta"
     >>> subprocess.call('clustalo -i {0} --infmt=fa -o {1} --force'.format(seq, msa),shell=True,env=env)
 
-Biopython also provides a module for this task, so you don't have to
-remember the exact syntax of Clustal::
+Biopython already provides a module for this task, so you don't have to
+memorize the exact syntax of Clustal::
 
     >>> from Bio.Align.Applications import ClustalOmegaCommandline
-    >>> import subprocess
+    >>> import os, subprocess
+    >>> env = os.environ.copy()
+    >>> env['LD_LIBRARY_PATH'] = "/usr/local/lib"
     >>> seq = "/path/seq.fasta"
     >>> msa = "/path/msa.fasta"
     >>> clustalo_cline = ClustalOmegaCommandline(infile=seq, outfile=msa, verbose=True, auto=True, force=True)
@@ -44,13 +49,6 @@ remember the exact syntax of Clustal::
     Alignment written to /path/msa.fasta
     0
 
-If :file:`/usr/local/lib` isn't available in your 'LD_LIBRARY_PATH', add the
-following code in the beginning of your Python script::
-
-    >>> import os
-    >>> env = os.environ.copy()
-    >>> env['LD_LIBRARY_PATH'] = "/usr/local/lib"
-
 .. highlight:: bash
 
 Installation procedure
@@ -69,8 +67,6 @@ Open a shell and type::
     make
     sudo make install
     make clean; cd ..; rm -rf argtable2-13/ argtable2-13.tar.gz
-    echo -e '\n# added by $(whoami) for libargtable2.so.0' >> ~/.bashrc
-    echo 'export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
     wget http://www.clustal.org/omega/clustal-omega-1.2.0.tar.gz
     tar xfz clustal-omega-1.2.0.tar.gz 
     cd clustal-omega-1.2.0/
@@ -117,10 +113,26 @@ You can now remove the install files and the archive::
     cd ..
     rm -rf argtable2-13/ argtable2-13.tar.gz
 
+.. At this point, you will have to export LD_LIBRARY_PATH everytime you use
+   clustalo, provided that your libc.conf file links to the correct dynamic
+   library::
+   
+       cat /etc/ld.so.conf.d/libc.conf
+       # libc default configuration
+       /usr/local/lib
+       LD_LIBRARY_PATH=/usr/local/lib
+       export LD_LIBRARY_PATH
+
+At this point, you would have to export LD_LIBRARY_PATH everytime you use
+Clustal Omega to gain access to ``libargtable2.so.0``::
+
+    LD_LIBRARY_PATH=/usr/local/lib
+    export LD_LIBRARY_PATH # libargtable2.so.0 is now available in your shell
+
 Alternatively, you may add this export command into your local .bashrc::
 
     echo -e '\n# added by $(whoami) for libargtable2.so.0' >> ~/.bashrc
-    echo 'export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
+    echo 'export LD_LIBRARY_PATH="/usr/local/lib"' >> ~/.bashrc
 
 Next, we need to install Clustal Omega::
 

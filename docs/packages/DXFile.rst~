@@ -54,7 +54,7 @@ Module Contents
 
     .. attribute:: box_center
 
-        Grid origin in Angstroms, shifted by :attr:`box_offset`.
+        DXBox center in Angstroms, shifted by :attr:`box_offset`.
 
     .. attribute:: file_path
 
@@ -80,6 +80,18 @@ Module Contents
 
         Docstring missing.
 
+    .. method:: getMaxSideLength()
+
+        Docstring missing.
+
+    .. method:: makeCubic(fillInValue, sidelength = 'noValue')
+
+        Docstring missing.
+
+    .. method:: enlargeBox(dim, fillInValue)
+
+        This method enlarges the box.
+
     .. method:: has_same_size_as(other_dxbox)
 
         Docstring missing.
@@ -96,6 +108,55 @@ Module Contents
 
         TODO: changed,  check if new method is correct!
 
+    .. method:: getNodesByValue(value)
+
+        Gets a list of all nodes which hold the given numerical value.
+
+    .. method:: getNodesWithoutValue(value)
+
+        Gets a list of all nodes which DO NOT hold the given numerical value.
+
+        :param value: value to NOT search for
+
+        :returns: vector-list of all nodes without supplied value
+
+    .. method:: multiply(factor_dxbox)
+
+        Docstring missing.
+
+    .. method:: subtract(substrahend_dxbox)
+
+        Docstring missing.
+
+    .. method:: determineEpitopeNodes(nodes, atoms, meshSize, radius)
+
+        Method takes a list of nodes and returns these which are
+        epitope-associated.
+
+        Nodes which reside within the supplied distance from at least
+        one of the supplied residues are considered epitope-associated.
+
+        Alogrithm:
+
+            compare every surface-associated node to every atom of every
+            epitope-associated residue:
+            If this node is within a given range of an atom,  it is
+            epitope-associated and added to the list.
+
+        :param nodes: vector-list of epitope candidate nodes
+        :param atoms: vector-list atoms which describe the epitope
+        :param meshSize: array with mesh spacing of this grid
+        :param radius: radius of atoms within which nodes are considered
+          epitope-associated
+
+        :returns: vector-list of epitope-associated nodes
+        
+        .. warning::
+
+            I don't know what Niko is doing here exactly, but I'll
+            find that out ... eventually ;)
+        
+
     .. method:: count_nodes_with_value(value)
 
         Returns number occurrences of a given value within this grid.
@@ -103,6 +164,16 @@ Module Contents
     .. method:: count_nodes_without_value(value)
 
         Docstring missing.
+
+    .. method:: getUniqueValues()
+
+        Returns unique values within this grid.
+        
+        .. warning::
+
+            Nikos code is very complex here (with threshold and so on),
+            so I don't know if I miss something, though the name of the
+            function is very clear.
 
     .. method:: getRotateBox(theta, phi, psi, fillInValue)
 
@@ -193,9 +264,51 @@ Module Contents
     Docstring missing.
 
 
+    .. method:: assignNodeIDs()
+
+        Docstring missing.
+
+    .. method:: applyPeptideScore(score)
+
+        Applies a given score to peptide. Method will retrieve actual
+        peptide (peptide nodes without solvent access) if surface- and
+        peptide score are identical. If surface-score is different
+        from peptide score(peptide nodes are thus distinguishable
+        from others) given score is applied to those.
+
+        :param score: score to apply
+
+    .. method:: applySolventScore(score)
+
+        Applies a given score to surface. Method will retrieve actual
+        surface (peptide nodes with solvent access) if surface- and
+        peptide score are identical. If surface-score is different
+        from peptide score(surface nodes are thus distinguishable
+        from others) given score is applied to those.
+
+        :param score: score to apply
+
+    .. method:: applySurfaceScore(score)
+
+        Docstring missing.
+
     .. method:: clone()
 
         Docstring missing.
+
+    .. method:: createPotentialArea(areaWidth)
+
+        Artificially enlarges the protein surface into surrounding solvent.
+        Then sets score within original and artificial surface to 1.
+        Everything else is set to 0.
+
+        :param areaWidth: area width
+
+    .. method:: enlargeBox(dim)
+
+        .. warning::
+
+            TODO: Does this work? probably not ;)
 
     .. method:: determineActualInnerPeptideNodes()
 
@@ -271,6 +384,18 @@ Module Contents
 
         The values for 'solventScore', 'peptideScore', etc. are not updated!
 
+    .. method:: getPeptideNodes()
+
+        :returns: a vector containing all nodes with peptide score
+
+    .. method:: getSolventNodes()
+
+        Docstring missing.
+
+    .. method:: getSurfaceNodes()
+
+        :returns: a vector containing all nodes with surface score
+
     .. method:: extendSurface(iterations)
 
         Method to artificially enlarge the protein surface into surrounding solvent.
@@ -286,3 +411,24 @@ Module Contents
     .. method:: highlightEpitope(atoms, meshSize, rangeCutoff, score)
 
         Docstring missing.
+
+    .. method:: invertScore()
+
+        Method to invert scores of protein/peptide and solvent.
+
+    .. method:: getRotatedBox(theta, phi, psi)
+
+        Docstring missing.
+
+    .. method:: setRotatedNode(rb, x, y, z, value)
+
+        Method to alter score for a larger set of nodes.
+
+    .. method:: setElementsRange(nodes, value)
+
+        Docstring missing.
+
+    .. method:: smoothSurface(iterations, gradient = 1.0)
+
+        Docstring missing.
+

@@ -1,8 +1,8 @@
 .. _install-index:
 
-*******************
-Installing Epitopsy
-*******************
+********
+Epitopsy
+********
 
 Epitopsy requires following softwares and modules to run:
 

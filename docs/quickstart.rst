@@ -9,6 +9,5 @@ Following pages cover the features of Epitopsy, the installation procedure and t
 
    overview
    license
-   install/epitopsy
-   install/third-party
+   installation
 

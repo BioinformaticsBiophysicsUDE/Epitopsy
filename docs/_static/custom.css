@@ -1,19 +1,81 @@
+/* definition lists */
 dl.docutils {
-    -moz-column-count:3; /* Firefox */
-    -webkit-column-count:3; /* Safari and Chrome */
     column-count:3;
+    -moz-column-count:3;    /* Firefox */
+    -webkit-column-count:3; /* Safari, Chrome */
 }
-
 dl.docutils>dt {
     text-align: center;
-    margin-left: 0px;
-    margin-right: 0px;
+    margin-left:   0px;
+    margin-right:  0px;
     margin-bottom: 0px;
+    font-weight:  bold;
 }
 dl.docutils>dd {
     text-align: center;
-    margin-left: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
+    margin-left:   0px;
+    margin-right:  0px;
+    margin-top:    0px;
+}
+
+/* titles */
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6 { 
+  border-radius: 20px;
+  margin-left:  -10px;
+  padding-left:  18px;
+}
+div.body h1 {
+  border-top: 0;
+  background-color: #AEC4DB;
+}
+div.body h2 {
+  border: 1px solid #B8C5D3;
+}
+div.body h3 {
+  border: 1px solid #C8CED3;
+}
+
+/* divs */
+div.body {
+    padding: 25px 40px 30px 40px;
+}
+div.footer {
+  color: #ccc;
+}
+div.footer a {
+  color: #bbb;
+}
+div.seealso {
+  border: 1px solid #dd2;
+  border-radius: 8px;
+}
+div.note {
+  border-radius: 8px;
+}
+span.copybutton,
+div.highlight,
+div.section>dl,
+div.section>p {
+  margin-left:  10px;
+  margin-right: 10px;
+}
+
+/* tables */
+table.docutils>thead>tr>th.head {
+  text-align:center;
+}
+table.right-align-col>tbody>tr>td {
+  text-align:right!important;
+}
+table.docutils>colgroup>col {
+  width:auto;
+}
+tr.row-odd>td,tr.row-even>td {
+  padding:2px 10px 2px;
 }
 

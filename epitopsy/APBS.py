@@ -4,9 +4,7 @@ Created on Jan 10,  2012
 @author: chris
 '''
 
-import sys
 import os
-import time
 import stat
 import subprocess
 import numpy as np
