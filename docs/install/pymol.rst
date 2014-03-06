@@ -2,20 +2,29 @@
 PyMOL --- 3D molecular viewer
 *****************************
 
-You may visualize a molecule by opening a PyMOL GUI using this code::
+You may open PyMOL in a minimal GUI using this code::
 
     import pymol
     pymol.finish_launching()
+    # further code waiting for user to quit the GUI
 
-However, the GUI is called without its command prompt, and code execution is
-halted until the user exits the window. Alternatively, the PyMOL core can be
+But this minimalist GUI lacks the command prompt, and the script execution is
+frozen until the user exits the window. Alternatively, the PyMOL core can be
 started in the command line mode::
 
     import __main__
     __main__.pymol_argv = ['pymol','-qc'] # -c: command line mode, -q: quiet mode (low verbosity)
     import pymol
-    pymol.finish_launching()
-    # PyMOL instructions...
+    
+    if __name__ == "__main__":
+        # start PyMOL if not already running in the current interpreter
+        try:
+            a = pymol.glutThread # see if PyMOL's variables are loaded in memory
+            del a
+        except:
+            pymol.finish_launching()
+        
+        # PyMOL instructions...
 
 .. note::
 
@@ -38,12 +47,12 @@ For the impatients
 Open a shell and type::
 
     sudo apt-get install build-essential python-dev python-pmw \
-                         libglew-dev freeglut3-dev libpng-dev libfreetype6-dev
+                         libglew-dev freeglut3-dev libpng-dev libfreetype6-dev -y
     cd $HOME/Downloads/
     wget http://downloads.sourceforge.net/project/pymol/pymol/1.6/pymol-v1.6.0.0.tar.bz2
     tar xfj pymol-v1.6.0.0.tar.bz2; cd pymol/
-    prefix=$HOME/pymol
-    python setup.py build install --{home,install-scripts}=$prefix  --install-lib=$prefix/modules
+    prefix=/usr/share/pymol
+    sudo python setup.py build install --{home,install-scripts}=$prefix  --install-lib=$prefix/modules
     sudo ln -s $prefix/pymol /usr/bin/pymol
     cd ..; rm -rf pymol/ pymol-v1.6.0.0.tar.bz2
 
@@ -63,23 +72,25 @@ SourceForge repository.
 First retrieve the dependencies and the archive::
 
     sudo apt-get install build-essential python-dev python-pmw \
-                         libglew-dev freeglut3-dev libpng-dev libfreetype6-dev
+                         libglew-dev freeglut3-dev libpng-dev libfreetype6-dev -y
     # sudo apt-get autoremove
     cd $HOME/Downloads/
     wget http://downloads.sourceforge.net/project/pymol/pymol/1.6/pymol-v1.6.0.0.tar.bz2
     tar xvfj pymol-v1.6.0.0.tar.bz2
     cd pymol/
 
-Compile PyMOL using these variables (you may set ``prefix=/usr/share/pymol``
-to make PyMOL available to everyone, in which case the build should be done
-with root privileges)::
+Build PyMOL and add a soft link in your ``/usr/bin/``::
 
-    prefix=$HOME/pymol
-    python setup.py build install --home=$prefix --install-lib=$prefix/modules --install-scripts=$prefix
-
-Create a soft link to the executable in your ``/usr/bin/``::
-
+    prefix=/usr/share/pymol
+    sudo python setup.py build install --home=$prefix --install-lib=$prefix/modules --install-scripts=$prefix
     sudo ln -s $prefix/pymol /usr/bin/pymol
+
+Alternatively, if you prefer a local copy or if you lack root privileges::
+
+    prefix=$HOME/bin/pymol
+    python setup.py build install --home=$prefix --install-lib=$prefix/modules --install-scripts=$prefix
+    echo -e "\n# added by $(whoami) on $(date) to source PyMOL binaries" >> $HOME/.bashrc
+    echo 'export PATH="$prefix/:$PATH"' >> $HOME/.bashrc
 
 Check if the shell command ``pymol -c | grep -e "Version [0-9\.]*"`` outputs
 ``Version 1.6.0.0``, and remove the installation files and the archive::
@@ -114,22 +125,21 @@ to create a symbolic link to the newer module::
 Troubleshooting
 ===============
 
-If there is a copy of Anaconda installed on your system (which we strongly
-recommend), you may encounter an issue while compiling PyMOL. Typically,
-the compilation will run smoothly, but the PyMOL build obtained cannot be
-correctly executed, as it will search for a pymol module inside
-:file:`.anaconda/lib/python2.7/`. When running this build of PyMOL from the
-shell, several errors will print out, usually involving shared libraries which
-cannot be accessed (libpng15.so.15, libc.so.6, or _cmd.so). The pymol module
-is actually located inside the ``$prefix`` directory, since it is where all
-PyMOL files were copied to.
+If there is a copy of Anaconda installed on your system, you may encounter an
+issue while compiling PyMOL. Typically, the compilation will run smoothly, but
+the PyMOL build obtained cannot be correctly executed, as it will search for a
+pymol module inside :file:`.anaconda/lib/python2.7/`.
+When running this build of PyMOL from the shell, several errors will print out,
+usually involving shared libraries which cannot be accessed (libpng15.so.15,
+libc.so.6, or _cmd.so). The pymol module is actually located inside the
+``$prefix`` directory, since it is where all PyMOL files were copied to.
 
-To resolve this, you must use another installation of python, which you should
-already have if you did ``sudo apt-get python-dev`` as explained. Then,
-temporarily deactivate shell sourcing for Anaconda by manually editing the
-following line in your :file:`.bashrc` file::
+In order to solve this issue, you must use another installation of python,
+which you should already have if you did ``sudo apt-get python-dev`` as
+explained. Then, temporarily deactivate shell sourcing for Anaconda by
+manually editing the following line in your :file:`.bashrc` file::
 
-    export PATH="/home/<your_username>/.anaconda/bin:$PATH"
+    export PATH="$HOME/.anaconda/bin:$PATH"
 
 Add a `#` character in front of it, save the file and start a new shell
 interpreter to build PyMOL. The correct pymol module directory will be used
@@ -139,11 +149,9 @@ the :file:`.bashrc` file.
 You might also find yourself unable to start PyMOL directly from your $HOME
 folder (error message: ``*** buffer overflow detected ***:
 /usr/bin/python terminated``), but any other directory within your $HOME will
-do it. This is independent from the location of the PyMOL directory as well
-as from the sourcing of your Anaconda distribution.
-The only workaround is not to start PyMOL from your $HOME. You
-can achieve this by opening the launcher (``gedit $prefix/pymol``) and typing
-the following ``if`` statement anywhere before the line executing PyMOL::
+do it. The only workaround is not to start PyMOL from your $HOME. You
+can achieve this by opening the launcher (gedit $prefix/pymol) and typing
+the following if statement anywhere before the line executing PyMOL::
 
     if [ $PWD = $HOME ]; then
       cd Documents/
@@ -158,12 +166,12 @@ In this case, the following error message is displayed:
 
     Traceback (most recent call last):
     File "<stdin>", line 1, in <module>
-    File "/home/grad/.anaconda/lib/python2.7/pymol/__init__.py", line 491, in <module>
+    File "/home/user/.anaconda/lib/python2.7/pymol/__init__.py", line 491, in <module>
     from pymol import _cmd
     ImportError: /home/user/.anaconda/bin/../lib/libm.so.6: version `GLIBC_2.15' not found (required by /home/user/.anaconda/lib/python2.7/pymol/_cmd.so)
 
-A workaround provided by the Anaconda development team consists in removing a
-symbolic link from the Anaconda directory::
+A workaround provided by the Anaconda development team consists in deleting
+(or renaming) the :file:`libm.so.6` symbolic link from the Anaconda directory::
 
     mv $HOME/.anaconda/lib/libm.so.6 $HOME/.anaconda/lib/libm.so.6-old
 
@@ -174,7 +182,7 @@ missing, with the following error message:
 
     Error: unable to initalize the pymol.cmd module
     Traceback (most recent call last):
-    File "/home/grad/.anaconda/lib/python2.7/pymol/cmd.py", line 117, in <module>
+    File "/home/user/.anaconda/lib/python2.7/pymol/cmd.py", line 117, in <module>
     from chempy import io
     ImportError: No module named chempy
 

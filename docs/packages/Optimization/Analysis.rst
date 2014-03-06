@@ -9,18 +9,20 @@
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
 
 
-This module provides tools for the calculation of Hypervolume by Slicing
-Objectives (HSO) of sets and for the Pareto analysis os sets. Part of this
-module belongs to the package **inspyred 1.0** (:math:`\copyright` 2012
-Inspired Intelligence Initiative), which can be found at `inspyred`_.
-Following functions are part or derivatives of the original package:
-:class:`hypervolume_max`, :class:`hypervolume_min`. They are therefore 
-covered by the GNU General Public License version 3.0 (GPLv3), available
-online at `opensource.org`_.
+This module provides tools for the Pareto analysis of sets and for the
+calculation of Hypervolume by Slicing Objectives (HSO) of sets. Parts of this
+module belong to the package **inspyred 1.0** (\ |copy| 2012 Inspired
+Intelligence Initiative, GNU General Public License version 3.0), which can be
+found at `inspyred`_. Following functions are part or derivatives of the
+original inspyred package: :func:`hypervolume_max`, :func:`hypervolume_min`.
+They stay covered by the terms of the GNU General Public License version 3.0
+(GPLv3, available online at `opensource.org`_) in Epitopsy.
 
 .. _inspyred: https://pypi.python.org/pypi/inspyred
 .. _opensource.org: http://opensource.org/licenses/gpl-3.0.html
 
+
+.. include:: <isonum.txt>
 
 .. _Analysis-syntax:
 

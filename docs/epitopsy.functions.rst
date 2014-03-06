@@ -17,4 +17,3 @@ functions Package
     packages/functions/ScoreHullEnsemble
     packages/functions/StartMD
     packages/functions/calculate_partition_function
-    packages/functions/depreciated_calculate_partition_function_slow

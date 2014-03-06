@@ -8,8 +8,8 @@ Goals
 Epitopsy is a Python package designed to extend the reach of the `Biopython
 <http://biopython.org/wiki/Biopython>`_ environment. Epitopsy supports
 additional file formats (PQR, lattice protein representation) and additional
-third party softwares (APBS, Clustal Omega, PDB2PQR, *etc.*, see :doc:`the
-list <install/third-party>`), and implements various algorithms relevant to
+third party softwares (APBS, Clustal Omega, PDB2PQR, *etc.*, :doc:`see list
+<install/third-party>`), and implements various algorithms relevant to
 the field of bioinformatics (see for example :doc:`Direct Coupling Analysis
 <packages/tools/dca>` or :doc:`Shape Complementarity Docking
 <packages/functions/calculate_partition_function>`).

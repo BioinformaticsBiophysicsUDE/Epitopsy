@@ -24,13 +24,15 @@ Open a shell and type::
     wget http://sourceforge.net/projects/pdb2pqr/files/pdb2pqr/pdb2pqr-1.8/pdb2pqr-1.8.tar.gz
     tar xfz pdb2pqr-1.8.tar.gz
     cd pdb2pqr-1.8/
-    ./configure --prefix $HOME/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
+    ./configure --prefix $HOME/bin/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
     make
     make install
     make clean
     cd ..
     rm -rf pdb2pqr-1.8/ pdb2pqr-1.8.tar.gz
-    sudo ln -s $HOME/pdb2pqr/pdb2pqr.py /usr/local/bin/pdb2pqr
+    ln -s $HOME/bin/pdb2pqr/pdb2pqr.py $HOME/bin/pdb2pqr/pdb2pqr
+    echo -e "\n# added by $(whoami) on $(date) to source PDB2PQR executables" >> $HOME/.bashrc
+    echo 'export PATH="$HOME/bin/pdb2pqr:$PATH"' >> $HOME/.bashrc
 
 Step-by-step installation
 -------------------------
@@ -46,7 +48,7 @@ Then proceed to the download and installation::
     wget http://sourceforge.net/projects/pdb2pqr/files/pdb2pqr/pdb2pqr-1.8/pdb2pqr-1.8.tar.gz
     tar xvfz pdb2pqr-1.8.tar.gz
     cd pdb2pqr-1.8/
-    ./configure --prefix $HOME/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
+    ./configure --prefix $HOME/bin/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
     make
     make test # outputs "simple test passed for PQR files"
     make install
@@ -58,11 +60,12 @@ Check that the shell command ``pdb2pqr --version`` outputs ``pdb2pqr
     cd ..
     rm -rf pdb2pqr-1.8/ pdb2pqr-1.8.tar.gz
 
-You still have to update your environment variables to be able to call pdb2pqr
-in the shell. Alternatively, you may add a symbolic link to the main.py file
-in the /usr/local/bin directory::
+You still have to update your :file:`.bashrc` to be able to call pdb2pqr in
+the shell::
 
-    sudo ln -s $HOME/pdb2pqr/pdb2pqr.py /usr/local/bin/pdb2pqr
+    ln -s $HOME/bin/pdb2pqr/pdb2pqr.py $HOME/bin/pdb2pqr/pdb2pqr
+    echo -e "\n# added by $(whoami) on $(date) to source PDB2PQR executables" >> $HOME/.bashrc
+    echo 'export PATH="$HOME/bin/pdb2pqr:$PATH"' >> $HOME/.bashrc
 
 .. highlight:: python
 

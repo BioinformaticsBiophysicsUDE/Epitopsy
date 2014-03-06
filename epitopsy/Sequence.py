@@ -5,6 +5,7 @@ import numpy as np
 from Bio import AlignIO, SeqIO, Seq, SeqRecord, pairwise2
 from Bio.SubsMat import MatrixInfo as matlist
 import urllib, urllib2
+import re
 
 alignment_alphabet = {'-':1, 'A':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8,
                       'I':9, 'K':10, 'L':11, 'M':12, 'N':13, 'P':14, 'Q':15,
@@ -123,7 +124,13 @@ def get_pairwise_alignment(ref_seq, query_seq):
     """
     result = {}
     matrix = matlist.blosum62
-    aln = pairwise2.align.globaldx(ref_seq, query_seq, matrix)
+    ref = re.sub(r"[^ACDEFGHIKLMNPQRSTVWY]",'',ref_seq.upper())
+    if ref != ref_seq:
+        print "Warning: removed gaps and/or non-natural amino acids in ref_seq."
+    query = re.sub(r"[^ACDEFGHIKLMNPQRSTVWY]",'',query_seq.upper())
+    if query != query_seq:
+        print "Warning: removed gaps and/or non-natural amino acids in query_seq."
+    aln = pairwise2.align.globaldx(ref, query, matrix)
     result["ref_seq"] = aln[0][0]
     result["query_seq"] = aln[0][1]
     return result
