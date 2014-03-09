@@ -4,6 +4,7 @@
 ###################
 *.py~
 *.py[cod]
+*.pyx~
 
 # C extensions
 *.so
