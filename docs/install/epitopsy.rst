@@ -25,8 +25,8 @@ For the impatients
 
 Open a shell and type::
 
-    cd Downloads/
-    mkdir temp; cd temp/
+    cd $HOME/Downloads/
+    mkdir temp; cd $_
     git clone https://code.google.com/p/epitopsy/
     cd epitopsy/
     python setup.py install
@@ -44,7 +44,7 @@ shell::
 Then move to a temporary directory and get a local copy of the installation
 package from Google Code::
 
-    cd Documents/
+    cd $HOME/Documents/
     mkdir temp
     cd temp/
     git clone https://code.google.com/p/epitopsy/

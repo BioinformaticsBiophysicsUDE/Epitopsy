@@ -194,9 +194,10 @@ points.
 In a first step, an instance of
 :class:`FFTCorrelationScoring.FFT_correlation_scoring` is created
 (**shape_scoring**) by computing the conjugated reciprocal lattice of the
-protein Van der Waals surface (**vdwbox.box**) by FFT (Fast Fourier Transform).
-For any rotational state **angle_element** of the ligand, the molecular surface
-**pqr_vdw** is projected to the grid *via* :func:`Structure.PQRFile.snap_vdw_to_box` and
+protein Van der Waals surface (**vdwbox.box**) by FFT (Fast Fourier
+Transform). For any rotational state **angle_element** of the ligand, the
+molecular surface **pqr_vdw** is projected to the grid *via*
+:meth:`Structure.Structure_Template.snap_vdw_to_box` and
 passed to :func:`FFTCorrelationScoring.FFT_correlation_scoring.get_correlation`.
 Within this method, the reciprocal lattice of the ligand molecular surface is
 computed by :func:`FFTCorrelationScoring.FFT_correlation_scoring.do_fft`,

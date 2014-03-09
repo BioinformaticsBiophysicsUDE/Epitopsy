@@ -70,8 +70,8 @@ To start the Epitopsy calculation::
     >>> from epitopsy.tools.style import style
     >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
     >>> m = 0.65 # mesh size = grid resolution
-    >>> calculate_interaction_energy(fixed_pdb_path = "sonic.pdb", # your pdb file
-    ...     ligand_pqr_path = "lig.pqr", # you must provide a mol2 file as well!
+    >>> calculate_interaction_energy(pdb_path = "sonic.pdb", # your pdb file
+    ...     ligand_path = "lig.pqr",     # you must provide a mol2 file as well!
     ...     mesh_size = [m,m,m],         # your grid resolution
     ...     number_of_rotations = 150,   # 150 is sufficient
     ...     extend = None,               # extension in every direction (in Angstroms)
@@ -287,21 +287,21 @@ amount of time is lost to :func:`APBS.APBSWrapper.get_dxbox` and
     :class: right-align-col
     :name: profiling
 
-    ===================================================================== ==== ==== ======== ============ ====== ======
+    ===================================================================== ==== ==== ======== ============ ====== =====
     Directive                                                             Line Hits Time (s) Per Hit (ms) % Time Cores
-    ===================================================================== ==== ==== ======== ============ ====== ======
-    :func:`APBS.APBSWrapper.get_dxbox`                                     211    1     52.3      52354.3   24.7 single
-    :func:`Structure.Structure_Template.snap_vdw_to_box`                   303  150      3.8         25.1    1.8 single
-    :func:`FFTCorrelationScoring.FFT_correlation_scoring.get_correlation`  310  150     31.0        206.8   14.6 multi
-    :func:`FFTCorrelationScoring.FFT_correlation_scoring.shift_fft`        312  150      3.0         20.0    1.4 multi
-    :func:`FFTCorrelationScoring.FFT_correlation_scoring.get_correlation`  315  150     31.0        206.7   14.6 multi
-    :func:`FFTCorrelationScoring.FFT_correlation_scoring.shift_fft`        317  150      3.0         20.0    1.4 multi
-    :func:`CalculateInteractionEnergyCython.count_rotations`               323  150      3.3         21.8    1.5 single
-    :func:`np.exp`                                                         325  150     29.2        194.9   13.8 multi
-    :func:`DXFile.DXBox.write`                                             417    1      3.9       3931.1    1.9 single
-    :func:`DXFile.DXBox.write`                                             424    1     44.8      44765.4   21.1 single
-    :func:`calc_vol_and_surface.calc_vol_and_surface`                      433    1      3.3       3338.3    1.6 single
-    ===================================================================== ==== ==== ======== ============ ====== ======
+    ===================================================================== ==== ==== ======== ============ ====== =====
+    :meth:`APBS.APBSWrapper.get_dxbox`                                     211    1     52.3      52354.3   24.7   1
+    :meth:`Structure.Structure_Template.snap_vdw_to_box`                   303  150      3.8         25.1    1.8   1
+    :func:`FFTCorrelationScoring.FFT_correlation_scoring.get_correlation`  310  150     31.0        206.8   14.6   4
+    :func:`FFTCorrelationScoring.FFT_correlation_scoring.shift_fft`        312  150      3.0         20.0    1.4   4
+    :func:`FFTCorrelationScoring.FFT_correlation_scoring.get_correlation`  315  150     31.0        206.7   14.6   4
+    :func:`FFTCorrelationScoring.FFT_correlation_scoring.shift_fft`        317  150      3.0         20.0    1.4   4
+    :func:`CalculateInteractionEnergyCython.count_rotations`               323  150      3.3         21.8    1.5   1
+    :func:`np.exp`                                                         325  150     29.2        194.9   13.8   4
+    :meth:`DXFile.DXBox.write`                                             417    1      3.9       3931.1    1.9   1
+    :meth:`DXFile.DXBox.write`                                             424    1     44.8      44765.4   21.1   1
+    :func:`calc_vol_and_surface.calc_vol_and_surface`                      433    1      3.3       3338.3    1.6   1
+    ===================================================================== ==== ==== ======== ============ ====== =====
 
 
 .. _contents-of-module-calculate_partition_function:
@@ -392,8 +392,8 @@ Module Contents
         >>> from epitopsy.tools.style import style
         >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
         >>> m = 0.65 # mesh size = grid resolution
-        >>> calculate_interaction_energy(fixed_pdb_path = "sonic.pdb", # your pdb file
-        ...     ligand_pqr_path = "lig.pqr", # you must provide a mol2 file as well!
+        >>> calculate_interaction_energy(pdb_path = "sonic.pdb", # your pdb file
+        ...     ligand_path = "lig.pqr",     # you must provide a mol2 file as well!
         ...     mesh_size = [m,m,m],         # your grid resolution
         ...     number_of_rotations = 150,   # 150 is sufficient
         ...     extend = None,               # extension in every direction (in Angstroms)
