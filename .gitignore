@@ -42,3 +42,7 @@ nosetests.xml
 
 # vim temps
 *.swp
+
+# cython generated output
+epitopsy/cython/*.html
+epitopsy/cython/*.c
