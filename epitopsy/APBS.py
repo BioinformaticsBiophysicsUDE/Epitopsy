@@ -89,7 +89,7 @@ class APBSWrapper:
 
         #os.remove('io.mc')
 
-    def get_dxbox(self, pdb_path, mesh_size, **kwds):
+    def get_dxbox(self, pdb_path, mesh_size, no_return = False, **kwds):
         '''
         This method starts pdb2pqr and apbs and returns the specified boxes.
         Be careful with absolute paths!
@@ -234,7 +234,8 @@ class APBSWrapper:
                     raise ValueError("Could not find file: {0}".format(orig_filename))
                     
             filename = "{0}_{1}.dx".format(pqr_path.replace('.pqr', ''), item)
-            box_dict[item] = DXReader().parse(fix_apbs_filename(filename), item)
+            if not no_return:
+                box_dict[item] = DXReader().parse(fix_apbs_filename(filename), item)
 
         return box_dict
 

@@ -71,11 +71,11 @@ To start the Epitopsy calculation::
     >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
     >>> m = 0.65 # mesh size = grid resolution
     >>> calculate_interaction_energy(pdb_path = "sonic.pdb", # your pdb file
-    ...     ligand_path = "lig.pqr",     # you must provide a mol2 file as well!
+    ...     ligand_path = "lig.pqr",
     ...     mesh_size = [m,m,m],         # your grid resolution
     ...     number_of_rotations = 150,   # 150 is sufficient
     ...     extend = None,               # extension in every direction (in Angstroms)
-    ...     use_pdb2pqr = True,          # if False, please provide a file "sonic.pqr"
+    ...     use_pdb2pqr = True,          # if False, please provide a PQR file of your protein
     ...     center_pdb=True,             # centers the pdb to (0,0,0), set to True if use_pdb2pqr is True, False otherwise
     ...     box_type=["esp","vdw"],      # always use at least ["esp","vdw"], others can be added
     ...     cubic_box = True,            # cubic boxes are memory-consuming
@@ -214,7 +214,7 @@ Benchmarking
 
 A mesh size of 0.40 |Aring| usually give satisfactory results. A mesh size of
 0.50 |Aring| or above will generate artifacts in the form of small bubbles
-(hey disappear above 5.00 |Aring|, but the picture will be crude).
+(they disappear above 5.00 |Aring|, but the picture will be crude).
 At a resolution of 0.40 |Aring|, each .dx file will require between 300 and
 400 Mio of free disk space (each experiment generates at least three .dx
 files). The function :func:`calculate_interaction_energy()` should not be run
@@ -282,7 +282,7 @@ amount of time is lost to :func:`APBS.APBSWrapper.get_dxbox` and
 
 .. table:: **Table 1**: Code profiling of :func:`calculate_interaction_energy`
            on an Intel Core 2 Quad Processor Q9650 (4 cores, 3.00 GHz) with
-           anfft, PDB: 3M1N and a heparin disaccharid as probe. Total time:
+           anfft, PDB: 3M1N and a heparin disaccharide as probe. Total time:
            212 |_| s, Timer unit: 1e-06 |_| s.
     :class: right-align-col
     :name: profiling
@@ -393,11 +393,11 @@ Module Contents
         >>> from epitopsy.functions.calculate_partition_function import calculate_interaction_energy
         >>> m = 0.65 # mesh size = grid resolution
         >>> calculate_interaction_energy(pdb_path = "sonic.pdb", # your pdb file
-        ...     ligand_path = "lig.pqr",     # you must provide a mol2 file as well!
+        ...     ligand_path = "lig.pqr",
         ...     mesh_size = [m,m,m],         # your grid resolution
         ...     number_of_rotations = 150,   # 150 is sufficient
         ...     extend = None,               # extension in every direction (in Angstroms)
-        ...     use_pdb2pqr = True,          # if False, please provide a file "sonic.pqr"
+        ...     use_pdb2pqr = True,          # if False, please provide a PQR file of your protein
         ...     center_pdb=True,             # centers the pdb to (0,0,0), set to True if use_pdb2pqr is True, False otherwise
         ...     box_type=["esp","vdw"],      # always use at least ["esp","vdw"], others can be added
         ...     cubic_box = True,            # cubic boxes are memory-consuming

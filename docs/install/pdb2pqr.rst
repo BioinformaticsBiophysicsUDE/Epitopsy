@@ -2,70 +2,52 @@
 PDB2PQR --- Generation of PQR files
 ***********************************
 
-..
-    gedit /etc/environment
-    PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games"
-    echo 'pdb2pqr="/home/grad/pdb2pqr/pdb2pqr.py"' >> /etc/environment
-
 Epitopsy provides several functions to create PQR files from PDB files using
 the command line version of PDB2PQR.
+
+.. note::
+
+    In order to run install PDB2PQR, following
+    dependency should be present on the system:
+
+    * APBS (see :doc:`../../install/apbs`)
 
 Installation procedure
 ======================
 
 .. highlight:: bash
 
-For the impatients
-------------------
-
-Open a shell and type::
-
-    cd $HOME/Downloads/
-    wget http://sourceforge.net/projects/pdb2pqr/files/pdb2pqr/pdb2pqr-1.8/pdb2pqr-1.8.tar.gz
-    tar xfz pdb2pqr-1.8.tar.gz
-    cd pdb2pqr-1.8/
-    ./configure --prefix $HOME/bin/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
-    make
-    make install
-    make clean
-    cd ..
-    rm -rf pdb2pqr-1.8/ pdb2pqr-1.8.tar.gz
-    ln -s $HOME/bin/pdb2pqr/pdb2pqr.py $HOME/bin/pdb2pqr/pdb2pqr
-    echo -e "\n# added by $(whoami) on $(date) to source PDB2PQR executables" >> $HOME/.bashrc
-    echo 'export PATH="$HOME/bin/pdb2pqr:$PATH"' >> $HOME/.bashrc
-
-Step-by-step installation
--------------------------
-
-You may download the source code from SourceForge, but you are encouraged to
+Before downloading the source code from SourceForge, you are encouraged to
 go first on the official website of the PDB2PQR project to register your name
 and organization, and tell if your work is supported by a US federal funding
 (`registration form <http://www.poissonboltzmann.org/pdb2pqr/d/downloads>`_).
 
-Then proceed to the download and installation::
+Version 1.9::
 
     cd $HOME/Downloads/
-    wget http://sourceforge.net/projects/pdb2pqr/files/pdb2pqr/pdb2pqr-1.8/pdb2pqr-1.8.tar.gz
-    tar xvfz pdb2pqr-1.8.tar.gz
-    cd pdb2pqr-1.8/
-    ./configure --prefix $HOME/bin/pdb2pqr/ --with-apbs=/usr/bin/apbs NUMPY=$HOME/.anaconda/lib/python2.7/ # or any directory containing site-packages/numpy/
+    mkdir pdb2pqr
+    wget -O - http://downloads.sourceforge.net/project/pdb2pqr/pdb2pqr/pdb2pqr-1.9.0/pdb2pqr-src-1.9.0.tar.gz | tar xfz - -C pdb2pqr --strip-components=1
+    cd pdb2pqr/
+    python scons/scons.py PREFIX="$HOME/bin/pdb2pqr-1.9" APBS="$HOME/bin/apbs" BUILD_PDB2PKA=True
+    python scons/scons.py install
+    cd ..; rm -rf pdb2pqr/
+    ln -s $HOME/bin/pdb2pqr-1.9/pdb2pqr.py $HOME/bin/pdb2pqr
+
+Version 1.8::
+
+    cd $HOME/Downloads/
+    mkdir pdb2pqr
+    wget -O - wget http://sourceforge.net/projects/pdb2pqr/files/pdb2pqr/pdb2pqr-1.8/pdb2pqr-1.8.tar.gz | tar xfz - -C pdb2pqr --strip-components=1
+    cd pdb2pqr/
+    ./configure --prefix $HOME/bin/pdb2pqr-1.8/ --with-apbs=$HOME/bin/apbs NUMPY=/usr/local/lib/python2.7/dist-packages/numpy # change this according to your system
     make
-    make test # outputs "simple test passed for PQR files"
+    #make test # outputs "simple test passed for PQR files"
     make install
+    make clean; cd ..; rm -rf pdb2pqr/
+    ln -s $HOME/bin/pdb2pqr-1.8/pdb2pqr.py $HOME/bin/pdb2pqr
 
-Check that the shell command ``pdb2pqr --version`` outputs ``pdb2pqr
-(Version 1.8)``, and remove the installation files and the archive::
-
-    make clean
-    cd ..
-    rm -rf pdb2pqr-1.8/ pdb2pqr-1.8.tar.gz
-
-You still have to update your :file:`.bashrc` to be able to call pdb2pqr in
-the shell::
-
-    ln -s $HOME/bin/pdb2pqr/pdb2pqr.py $HOME/bin/pdb2pqr/pdb2pqr
-    echo -e "\n# added by $(whoami) on $(date) to source PDB2PQR executables" >> $HOME/.bashrc
-    echo 'export PATH="$HOME/bin/pdb2pqr:$PATH"' >> $HOME/.bashrc
+The shell command ``pdb2pqr --version`` should give ``pdb2pqr (Version 1.8)``
+or ``pdb2pqr (Version 1.9)``.
 
 .. highlight:: python
 

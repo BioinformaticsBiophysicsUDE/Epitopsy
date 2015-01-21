@@ -46,3 +46,6 @@ nosetests.xml
 # cython generated output
 epitopsy/cython/*.html
 epitopsy/cython/*.c
+
+# other temps
+*.*~

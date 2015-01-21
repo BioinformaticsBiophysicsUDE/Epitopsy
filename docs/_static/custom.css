@@ -78,4 +78,17 @@ table.docutils>colgroup>col {
 tr.row-odd>td,tr.row-even>td {
   padding:2px 10px 2px;
 }
+table.no-border td {
+    border-bottom: 0!important;
+}
+table.float-right td {
+    float: right;
+}
+
+div.legend {
+    margin-left:  auto!important;
+    margin-right: auto!important;
+    text-align: center!important;
+    width:         75%!important;
+}
 

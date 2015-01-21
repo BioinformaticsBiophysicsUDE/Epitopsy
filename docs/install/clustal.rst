@@ -53,6 +53,7 @@ following code in the beginning of your Python script::
 
 .. highlight:: bash
 
+
 Installation procedure
 ======================
 
@@ -62,22 +63,22 @@ For the impatients
 Open a shell and type::
 
     cd $HOME/Downloads/
-    wget sourceforge.net/projects/argtable/files/argtable/argtable-2.13/argtable2-13.tar.gz
-    tar xfz argtable2-13.tar.gz 
-    cd argtable2-13/
+    mkdir argtable
+    wget -O - sourceforge.net/projects/argtable/files/argtable/argtable-2.13/argtable2-13.tar.gz | tar xfz - -C clustal --strip-components=1
+    cd argtable/
     ./configure
     make
     sudo make install
-    make clean; cd ..; rm -rf argtable2-13/ argtable2-13.tar.gz
+    make clean; cd ..; rm -rf argtable/ 
     echo -e '\n# added by $(whoami) for libargtable2.so.0' >> ~/.bashrc
     echo 'export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
-    wget http://www.clustal.org/omega/clustal-omega-1.2.0.tar.gz
-    tar xfz clustal-omega-1.2.0.tar.gz 
-    cd clustal-omega-1.2.0/
-    ./configure
+    mkdir clustal
+    wget -O - http://www.clustal.org/omega/clustal-omega-1.2.1.tar.gz | tar xfz - -C clustal --strip-components=1
+    cd clustal/
+    ./configure --prefix=$HOME/bin/clustal
     make
-    sudo make install
-    make clean; cd ..; rm -rf clustal-omega-1.2.0/ clustal-omega-1.2.0.tar.gz
+    make install
+    make clean; cd ..; rm -rf clustal/
 
 Step-by-step installation
 -------------------------
@@ -86,7 +87,7 @@ First, we need to install Argtable::
 
     cd $HOME/Downloads/
     wget sourceforge.net/projects/argtable/files/argtable/argtable-2.13/argtable2-13.tar.gz
-    tar xvfz argtable2-13.tar.gz 
+    tar xfz argtable2-13.tar.gz 
     cd argtable2-13/
     ./configure
     make
@@ -104,12 +105,12 @@ The ``make check`` command should print this message:
     All 5 tests passed
     ==================
 
-Check with ``ls /usr/local/lib`` that following files were correctly created:
+Check with ``ls /usr/local/lib/libargtable*`` that following files were correctly created:
 
 .. code-block:: none
 
     libargtable2.a   libargtable2.so    libargtable2.so.0.1.8  
-    libargtable2.la  libargtable2.so.0  [...]
+    libargtable2.la  libargtable2.so.0
 
 You can now remove the install files and the archive::
 
@@ -117,7 +118,7 @@ You can now remove the install files and the archive::
     cd ..
     rm -rf argtable2-13/ argtable2-13.tar.gz
 
-Alternatively, you may add this export command into your local .bashrc::
+The libraries should now be sourced in the local .bashrc::
 
     echo -e '\n# added by $(whoami) for libargtable2.so.0' >> ~/.bashrc
     echo 'export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
@@ -125,22 +126,22 @@ Alternatively, you may add this export command into your local .bashrc::
 Next, we need to install Clustal Omega::
 
     cd Downloads/
-    wget http://www.clustal.org/omega/clustal-omega-1.2.0.tar.gz
-    tar xvfz clustal-omega-1.2.0.tar.gz 
-    cd clustal-omega-1.2.0/
-    ./configure
+    wget http://www.clustal.org/omega/clustal-omega-1.2.1.tar.gz
+    tar xfz clustal-omega-1.2.1.tar.gz 
+    cd clustal-omega-1.2.1/
+    ./configure --prefix=$HOME/bin/clustal
     make
     make check
-    sudo make install
+    make install
     make installcheck
     make clean
 
 You may get warnings of the type "warning: ISO C++ does not support
 variable-length array types [-Wvla]", but these can be ignored. Now check that
-the shell command ``clustalo --version`` outputs ``1.2.0``, and remove the
+the shell command ``clustalo --version`` outputs ``1.2.1``, and remove the
 installation files and the archive::
 
     make clean
     cd ..
-    rm -rf clustal-omega-1.2.0/ clustal-omega-1.2.0.tar.gz
+    rm -rf clustal-omega-1.2.1/ clustal-omega-1.2.1.tar.gz
 
