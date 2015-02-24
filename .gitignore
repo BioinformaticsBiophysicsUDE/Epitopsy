@@ -4,6 +4,7 @@
 ###################
 *.py~
 *.py[cod]
+*.pyx~
 
 # C extensions
 *.so
@@ -41,3 +42,10 @@ nosetests.xml
 
 # vim temps
 *.swp
+
+# cython generated output
+epitopsy/cython/*.html
+epitopsy/cython/*.c
+
+# other temps
+*.*~

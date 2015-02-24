@@ -74,6 +74,10 @@ Module Contents
         :type pdb_path: str
         :param mesh_size: grid dimensions
         :type mesh_size:
+        :param no_return: don't read the generated .dx files, just generate
+            them (optional), by default the .dx files are read and returned
+            in a dictionary
+        :type no_return: bool
         :param pqr_path: alternative path to pdb2pqr (optional)
         :type pqr_path: str
         :param box_dim: if box dimensions and a box center are supplied, it

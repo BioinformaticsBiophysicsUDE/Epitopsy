@@ -89,7 +89,7 @@ class APBSWrapper:
 
         #os.remove('io.mc')
 
-    def get_dxbox(self, pdb_path, mesh_size, **kwds):
+    def get_dxbox(self, pdb_path, mesh_size, no_return = False, **kwds):
         '''
         This method starts pdb2pqr and apbs and returns the specified boxes.
         Be careful with absolute paths!
@@ -213,8 +213,29 @@ class APBSWrapper:
         box_dict = {}
 
         for item in template_in.box_type:
+            def fix_apbs_filename(orig_filename):
+                '''
+                APBS installed from the ubuntu repositories inserts "-PE0"
+                into the generated dx files. This function checks which 
+                output was generated
+                '''
+                filename = orig_filename.replace("-PE0.dx",".dx")
+                variant_1 = filename
+                variant_2 = filename.replace(".dx","-PE0.dx")
+                if (os.path.exists(variant_1) and os.path.exists(variant_2)):
+                    raise ValueError("Both files exist, '{0}' and '{1}'!".format(
+                        variant_1,
+                        variant_2))
+                elif os.path.exists(variant_1):
+                    return variant_1
+                elif os.path.exists(variant_2):
+                    return variant_2
+                else:
+                    raise ValueError("Could not find file: {0}".format(orig_filename))
+                    
             filename = "{0}_{1}.dx".format(pqr_path.replace('.pqr', ''), item)
-            box_dict[item] = DXReader().parse(filename, item)
+            if not no_return:
+                box_dict[item] = DXReader().parse(fix_apbs_filename(filename), item)
 
         return box_dict
 

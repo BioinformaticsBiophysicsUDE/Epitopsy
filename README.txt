@@ -5,7 +5,7 @@ python >= 2.7.4 (python3.* has to be tested)
 cython >= 0.18
 numpy >= 1.7.0
 biopython >= 1.6.0
-anfft (https://code.google.com/p/anfft/) and include it in you pythonpath 
+anfft (https://code.google.com/p/anfft/) and include it in your pythonpath 
 
 use pip to install python packages
 

@@ -25,11 +25,16 @@ OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
 OR PERFORMANCE OF THIS SOFTWARE.
 '''
 import os
-import copy
 import gzip
 import time
 import numpy as np
 import subprocess
+from Bio.PDB.Atom import Atom as BioAtom
+from Bio.PDB.Residue import Residue
+from Bio.PDB.Chain import Chain
+from Bio.PDB.Structure import Structure
+from Bio.PDB.Model import Model
+
 #from Bio.PDB import PDBParser, PDBIO, Select
 
 from epitopsy.DXFile import DXBox, VDWBox
@@ -2191,465 +2196,8 @@ class LatFile(Structure_Template):
 
         return coord_list
 
-class Entity(object):
-    '''
-    This class is more or less copied from biopython.
 
-    Permission to use, copy, modify, and distribute this software and its
-    documentation with or without modifications and for any purpose and
-    without fee is hereby granted, provided that any copyright notices
-    appear in all copies and that both those copyright notices and this
-    permission notice appear in supporting documentation, and that the
-    names of the contributors or copyright holders not be used in
-    advertising or publicity pertaining to distribution of the software
-    without specific prior permission.
-
-    THE CONTRIBUTORS AND COPYRIGHT HOLDERS OF THIS SOFTWARE DISCLAIM ALL
-    WARRANTIES WITH REGARD TO THIS SOFTWARE, INCLUDING ALL IMPLIED
-    WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO EVENT SHALL THE
-    CONTRIBUTORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT
-    OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS
-    OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
-    OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
-    OR PERFORMANCE OF THIS SOFTWARE.
-    '''
-    def __init__(self, id):
-        self.id = id
-        self.full_id = None
-        self.parent = None
-        self.child_list = []
-        self.child_dict = {}
-        # Dictionary that keeps addictional properties
-        self.xtra = {}
-
-    # Special methods
-
-    def __len__(self):
-        "Return the number of children."
-        return len(self.child_list)
-
-    def __getitem__(self, id):
-        "Return the child with given id."
-        return self.child_dict[id]
-
-    def __delitem__(self, id):
-        "Remove a child."
-        return self.detach_child(id)
-
-    def __iter__(self):
-        "Iterate over children."
-        for child in self.child_list:
-            yield child
-
-    # Public methods
-
-    def get_level(self):
-        """Return level in hierarchy.
-
-        A - atom
-        R - residue
-        C - chain
-        M - model
-        S - structure
-        """
-        return self.level
-
-    def set_parent(self, entity):
-        "Set the parent Entity object."
-        self.parent = entity
-
-    def detach_parent(self):
-        "Detach the parent."
-        self.parent = None
-
-    def detach_child(self, id):
-        "Remove a child."
-        child = self.child_dict[id]
-        child.detach_parent()
-        del self.child_dict[id]
-        self.child_list.remove(child)
-
-    def add(self, entity):
-        "Add a child to the Entity."
-        entity_id = entity.get_id()
-        if self.has_id(entity_id):
-            raise AttributeError("{0} defined twice".format((entity_id)))
-        entity.set_parent(self)
-        self.child_list.append(entity)
-        self.child_dict[entity_id] = entity
-
-    def get_iterator(self):
-        "Return iterator over children."
-        for child in self.child_list:
-            yield child
-
-    def get_list(self):
-        "Return a copy of the list of children."
-        return copy.copy(self.child_list)
-
-    def has_id(self, id):
-        """True if a child with given id exists."""
-        return (id in self.child_dict)
-
-    def get_parent(self):
-        "Return the parent Entity object."
-        return self.parent
-
-    def get_id(self):
-        "Return the id."
-        return self.id
-
-    def get_full_id(self):
-        """Return the full id.
-
-        The full id is a tuple containing all id's starting from
-        the top object (Structure) down to the current object. A full id for
-        a Residue object e.g. is something like:
-
-        ("1abc", 0, "A", (" ", 10, "A"))
-
-        This corresponds to:
-
-        Structure with id "1abc"
-        Model with id 0
-        Chain with id "A"
-        Residue with id (" ", 10, "A")
-
-        The Residue id indicates that the residue is not a hetero-residue
-        (or a water) beacuse it has a blank hetero field, that its sequence
-        identifier is 10 and its insertion code "A".
-        """
-        if self.full_id == None:
-            entity_id = self.get_id()
-            l = [entity_id]
-            parent = self.get_parent()
-            while not (parent is None):
-                entity_id = parent.get_id()
-                l.append(entity_id)
-                parent = parent.get_parent()
-            l.reverse()
-            self.full_id = tuple(l)
-        return self.full_id
-
-
-class Structure(Entity):
-    """
-    The Structure class contains a collection of Model instances.
-    """
-    def __init__(self, id):
-        self.level = "S"
-        Entity.__init__(self, id)
-
-    # Special methods
-
-    def __repr__(self):
-        return "<Structure id=%s>" % self.get_id()
-
-    # Private methods
-
-    def _sort(self, m1, m2):
-        """Sort models.
-
-        This sorting function sorts the Model instances in the Structure instance.
-        The sorting is done based on the model id, which is a simple int that
-        reflects the order of the models in the PDB file.
-
-        Arguments:
-        o m1, m2 - Model instances
-        """
-        return cmp(m1.get_id(), m2.get_id())
-
-    # Public
-
-    def get_chains(self):
-        for m in self:
-            for c in m:
-                yield c
-
-    def get_residues(self):
-        for c in self.get_chains():
-            for r in c:
-                yield r
-
-    def get_atoms(self):
-        for r in self.get_residues():
-            for a in r:
-                yield a
-
-
-class Model(Entity):
-    """
-    The object representing a model in a structure. In a structure
-    derived from an X-ray crystallography experiment, only a single
-    model will be present (with some exceptions). NMR structures
-    normally contain many different models.
-    """
-
-    def __init__(self, id, serial_num = None):
-        """
-        Arguments:
-        o id - int
-        o serial_num - int
-        """
-        self.level = "M"
-        if serial_num is None:
-            self.serial_num = id
-        else:
-            self.serial_num = serial_num
-
-        Entity.__init__(self, id)
-
-    # Private methods
-
-    def _sort(self, c1, c2):
-        """Sort the Chains instances in the Model instance.
-
-        Chain instances are sorted alphabetically according to
-        their chain id. Blank chains come last, as they often consist
-        of waters.
-
-        Arguments:
-        o c1, c2 - Chain objects
-        """
-        id1 = c1.get_id()
-        id2 = c2.get_id()
-        # make sure blank chains come last (often waters)
-        if id1 == " " and not id2 == " ":
-            return 1
-        elif id2 == " " and not id1 == " ":
-            return -1
-        return cmp(id1, id2)
-
-    # Special methods
-
-    def __repr__(self):
-        return "<Model id=%s>" % self.get_id()
-
-    # Public
-
-    def get_residues(self):
-        for c in self:
-            for r in c:
-                yield r
-
-    def get_atoms(self):
-        for r in self.get_residues():
-            for a in r:
-                yield a
-
-
-
-class Chain(Entity):
-    def __init__(self, id):
-        self.level = "C"
-        Entity.__init__(self, id)
-
-    # Private methods
-
-    def _sort(self, r1, r2):
-        """Sort function for residues in a chain
-
-        Residues are first sorted according to their hetatm records.
-        Protein and nucleic acid residues first, hetatm residues next,
-        and waters last. Within each group, the residues are sorted according
-        to their resseq's (sequence identifiers). Finally, residues with the
-        same resseq's are sorted according to icode.
-
-        Arguments:
-        o r1, r2 - Residue objects
-        """
-        hetflag1, resseq1, icode1 = r1.id
-        hetflag2, resseq2, icode2 = r2.id
-        if hetflag1 != hetflag2:
-            return cmp(hetflag1[0], hetflag2[0])
-        elif resseq1 != resseq2:
-            return cmp(resseq1, resseq2)
-        return cmp(icode1, icode2)
-
-    def _translate_id(self, id):
-        """
-        A residue id is normally a tuple (hetero flag, sequence identifier,
-        insertion code). Since for most residues the hetero flag and the
-        insertion code are blank (i.e. " "), you can just use the sequence
-        identifier to index a residue in a chain. The _translate_id method
-        translates the sequence identifier to the (" ", sequence identifier,
-        " ") tuple.
-
-        Arguments:
-        o id - int, residue resseq
-        """
-        if isinstance(id, int):
-            id = (' ', id, ' ')
-        return id
-
-    # Special methods
-
-    def __getitem__(self, id):
-        """Return the residue with given id.
-
-        The id of a residue is (hetero flag, sequence identifier, insertion code).
-        If id is an int, it is translated to (" ", id, " ") by the _translate_id
-        method.
-
-        Arguments:
-        o id - (string, int, string) or int
-        """
-        id = self._translate_id(id)
-        return Entity.__getitem__(self, id)
-
-    def __delitem__(self, id):
-        """
-        Arguments:
-        o id - (string, int, string) or int
-        """
-        id = self._translate_id(id)
-        return Entity.__delitem__(self, id)
-
-    def __repr__(self):
-        return "<Chain id=%s>" % self.get_id()
-
-    # Public methods
-
-    def get_unpacked_list(self):
-        """Return a list of undisordered residues.
-
-        Some Residue objects hide several disordered residues
-        (DisorderedResidue objects). This method unpacks them,
-        ie. it returns a list of simple Residue objects.
-        """
-        unpacked_list = []
-        for residue in self.get_list():
-            if residue.is_disordered() == 2:
-                for dresidue in residue.disordered_get_list():
-                    unpacked_list.append(dresidue)
-            else:
-                unpacked_list.append(residue)
-        return unpacked_list
-
-    def has_id(self, id):
-        """Return 1 if a residue with given id is present.
-
-        The id of a residue is (hetero flag, sequence identifier, insertion code).
-               If id is an int, it is translated to (" ", id, " ") by the _translate_id
-        method.
-
-        Arguments:
-        o id - (string, int, string) or int
-        """
-        id = self._translate_id(id)
-        return Entity.has_id(self, id)
-
-
-    # Public
-
-    def get_atoms(self):
-        for r in self:
-            for a in r:
-                yield a
-
-
-_atom_name_dict = {}
-_atom_name_dict["N"] = 1
-_atom_name_dict["CA"] = 2
-_atom_name_dict["C"] = 3
-_atom_name_dict["O"] = 4
-
-class Residue(Entity):
-    """
-    Represents a residue. A Residue object stores atoms.
-    """
-    def __init__(self, id, resname, segid):
-        self.level = "R"
-        self.disordered = 0
-        self.resname = resname
-        self.segid = segid
-        Entity.__init__(self, id)
-
-    # Special methods
-
-    def __repr__(self):
-        resname = self.get_resname()
-        #resseq = self.get_id()
-        #return "<Residue {0} resseq={1}>".format(resname, resseq)
-        hetflag, resseq, icode = self.get_id()
-        full_id = (resname, hetflag, resseq, icode)
-        return "<Residue %s het=%s resseq=%s icode=%s>" % full_id
-
-    # Private methods
-
-    def _sort(self, a1, a2):
-        """Sort the Atom objects.
-
-        Atoms are sorted alphabetically according to their name,
-        but N, CA, C, O always come first.
-
-        Arguments:
-        o a1, a2 - Atom objects
-        """
-        name1 = a1.get_name()
-        name2 = a2.get_name()
-        if name1 == name2:
-            return(cmp(a1.get_altloc(), a2.get_altloc()))
-        if name1 in _atom_name_dict:
-            index1 = _atom_name_dict[name1]
-        else:
-            index1 = None
-        if name2 in _atom_name_dict:
-            index2 = _atom_name_dict[name2]
-        else:
-            index2 = None
-        if index1 and index2:
-            return cmp(index1, index2)
-        if index1:
-            return -1
-        if index2:
-            return 1
-        return cmp(name1, name2)
-
-    # Public methods
-
-    def add(self, atom):
-        """Add an Atom object.
-
-        Checks for adding duplicate atoms, and raises a
-        PDBConstructionException if so.
-        """
-        atom_id = atom.get_id()
-        if self.has_id(atom_id):
-            raise AttributeError("Atom {0} defined twice in residue {1}".format(atom_id, self))
-        Entity.add(self, atom)
-
-    def sort(self):
-        self.child_list.sort(self._sort)
-
-    def flag_disordered(self):
-        "Set the disordered flag."
-        self.disordered = 1
-
-    def is_disordered(self):
-        "Return 1 if the residue contains disordered atoms."
-        return self.disordered
-
-    def get_resname(self):
-        return self.resname
-
-    def get_unpacked_list(self):
-        """
-        Returns the list of all atoms, unpack DisorderedAtoms."
-        """
-        atom_list = self.get_list()
-        undisordered_atom_list = []
-        for atom in atom_list:
-            if atom.is_disordered():
-                undisordered_atom_list = (undisordered_atom_list + atom.disordered_get_list())
-            else:
-                undisordered_atom_list.append(atom)
-        return undisordered_atom_list
-
-    def get_segid(self):
-        return self.segid
-
-class Atom(object):
+class Atom(BioAtom):
     def __init__(self, name, coord, occupancy, bfactor, altloc, fullname,
                  serial_number, element = None, charge = None):
         """
@@ -2683,6 +2231,10 @@ class Atom(object):
         @type fullname: uppercase string (or None if unknown)
 
         """
+        BioAtom.__init__(self, name, coord, bfactor, occupancy, altloc,
+                         fullname,
+                         serial_number,
+                         element)
         self.level = "A"
         # Reference to the residue
         self.parent = None
@@ -2709,79 +2261,11 @@ class Atom(object):
         self.element = element
         self.charge = charge
 
-
-    # Special methods
-
-    def __repr__(self):
-        "Print Atom object as <Atom atom_name>."
-        return "<Atom %s>" % self.get_id()
-
-    def __sub__(self, other):
-        """
-        Calculate distance between two atoms.
-
-        Example:
-            >>> distance=atom1-atom2
-
-        @param other: the other atom
-        @type other: L{Atom}
-        """
-        diff = self.coord - other.coord
-        return np.sqrt(np.dot(diff, diff))
-
-    # set methods
-
-    def set_serial_number(self, n):
-        self.serial_number = n
-
-    def set_bfactor(self, bfactor):
-        self.bfactor = bfactor
-
-    def set_coord(self, coord):
-        self.coord = coord
-
-    def set_altloc(self, altloc):
-        self.altloc = altloc
-
-    def set_occupancy(self, occupancy):
-        self.occupancy = occupancy
-
-    def set_sigatm(self, sigatm_array):
-        """
-        Set standard deviation of atomic parameters.
-
-        The standard deviation of atomic parameters consists
-        of 3 positional, 1 B factor and 1 occupancy standard
-        deviation.
-
-        @param sigatm_array: standard deviations of atomic parameters.
-        @type sigatm_array: Numeric array (length 5)
-        """
-        self.sigatm_array = sigatm_array
-
-    def set_siguij(self, siguij_array):
-        """
-        Set standard deviations of anisotropic temperature factors.
-
-        @param siguij_array: standard deviations of anisotropic temperature factors.
-        @type siguij_array: Numeric array (length 6)
-        """
-        self.siguij_array = siguij_array
-
-    def set_anisou(self, anisou_array):
-        """
-        Set anisotropic B factor.
-
-        @param anisou_array: anisotropic B factor.
-        @type anisou_array: Numeric array (length 6)
-        """
-        self.anisou_array = anisou_array
-
-    def set_element(self, element):
+    def _assign_element(self, element): 
         '''
-        Set element.
+        Not used!.
         '''
-        self.element = element
+        return None
 
     def set_info_1(self, info_1):
         '''
@@ -2801,106 +2285,6 @@ class Atom(object):
         '''
         self.set_bfactor(info_2)
 
-    # Public methods
-
-    def flag_disorder(self):
-        """Set the disordered flag to 1.
-
-        The disordered flag indicates whether the atom is disordered or not.
-        """
-        self.disordered_flag = 1
-
-    def is_disordered(self):
-        "Return the disordered flag (1 if disordered, 0 otherwise)."
-        return self.disordered_flag
-
-    def set_parent(self, parent):
-        """Set the parent residue.
-
-        Arguments:
-        o parent - Residue object
-        """
-        self.parent = parent
-
-    def detach_parent(self):
-        "Remove reference to parent."
-        self.parent = None
-
-    def get_sigatm(self):
-        "Return standard deviation of atomic parameters."
-        return self.sigatm_array
-
-    def get_siguij(self):
-        "Return standard deviations of anisotropic temperature factors."
-        return self.siguij_array
-
-    def get_anisou(self):
-        "Return anisotropic B factor."
-        return self.anisou_array
-
-    def get_parent(self):
-        "Return parent residue."
-        return self.parent
-
-    def get_serial_number(self):
-        return self.serial_number
-
-    def get_name(self):
-        "Return atom name."
-        return self.name
-
-    def get_id(self):
-        "Return the id of the atom (which is its atom name)."
-        return self.id
-
-    def get_full_id(self):
-        """Return the full id of the atom.
-
-        The full id of an atom is the tuple
-        (structure id, model id, chain id, residue id, atom name, altloc).
-        """
-        return self.parent.get_full_id() + ((self.name, self.altloc),)
-
-    def get_coord(self):
-        "Return atomic coordinates."
-        return self.coord
-
-    def get_bfactor(self):
-        "Return B factor."
-        return self.bfactor
-
-    def get_occupancy(self):
-        "Return occupancy."
-        return self.occupancy
-
-    def get_fullname(self):
-        "Return the atom name, including leading and trailing spaces."
-        return self.fullname
-
-    def get_altloc(self):
-        "Return alternative location specifier."
-        return self.altloc
-
-    def get_level(self):
-        return self.level
-
-    def transform(self, rot, tran):
-        """
-        Apply rotation and translation to the atomic coordinates.
-
-        Example:
-                >>> rotation=rotmat(pi, Vector(1,0,0))
-                >>> translation=array((0,0,1), 'f')
-                >>> atom.transform(rotation, translation)
-
-        @param rot: A right multiplying rotation matrix
-        @type rot: 3x3 Numeric array
-
-        @param tran: the translation vector
-        @type tran: size 3 Numeric array
-        """
-        self.coord = np.dot(self.coord, rot) + tran
-
     def get_info_1(self):
         '''
         This is just a more abstract method which I will use instead of
@@ -2919,12 +2303,18 @@ class Atom(object):
         '''
         return self.get_bfactor()
 
+    def set_element(self, element):
+        '''
+        Set element.
+        '''
+        self.element = element
+        
     def get_element(self):
         '''
         Return element.
         '''
         return self.element
-
+        
     def set_charge(self, charge):
         self.charge = charge
 

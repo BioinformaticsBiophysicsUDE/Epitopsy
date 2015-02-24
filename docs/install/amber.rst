@@ -4,74 +4,49 @@ Amber --- MD simulations
 
 Epitopsy cannot call Amber yet.
 
+.. note::
+
+    In order to run compile Amber12, following dependencies should be present on the system:
+
+    * python2.X, gcc, gfortran, NetCDF, flex, zlib, libbz2, fftw-3.3, XBLAS, MTK++
+    
+    Most of them can be obtained *via* sudo apt-get install -y csh flex gfortran g++ xorg-dev zlib1g-dev libbz2-dev
+
 Installation procedure
 ======================
 
 .. highlight:: bash
 
-For the impatients
-------------------
-
 Get your licensed version of Amber12 as a .tar.bz2 file and download the
 AmberTools13 package from the official website
 (`registration form <http://ambermd.org/AmberTools-get.html>`_).
-Store them in $HOME/Downloads for example. Open a shell and type::
+Store them in :file:`$HOME/Downloads`. Open a shell and type::
 
-    sudo apt-get install csh flex gfortran g++ xorg-dev \
-                         zlib1g-dev libbz2-dev
-    cd $HOME
-    tar xfj $HOME/Downloads/AmberTools13.tar.bz2
-    tar xfj $HOME/Downloads/Amber12.tar.bz2
-    export AMBERHOME=$HOME/amber12
+    sudo apt-get install -y csh flex gfortran g++ xorg-dev zlib1g-dev libbz2-dev
+    export AMBERHOME=$HOME/bin/amber12
+    cd $HOME/Downloads
+    tar xfj amber12.tar.bz2
+    tar xfj AmberTools13.tar.bz2
+    mv amber12 $AMBERHOME
     cd $AMBERHOME
-    ./configure gnu
+    ./configure gnu # type "y" when prompted for downloading updates, also check that all dependencies were found
     make install
-    make test
-
-
-Step-by-step installation
--------------------------
-
-Get your licensed version of Amber12 as a .tar.bz2 file and download the
-AmberTools13 package from the official website
-(`registration form <http://ambermd.org/AmberTools-get.html>`_).
-Store them in $HOME/Downloads for example.
-
-Download all dependencies and extract the two Amber archives in your
-installation directory::
-
-    sudo apt-get install csh flex gfortran g++ xorg-dev \
-                         zlib1g-dev libbz2-dev
-    INSTALLDIR=$HOME # installation directory, may be changed
-    cd $INSTALLDIR
-    tar xvfj $HOME/Downloads/AmberTools13.tar.bz2
-    tar xvfj $HOME/Downloads/Amber12.tar.bz2
-
-Compile Amber using these variables (you may change $INSTALLDIR)::
-
-    export AMBERHOME=$INSTALLDIR/amber12
-    cd $AMBERHOME
-    ./configure gnu
-    make install
-    make test # takes some time...
+    # make test # optional
+    echo -e "\n# added by $(whoami) on $(date) to source Amber12 and AmberTools13 binaries" >> $HOME/.bashrc
+    echo "export AMBERHOME=$HOME/bin/amber12" >> $HOME/.bashrc
+    echo 'export PATH="$HOME/bin/amber12/bin/:$PATH"' >> $HOME/.bashrc
+    echo 'export PATH="$HOME/bin/amber12/AmberTools/bin/:$PATH"' >> $HOME/.bashrc
 
 The ``make test`` instruction may take some time depending on your machine.
-The results are stored in $AMBERHOME/logs/
+The results are stored in :file:`$AMBERHOME/logs/`
 
 The shell command ``$AMBERHOME/update_amber --version`` should output this:
 
 .. code-block:: none
 
     Version is reported as <version>.<patches applied>
-        AmberTools version 13.22
+        AmberTools version 13.26
         Amber version 12.21
-
-You should now source the location of Amber executables in your
-:file:`.bashrc` file::
-
-    echo -e "\n# added by $(whoami) on $(date) to source Amber12 and AmberTools 13 binaries" >> $HOME/.bashrc
-    echo "export AMBERHOME=$HOME/amber12" >> $HOME/.bashrc
-    echo 'export PATH="$HOME/.amber12/AmberTools/bin/:$PATH"' >> $HOME/.bashrc
 
 Amber Flowchart
 ===============

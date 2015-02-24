@@ -55,7 +55,7 @@ To compile CMake if not already installed::
     wget ftp://ftp.fftw.org/pub/fftw/fftw-3.3.3.tar.gz
     tar xfz fftw-3.3.3.tar.gz
     cd fftw-3.3.3
-    ./configure # sudo ./configure # --prefix=/home/user/bin/fftw  --enable-float (for single precision)
+    ./configure # sudo ./configure # --prefix=/home/user/bin/fftw  --enable-single (for single precision)
     make
     make install
     cd ..
@@ -72,9 +72,8 @@ procedure, put in a nutshell::
     cd gromacs-4.6.5
     mkdir build
     cd build
-    cmake .. -DGMX_DOUBLE=ON -DGMX_BUILD_OWN_FFTW=ON # to disable quotes: -DGMX_COOL_QUOTES=OFF
+    cmake .. -DGMX_DOUBLE=ON -DGMX_BUILD_OWN_FFTW=ON # -DCMAKE_INSTALL_PREFIX=$HOME/bin/gromacs-double # to disable quotes: -DGMX_COOL_QUOTES=OFF
     make -j $(nproc) # or "make -j N" with N the number of CPU cores to use
-    echo "Finished"
     sudo make install
 
 You should now source the location of Gromacs in your .bashrc using the GMXRC

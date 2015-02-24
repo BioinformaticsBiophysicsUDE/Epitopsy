@@ -11,7 +11,7 @@ from epitopsy.cython import FFTCorrelationScoringCython
 from epitopsy.scoring.Scoring import Scoring
 from epitopsy.DXFile import DXBox
 import anfft
-import pyfftw
+#import pyfftw
 
 class FFT_correlation_scoring(Scoring):
     '''

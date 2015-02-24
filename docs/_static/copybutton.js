@@ -1,9 +1,19 @@
 /*
- * Javascript "copybutton.js"
- * Downloaded from docs.python.org on January 2nd, 2014
- * http://docs.python.org/2/_static/copybutton.js
- *
+ * @name    Copybutton
+ * @desc    Add a button to the code examples in the doc to show/hide the prompts and output.
+ * @author  Ezio Melotti <ezio.melotti@gmail.com>
+ * @author  Georg Brandl <georg@python.org>
+ * @date    Sun, 04 Dec 2011 11:51:21 +0100 (2011-12-04)
+ * @license Python Software Foundation License (PSFL) <https://docs.python.org/2/license.html>
+ * @url     <http://hg.python.org/cpython/file/0436ef8be253/Doc/tools/sphinxext/static/copybutton.js>
+ * @home    <http://hg.python.org/cpython>
+ * 
+ * Version history:
+ *   (2011-12-04) Georg Brandl <http://hg.python.org/cpython/rev/0436ef8be253>
+ *   (2011-10-30) Ezio Melotti <http://hg.python.org/cpython/rev/18bbfed9aafa>
+ * 
  */
+
 
 $(document).ready(function() {
     /* Add a [>>>] button on the top-right corner of code samples to hide
