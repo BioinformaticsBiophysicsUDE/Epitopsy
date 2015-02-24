@@ -232,7 +232,7 @@ def get_res_id_aa_dict(pdb, chain_id):
 
     return res_map
 
-@numba.autojit
+@numba.jit
 def res_res_distance(res1_coords, res2_coords):
     '''
     Args:
