@@ -684,3 +684,66 @@ cdef np.ndarray _find_solvent_surface(float protein_score, float solvent_score,
                             protein_score, surface_score)
 
     return box_np
+
+def simulated_annealing(box, runs=50, search_min=True, conv_temp=0.00001, gamma=0.25):
+    # by default, simulated annealing will search for minima
+    if search_min:
+        return c_simulated_annealing(box, runs, conv_temp, gamma)
+    else:
+        return c_simulated_annealing(-box, runs, conv_temp, gamma)
+
+cdef np.ndarray[np.int16_t] c_simulated_annealing(np.ndarray[np.float64_t, ndim=3] box, 
+                                int runs, float conv_temp, float gamma):
+    cdef int max_x, max_y, max_z
+    max_x = box.shape[0]
+    max_y = box.shape[1]
+    max_z = box.shape[2]
+
+    cdef int delta
+    cdef int step
+    cdef int acc
+    cdef float T
+    cdef int x, y, z
+    cdef int xnew, ynew, znew
+    cdef np.ndarray L = np.zeros([runs, 3], dtype=np.int16)
+
+    for run in range(runs):
+        T = 4.0
+        new_starting_point = random_sphere([max_x, max_y, max_z])
+        x = new_starting_point[0]
+        y = new_starting_point[1]
+        z = new_starting_point[2]
+        delta = 2
+        step = 0
+        acc = 0
+        while T > conv_temp:
+            step += 1
+            if step == 100:
+                T *= (1.0 - gamma)
+                if acc < 30:
+                    delta = max(1, int(round(delta/2)))
+                elif acc > 70:
+                    delta = int(round(delta*2))
+                step = 0
+                acc = 0
+            xnew = (x + np.random.randint(-delta, delta) ) % max_x
+            ynew = (y + np.random.randint(-delta, delta) ) % max_y
+            znew = (z + np.random.randint(-delta, delta) ) % max_z
+            #this case is handled seperately because math.exp can cause errors for too large exponents
+            if box[xnew, ynew, znew] < box[x, y, z] or \
+               np.random.rand() < np.math.exp(- ( box[xnew, ynew, znew] - box[x, y, z]) / T):
+                x = xnew
+                y = ynew
+                z = znew
+                acc += 1
+        L[run] = np.array([x,y,z])
+    return L
+
+def random_sphere(shape):
+    phi = np.random.rand() * 2 * np.math.pi
+    theta = np.random.rand() * np.math.pi
+    r = np.min(shape)/2
+    x = r * (1 + np.math.sin(phi) * np.math.sin(theta) )
+    y = r * (1 + np.math.cos(phi) * np.math.sin(theta) )
+    z = r * (1 + np.math.cos(theta) )
+    return int(x), int(y), int(z)
