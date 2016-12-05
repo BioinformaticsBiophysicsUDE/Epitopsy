@@ -12,7 +12,6 @@ tools Package
     packages/tools/MathTools
     packages/tools/Modeller
     packages/tools/PDB_Tools
-    packages/tools/ParallelComputation
     packages/tools/UtilityClasses
     packages/tools/Wrapper
     packages/tools/calc_vol_and_surface

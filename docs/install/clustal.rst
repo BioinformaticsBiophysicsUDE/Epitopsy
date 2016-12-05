@@ -63,22 +63,21 @@ For the impatients
 Open a shell and type::
 
     cd $HOME/Downloads/
-    mkdir argtable
-    wget -O - sourceforge.net/projects/argtable/files/argtable/argtable-2.13/argtable2-13.tar.gz | tar xfz - -C clustal --strip-components=1
-    cd argtable/
+    mkdir argtable; cd $_
+    wget -O - sourceforge.net/projects/argtable/files/argtable/argtable-2.13/argtable2-13.tar.gz | tar xfz - -C . --strip-components=1
     ./configure
     make
     sudo make install
     make clean; cd ..; rm -rf argtable/ 
     echo -e '\n# added by $(whoami) for libargtable2.so.0' >> ~/.bashrc
     echo 'export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
-    mkdir clustal
-    wget -O - http://www.clustal.org/omega/clustal-omega-1.2.1.tar.gz | tar xfz - -C clustal --strip-components=1
-    cd clustal/
+    mkdir clustal; cd $_
+    wget -O - http://www.clustal.org/omega/clustal-omega-1.2.1.tar.gz | tar xfz - -C . --strip-components=1
     ./configure --prefix=$HOME/bin/clustal
     make
     make install
     make clean; cd ..; rm -rf clustal/
+    ln -s $HOME/bin/clustal-1.2.1/bin/clustalo $HOME/bin/clustalo
 
 Step-by-step installation
 -------------------------
@@ -134,7 +133,7 @@ Next, we need to install Clustal Omega::
     make check
     make install
     make installcheck
-    make clean
+    ln -s $HOME/bin/clustal-1.2.1/bin/clustalo $HOME/bin/clustalo
 
 You may get warnings of the type "warning: ISO C++ does not support
 variable-length array types [-Wvla]", but these can be ignored. Now check that

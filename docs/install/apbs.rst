@@ -24,7 +24,9 @@ the shell::
     make install
     make clean; cd ../..; rm -rf apbs/
     ln -s $HOME/bin/apbs-1.4/bin/apbs $HOME/bin/apbs
-    echo LD_LIBRARY_PATH="$HOME/bin/apbs-1.4/lib:$LD_LIBRARY_PATH" >> ~/.bashrc
+    echo 'LD_LIBRARY_PATH="$HOME/bin/apbs-1.4/lib:$LD_LIBRARY_PATH"' >> ~/.bashrc
+    echo 'export APBS_BINARY_LOCATION="$HOME/bin/apbs-1.4/bin/"' >> ~/.bashrc
+    echo 'export APBS_PSIZE_DIR="$HOME/bin/apbs-1.4/share/apbs/tools/manip/"' >> ~/.bashrc # for PyMOL
 
 The shell command ``apbs --version 2>&1 | grep -e "Version [0-9.]*"`` shoud give ``1.4.1``.
 

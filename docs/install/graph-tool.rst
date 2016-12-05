@@ -2,7 +2,7 @@
 Graph-Tool --- Graphs and Networks
 **********************************
 
-Graph-Tool 2.2.28 (`homepage <http://graph-tool.skewed.de/>`_, `doc <http://graph-tool.skewed.de/static/doc/index.html>`_, `download <http://graph-tool.skewed.de/download>`_).
+Graph-Tool 2.2.28 (`homepage <http://graph-tool.skewed.de/>`__, `doc <http://graph-tool.skewed.de/static/doc/index.html>`__, `download <http://graph-tool.skewed.de/download>`__).
 
 Installation procedure
 ======================
@@ -13,7 +13,7 @@ For the impatients
 ------------------
 
 Graph-Tool can be installed with a package. Get first the public key `98507F25
-<http://pgp.skewed.de:11371/pks/lookup?op=get&search=0x612DEFB798507F25>`_ and
+<http://pgp.skewed.de:11371/pks/lookup?op=get&search=0x612DEFB798507F25>`__ and
 add it to your list::
 
     sudo apt-key add 0x612defb798507f25.html
@@ -57,18 +57,18 @@ From the source code
 .. seealso::
 
     You may follow the official Graph-Tool `compilation procedure
-    <http://graph-tool.skewed.de/download#compilation>`_.
+    <http://graph-tool.skewed.de/download#compilation>`__.
 
 There are at least three dependencies to download and install:
 
-* the Boost libraries v1.46 (`homepage <http://www.boost.org/>`_,
-  `doc <http://www.boost.org/doc/libs/1_55_0/?view=categorized>`_,
-  `download <http://www.boost.org/users/history/version_1_55_0.html>`_),
-* expat (`homepage <http://expat.sourceforge.net/>`_,
-  `download <http://sourceforge.net/projects/expat/>`_),
-* CGAL v4.3 (`homepage <http://www.cgal.org/>`_,
-  `doc <http://doc.cgal.org/latest/Manual/index.html>`_,
-  `registration form <http://www.cgal.org/download.html>`_).
+* the Boost libraries v1.46 (`homepage <http://www.boost.org/>`__,
+  `doc <http://www.boost.org/doc/libs/1_55_0/?view=categorized>`__,
+  `download <http://www.boost.org/users/history/version_1_55_0.html>`__),
+* expat (`homepage <http://expat.sourceforge.net/>`__,
+  `download <http://sourceforge.net/projects/expat/>`__),
+* CGAL v4.3 (`homepage <http://www.cgal.org/>`__,
+  `doc <http://doc.cgal.org/latest/Manual/index.html>`__,
+  `registration form <http://www.cgal.org/download.html>`__).
 
 ..
     https://gforge.inria.fr/frs/?group_id=52

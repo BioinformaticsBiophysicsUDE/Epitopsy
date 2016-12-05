@@ -19,16 +19,14 @@ For the impatients
 
 Open a shell and type::
 
-    cd $HOME/Downloads/
-    wget ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz
-    tar xfz gromacs-4.6.5.tar.gz
-    cd gromacs-4.6.5
+    mkdir ~/Downloads/gromacs; cd $_
+    wget -O - ftp://ftp.gromacs.org/pub/gromacs/gromacs-4.6.5.tar.gz | tar xfz - -C . --strip-components=1
     mkdir build; cd $_
     cmake .. -DGMX_DOUBLE=ON -DGMX_BUILD_OWN_FFTW=ON
-    make -j $(nproc)
+    make -j$(nproc)
     sudo make install
     echo -e '\nsource /usr/local/gromacs/bin/GMXRC' >> $HOME/.bashrc
-    make clean; cd ../..; rm -rf gromacs-4.6.5/ gromacs-4.6.5.tar.gz
+    make clean; cd ../..; rm -rf gromacs
 
 Step-by-step installation
 -------------------------

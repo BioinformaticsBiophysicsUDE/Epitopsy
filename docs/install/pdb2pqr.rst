@@ -32,6 +32,7 @@ Version 1.9::
     python scons/scons.py install
     cd ..; rm -rf pdb2pqr/
     ln -s $HOME/bin/pdb2pqr-1.9/pdb2pqr.py $HOME/bin/pdb2pqr
+    echo 'export APBS_PDB2PQR_DIR="$HOME/bin/pdb2pqr-1.9/"' >> ~/.bashrc # for PyMOL
 
 Version 1.8::
 

@@ -9,15 +9,17 @@ Unless otherwise stated, all compilations were achieved on Ubuntu 13.10.
 .. toctree::
    :maxdepth: 2
 
-   fftw
-   clustal
-   pdb2pqr
-   apbs
-   pymol
-   vmd
-   gromacs
    amber
+   apbs
    autodock
+   clustal
+   fftw
    graph-tool
-   tcl_tk
+   gromacs
+   modeller
+   pdb2pqr
+   pymol
+   obabel
    sharelib
+   tcl_tk
+   vmd

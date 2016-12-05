@@ -1,8 +1,6 @@
 """
-.. moduleauthor:: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
-.. module:: dca_analysis
-    :platform: Unix, (Windows)
-    :synopsis: A module for analysing dca data.
+@author: Ludwig Ohl <Ludwig.Ohl@uni-due.de>
+@brief: A module for analysing dca data.
 """
 
 import numpy as np
@@ -151,7 +149,7 @@ class DcaAnalysis(object):
         :param cutoff: lower bound for best candidates.
         :type cutoff: float.
 
-        returns: list of in order of strongest candidates.
+        :returns: list of in order of strongest candidates.
         '''
         # if self.bindings.size():
         #    return self.bindings
@@ -182,11 +180,9 @@ class DcaAnalysis(object):
         aligned sequence and filteres out the gapped
         positions in the di matrix.
 
-        input:
-            matrix: dca matrix
-            alignedSeq: aligned sequence of the protein
-         output:
-             filtered matrix
+        :param matrix: dca matrix
+        :param alignedSeq: aligned sequence of the protein
+        :returns: filtered matrix
         '''
         sequence = np.array([alpha for alpha in self.info['aligned_seq']])
         # numpy magic: creates a bool array for filtering

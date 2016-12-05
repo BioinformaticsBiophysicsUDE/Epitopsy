@@ -14,7 +14,7 @@ From the binaries
 
 You may download the binaries from the official website, but you are
 encouraged to register first your name and organization (`registration
-form <http://autodock.scripps.edu/downloads/autodock-registration>`_).
+form <http://autodock.scripps.edu/downloads/autodock-registration>`__).
 
 Open a shell and type::
 
@@ -31,25 +31,24 @@ For the impatients
 
 You may download the source code from the official website, but you are
 encouraged to register first your name and organization (`registration
-form <http://autodock.scripps.edu/downloads/autodock-registration>`_).
+form <http://autodock.scripps.edu/downloads/autodock-registration>`__).
 
 Open a shell and type::
 
-    cd $HOME/Downloads/
-    mkdir autodock
+    mkdir ~/Downloads/autodock; cd $_
     wget -O - http://autodock.scripps.edu/downloads/autodock-registration/tars/dist426/autodocksuite-4.2.6-src.tar.gz | tar xfz - -C autodock --strip-components=1
     for dir in autodock autogrid
     do
-        cd $HOME/Downloads/autodock/$dir
-        mkdir build; cd $_
+        mkdir $dir/build; cd $_
         ../configure --prefix=$HOME/bin/autodock/ --bindir=$HOME/bin/autodock/
         make
         # make check
         make install
         make clean
+        cd ../..
     done
-    cd $HOME/Downloads/
-    mv autodock/USERGUIDES/AutoDock4.2_UserGuide.pdf $HOME/
+    cd ~/Downloads/
+    mv autodock/USERGUIDES/AutoDock4.2_UserGuide.pdf ~/
     rm -rf autodock
 
 The command ``make check`` should return in both cases ``OK Nothing to be done
@@ -76,10 +75,10 @@ AutoDockTools to your $PATH.
 From the sources
 ----------------
 
-The SWIG package (`homepage <http://www.swig.org/>`_) is a dependency of
+The SWIG package (`homepage <http://www.swig.org/>`__) is a dependency of
 AutoDockTools. You may download the source code from the official website,
 but you are encouraged to fill in a survey first (`document
-<http://swig.org/survey.html>`_).
+<http://swig.org/survey.html>`__).
 
 Open a shell and type::
 
@@ -209,21 +208,21 @@ From the sources
 
 .. warning:: Not tested.
 
-Vina depends on makedepend (`compilation
-<http://www.linuxfromscratch.org/blfs/view/stable/x/makedepend.html>`_),
-which itself depends on pkg-config (`compilation
-<http://www.linuxfromscratch.org/blfs/view/stable/general/pkgconfig.html>`_)
-and Xorg Protocol Headers (`compilation
-<http://www.linuxfromscratch.org/blfs/view/stable/x/x7proto.html>`_),
-which itself depends on util-macros (`compilation
-<http://www.linuxfromscratch.org/blfs/view/stable/x/util-macros.html>`_),
-which depends on Xorg (`compilation
-<http://www.linuxfromscratch.org/blfs/view/svn/x/xorg7.html#xorg-env>`_).
+Vina depends on makedepend (`compilation 
+<http://www.linuxfromscratch.org/blfs/view/stable/x/makedepend.html>`__),
+which itself depends on pkg-config (`compilation 
+<http://www.linuxfromscratch.org/blfs/view/stable/general/pkgconfig.html>`__)
+and Xorg Protocol Headers (`compilation 
+<http://www.linuxfromscratch.org/blfs/view/stable/x/x7proto.html>`__),
+which itself depends on util-macros (`compilation 
+<http://www.linuxfromscratch.org/blfs/view/stable/x/util-macros.html>`__),
+which depends on Xorg (`compilation 
+<http://www.linuxfromscratch.org/blfs/view/svn/x/xorg7.html#xorg-env>`__).
 
 Once all dependencies are installed, install the Boost libraries v1.55
-(`homepage <http://www.boost.org/>`_,
-`doc <http://www.boost.org/doc/libs/1_55_0/?view=categorized>`_,
-`download <http://www.boost.org/users/history/version_1_55_0.html>`_) with::
+(`homepage <http://www.boost.org/>`__,
+`doc <http://www.boost.org/doc/libs/1_55_0/?view=categorized>`__,
+`download <http://www.boost.org/users/history/version_1_55_0.html>`__) with::
 
     cd $HOME/Downloads
     tar xfz boost_1_55_0.tar.gz
