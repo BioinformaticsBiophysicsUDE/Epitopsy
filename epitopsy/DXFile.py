@@ -1009,7 +1009,7 @@ class VDWBox(DXBox):
         The values for 'solventScore', 'peptideScore', etc. are not updated!
         """
         # set solvent accessible surface to self.score_of_surface
-        self.find_surface()
+        self.find_solvent_surface()
         surface_points = np.nonzero(self.box == self.score_of_surface)
         solvent_points = np.nonzero(self.box == self.solventScore)
         interior_points = np.nonzero(self.box == self.peptideScore)
