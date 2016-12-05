@@ -14,9 +14,42 @@ from sklearn.cluster import KMeans
 from epitopsy.cython import dx_cython
 
 class DXBox(object):
-    '''
-    This class stores the output of an APBS calculation.
-    '''
+    """
+    Container for an OpenDX box.
+    Typically used to store the output of an APBS calculation.
+    
+    :param box: 3D box
+    :type  box: np.ndarray
+    :param box_mesh_size: box mesh size in Angstroms
+    :type  box_mesh_size: tuple
+    :param box_offset: box offset in Angstroms
+    :type  box_offset: tuple
+        
+    .. attribute:: box
+    
+        (**np.ndarray**) 3D array storing OpenDX box grid points.
+        
+    .. attribute:: box_dim
+    
+        (**np.array**) Box shape.
+        
+    .. attribute:: box_mesh_size
+    
+        (**np.array**) Box mesh resolution in Angstroms.
+        
+    .. attribute:: box_offset
+    
+        (**np.array**) Box offset in Angstroms.
+        
+    .. attribute:: box_center
+    
+        (**np.array**) Box center in Angstroms.
+        
+    .. attribute:: file_path
+    
+        (**str**) Filepath.
+    
+    """
     X = 0
     Y = 1
     Z = 2
@@ -84,11 +117,6 @@ class DXBox(object):
     all_neighbors_xy[7, 1] = 1
 
     def __init__(self, box = None, meshsize = None, offset = None):
-        '''
-        Creates a new DXBox Object.
-        @param box Three-dimensional array with van-der-Waals surface or
-        electrostatic potential of a protein structure
-        '''
         if box is None and meshsize is None and offset is None:
             pass
         else:
@@ -525,7 +553,7 @@ def read_dxfile(filename, box_type):
         dxBox = DXBox(box_3d, meshsize, offset)
         dxBox.file_path = filename
     else:
-        raise Exception('use box_type: vdv,smol or esp')
+        raise Exception('use box_type: vdv, smol or esp')
     return dxBox
 
 def unique(a):
@@ -731,7 +759,38 @@ class DXReader:
 
 class VDWBox(DXBox):
     """
-    classdocs
+    Specialized class for APBS van der Waals boxes.
+    
+    :param box: 3D box
+    :type  box: np.ndarray
+    :param box_mesh_size: box mesh size in Angstroms
+    :type  box_mesh_size: tuple
+    :param box_offset: box offset in Angstroms
+    :type  box_offset: tuple
+        
+    .. attribute:: solventScore
+    
+        (**float**) APBS value of grid points in the solvent: 1.
+        
+    .. attribute:: peptideScore
+    
+        (**float**) APBS value of grid points inside a protein or ligand: 0.
+        
+    .. attribute:: surfaceScore
+    
+        (**float**) APBS value of grid points inside a protein or ligand
+        and in contact with the protein surface: 0.
+        
+    .. attribute:: epitopeScore
+    
+        (**float**) APBS value of grid points inside the protein which are part
+        of an epitope: 0.
+        
+    .. attribute:: score_of_surface
+    
+        (**float**) Custom value for grid points on the protein surface, chosen
+        as 2 to be distinguished from 0 (interior) and 1 (solvent).
+    
     """
     SOLVENT_ID_VALUE = 99.0
     INNER_ID_VALUE = 98
@@ -916,12 +975,12 @@ class VDWBox(DXBox):
 
     def find_surface(self):
         """
-        This method finds the surface of the protein and assigns
-        'score_of_surface' to these points. The box should have been flooded
-        before using this function!
-
-        In contrast, find_solvent surface yields the surface that lies in the
-        surface. Both surfaces should lie directly next to each other.
+        Find the layer below the solvent accessible surface and assign
+        :attr:`score_of_surface` to its grid points. This layer is
+        inaccessible to the solvent and the ligands.
+        The grid points in the solvent and protein interior
+        are assigned :attr:`solventScore` resp. :attr:`peptideScore`.
+        The box should have been flooded before using this function!
         """
         self.box = dx_cython.find_protein_surface(self.peptideScore,
                                           self.solventScore,
@@ -930,12 +989,10 @@ class VDWBox(DXBox):
 
     def find_solvent_surface(self):
         """
-        This method finds the surface that lies in the solvent and
-        encapsulates the protein and assigns 'score_of_surface' to these
-        points. The box should have been flooded before using this function!
-
-        In contrast, find_surface yields the surface that lies in the protein.
-        Both surfaces should lie directly next to each other.
+        Find the solvent accessible surface and assign :attr:`score_of_surface`
+        to its grid points. The grid points in the solvent and protein interior
+        are assigned :attr:`solventScore` resp. :attr:`peptideScore`.
+        The box should have been flooded before using this function!
         """
         self.box = dx_cython.find_solvent_surface(self.peptideScore,
                                           self.solventScore,
@@ -944,14 +1001,14 @@ class VDWBox(DXBox):
 
     def prepare_for_geometric_matching(self, interior):
         """
-        This method prepares the box for geometric matching. It sets the
-        solvent to 0, the surface to 1 and the protein interior to the given
-        value. This value should be -15 for the fixed protein and 1 for the
-        rotated according to Katchalski-Katzir.
+        Prepare the vdw box for geometric matching. Set the solvent grid
+        points to 0, the protein or ligand surface to 1 and the protein or
+        ligand interior to **interior**, for example -15 for the fixed protein
+        and +1 for the rotating ligand according to Katchalski-Katzir.
 
         The values for 'solventScore', 'peptideScore', etc. are not updated!
         """
-        # set surface to self.score_of_surface
+        # set solvent accessible surface to self.score_of_surface
         self.find_surface()
         surface_points = np.nonzero(self.box == self.score_of_surface)
         solvent_points = np.nonzero(self.box == self.solventScore)

@@ -545,8 +545,8 @@ def extend_nice_surface(int iterations, np.ndarray[np.float64_t, ndim=3] box,
                             nx = x + next_neighbors[n,0]
                             ny = y + next_neighbors[n,1]
                             nz = z + next_neighbors[n,2]
-                            if (nx >= 0 and nx < xdim and ny >= 0 and ny < ydim and
-                                nz >= 0 and nz < zdim):
+                            if (nx >= 0 and nx < xdim and ny >= 0 and
+                                ny < ydim and nz >= 0 and nz < zdim):
                                 if box[nx,ny,nz] == peptideScore:
                                     box[x,y,z] = dummy_score
         box = switch_value(box, xdim, ydim, zdim, dummy_score, peptideScore)
@@ -554,16 +554,22 @@ def extend_nice_surface(int iterations, np.ndarray[np.float64_t, ndim=3] box,
     return box
 
 
-def find_protein_surface(protein_score,
-                 solvent_score,
-                 surface_score,
-                 np.ndarray[np.float64_t, ndim=3] box):
+def find_protein_surface(protein_score, solvent_score, surface_score,
+                         np.ndarray[np.float64_t, ndim=3] box):
+    """
+    Find the layer below the solvent accessible surface and assign
+    :attr:`score_of_surface` to its grid points. This layer is
+    inaccessible to the solvent and the ligands.
+    The grid points in the solvent and protein interior
+    are assigned :attr:`solventScore` resp. :attr:`peptideScore`.
+    
+    Cython wrapper for C function :func:`_find_protein_surface`.
+    """
     return _find_protein_surface(<float> protein_score, <float> solvent_score,
-                         <float> surface_score, box)
+                                 <float> surface_score, box)
 
 cdef double[:,:,:] check_protein_neighbor(double[:,:,:] box, int xdim, int ydim,
-        int zdim, int x, int y, int z, float solvent_score,
-        float surface_score):
+       int zdim, int x, int y, int z, float solvent_score, float surface_score):
     cdef int i,j,k
     cdef int posx,posy,posz
     for i from -1 <= i <= 1:
@@ -631,16 +637,20 @@ cdef np.ndarray _find_protein_surface(float protein_score, float solvent_score,
     return box_np
 
 
-def find_solvent_surface(protein_score,
-                 solvent_score,
-                 surface_score,
-                 np.ndarray[np.float64_t, ndim=3] box):
+def find_solvent_surface(protein_score, solvent_score, surface_score,
+                         np.ndarray[np.float64_t, ndim=3] box):
+    """
+    Find the solvent accessible surface and assign **surface_score**
+    to its grid points. The grid points in the solvent and protein interior
+    are assigned **solvent_score** resp. **protein_score**.
+    
+    Cython wrapper for C function :func:`_find_solvent_surface`.
+    """
     return _find_solvent_surface(<float> protein_score, <float> solvent_score,
-                         <float> surface_score, box)
+                                 <float> surface_score, box)
 
 cdef double[:,:,:] check_surface_neighbor(double[:,:,:] box, int xdim, int ydim,
-        int zdim, int x, int y, int z, float protein_score,
-        float surface_score):
+       int zdim, int x, int y, int z, float protein_score, float surface_score):
     cdef int i,j,k
     cdef int posx,posy,posz
     for i from -1 <= i <= 1:
@@ -663,8 +673,7 @@ cdef double[:,:,:] check_surface_neighbor(double[:,:,:] box, int xdim, int ydim,
     return box
 
 cdef np.ndarray _find_solvent_surface(float protein_score, float solvent_score,
-                  float surface_score,
-                  np.ndarray[np.float64_t, ndim=3] box_np):
+                  float surface_score, np.ndarray[np.float64_t, ndim=3] box_np):
     cdef int x,y,z,i,j,k
     cdef double[:,:,:] box = box_np
     cdef int posx, poxy, posz
