@@ -33,27 +33,27 @@ float64 = np.dtype(np.float64)
 
 @cython.boundscheck(False)
 cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
-        np.ndarray[np.float64_t, ndim=3] shape_correlation_np,
+        np.ndarray[np.float64_t, ndim=3] vdw_correlation_np,
         np.ndarray[np.float64_t, ndim=3] counter_matrix_np,
         np.ndarray[np.float64_t, ndim=3] interaction_energy_np,
         float shape_correlation_cutoff):
-    cdef double[:,:,:] shape_correlation = shape_correlation_np
+    cdef double[:,:,:] vdw_correlation = vdw_correlation_np
     cdef double[:,:,:] esp_correlation = esp_correlation_np
     cdef double[:,:,:] counter_matrix = counter_matrix_np
     cdef double[:,:,:] interaction_energy = interaction_energy_np,
     cdef int x,y,z
     cdef float counter_add = 1.
-    cdef int xdim = shape_correlation.shape[0]
-    cdef int ydim = shape_correlation.shape[1]
-    cdef int zdim = shape_correlation.shape[2]
+    cdef int xdim = vdw_correlation.shape[0]
+    cdef int ydim = vdw_correlation.shape[1]
+    cdef int zdim = vdw_correlation.shape[2]
 
     for x in range(xdim):
         for y in range(ydim):
             for z in range(zdim):
                 # use absolute value of shape_correlation, so that it is
                 # in the
-                # range(-shape_correlation_cutoff, shape_correlation_cutoff)
-                if abs_c(shape_correlation[x,y,z]) < shape_correlation_cutoff:
+                # range(-vdw_correlation_cutoff, vdw_correlation_cutoff)
+                if abs_c(vdw_correlation[x,y,z]) < vdw_correlation_cutoff:
                     # increase counter_matrix at the current position
                     counter_matrix[x, y, z] = counter_matrix[x, y, z] + counter_add
                     # get energy if shape correlation is okay
@@ -62,16 +62,16 @@ cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
                     interaction_energy[x, y, z] = esp_correlation[x, y, z]
     return interaction_energy_np, counter_matrix_np
 
-def count_rotations(np.ndarray[np.float64_t, ndim=3] shape_correlation,
+def count_rotations(np.ndarray[np.float64_t, ndim=3] vdw_correlation,
         np.ndarray[np.float64_t, ndim=3] esp_correlation,
         np.ndarray[np.float64_t, ndim=3] counter_matrix,
-        float shape_correlation_cutoff):
+        float vdw_correlation_cutoff):
 
     interaction_energy = np.zeros([esp_correlation.shape[0],
-        esp_correlation.shape[1], esp_correlation.shape[2]])
+         esp_correlation.shape[1], esp_correlation.shape[2]])
     interaction_energy, counter_matrix = _count_rotations(esp_correlation,
-        shape_correlation, counter_matrix, interaction_energy,
-        shape_correlation_cutoff)
+        vdw_correlation, counter_matrix, interaction_energy,
+        vdw_correlation_cutoff)
     return interaction_energy, counter_matrix
 
 #@cython.boundscheck(False)
