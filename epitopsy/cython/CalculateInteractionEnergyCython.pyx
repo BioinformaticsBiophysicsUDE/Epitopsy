@@ -35,8 +35,7 @@ float64 = np.dtype(np.float64)
 cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
         np.ndarray[np.float64_t, ndim=3] vdw_correlation_np,
         np.ndarray[np.float64_t, ndim=3] counter_matrix_np,
-        np.ndarray[np.float64_t, ndim=3] interaction_energy_np,
-        float shape_correlation_cutoff):
+        np.ndarray[np.float64_t, ndim=3] interaction_energy_np):
     cdef double[:,:,:] vdw_correlation = vdw_correlation_np
     cdef double[:,:,:] esp_correlation = esp_correlation_np
     cdef double[:,:,:] counter_matrix = counter_matrix_np
@@ -46,32 +45,25 @@ cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
     cdef int xdim = vdw_correlation.shape[0]
     cdef int ydim = vdw_correlation.shape[1]
     cdef int zdim = vdw_correlation.shape[2]
-
+    # FFT precision / machine epsilon: threshold for float equality testing
+    cdef float vdw_correlation_eps = 0.0001
+    
     for x in range(xdim):
         for y in range(ydim):
             for z in range(zdim):
-                # use absolute value of shape_correlation, so that it is
-                # in the
-                # range(-vdw_correlation_cutoff, vdw_correlation_cutoff)
-                if abs_c(vdw_correlation[x,y,z]) < vdw_correlation_cutoff:
-                    # increase counter_matrix at the current position
-                    counter_matrix[x, y, z] = counter_matrix[x, y, z] + counter_add
-                    # get energy if shape correlation is okay
-                    # calc exp(-energy), it should be faster to do it here
-#                    interaction_energy[x, y, z] = exp(-esp_correlation[x, y, z])
+                if vdw_correlation[x,y,z] + vdw_correlation_eps > 0:
+                    counter_matrix[x, y, z] += 1
                     interaction_energy[x, y, z] = esp_correlation[x, y, z]
     return interaction_energy_np, counter_matrix_np
 
 def count_rotations(np.ndarray[np.float64_t, ndim=3] vdw_correlation,
         np.ndarray[np.float64_t, ndim=3] esp_correlation,
-        np.ndarray[np.float64_t, ndim=3] counter_matrix,
-        float vdw_correlation_cutoff):
+        np.ndarray[np.float64_t, ndim=3] counter_matrix):
 
     interaction_energy = np.zeros([esp_correlation.shape[0],
          esp_correlation.shape[1], esp_correlation.shape[2]])
     interaction_energy, counter_matrix = _count_rotations(esp_correlation,
-        vdw_correlation, counter_matrix, interaction_energy,
-        vdw_correlation_cutoff)
+        vdw_correlation, counter_matrix, interaction_energy)
     return interaction_energy, counter_matrix
 
 #@cython.boundscheck(False)
@@ -305,15 +297,16 @@ cdef bool out_of_box(long[:,:] ligand_coords, long[:] box_dim):
 def speed_up_brute_force(ligand_pqr,
         np.ndarray[np.float64_t, ndim=3] vdwbox_np,
         espbox,
-        np.ndarray[np.float64_t, ndim=3] counter_matrix_np):
+        np.ndarray[np.float64_t, ndim=3] counter_matrix_np,
+        score_solvent, score_protein):
     ## general stuff
     cdef int xdim = espbox.box.shape[0]
     cdef int ydim = espbox.box.shape[1]
     cdef int zdim = espbox.box.shape[2]
     cdef int x,y,z
     cdef double energy = 0.
-    cdef double solvent_score = 1.
-    cdef double protein_score = 0.
+    cdef double solvent_score = score_solvent
+    cdef double protein_score = score_protein
     cdef bool overlapp = False
     cdef bool left_the_box = False
 
