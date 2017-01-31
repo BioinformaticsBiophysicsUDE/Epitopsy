@@ -10,8 +10,14 @@ import numpy as np
 from epitopsy.cython import FFTCorrelationScoringCython
 from epitopsy.scoring.Scoring import Scoring
 from epitopsy.DXFile import DXBox
-import anfft
-#import pyfftw
+
+__anfft__ = False
+try:
+    import anfft
+    __anfft__ = True
+except:
+    pass
+
 
 class FFT_correlation_scoring(Scoring):
     '''
@@ -23,46 +29,75 @@ class FFT_correlation_scoring(Scoring):
     It is important to set the protein interior to 1 and the solvent to 0, if
     one is interested in the geometric complementarity.
     '''
-    def __init__(self, box_array):
+    def __init__(self, box_array, fft_module = None):
+        # select FFT module
+        if fft_module:
+            if fft_module == 'anfft':
+                if not __anfft__:
+                    raise ImportError('Module anfft unavailable')
+                else:
+                    self.fft_module = 'anfft'
+            elif fft_module in ('numpy', 'np', 'npfft'):
+                self.fft_module = 'npfft'
+            else:
+                raise ImportError('Module {} not supported'.format(fft_module))
+        else:
+            if __anfft__:
+                self.fft_module = 'anfft'
+            else:
+                self.fft_module = 'npfft'
+        
+        # initialize box
         if isinstance(box_array, np.ndarray):
             Scoring.__init__(self, box_array)
         elif isinstance(box_array, DXBox):
             Scoring.__init__(self, box_array)
         else:
-            print("Error in FFT_correlation_scoring, this function requires an array or a DXBox!!!")
+            print("Error in FFT_correlation_scoring, this function requires "
+                  "an array or a DXBox!!!")
             sys.exit(1)
-
+        
+        # compute FFT
         self.box = self.do_fft(self.box)
         self.box = self.box.conjugate()
+        
 
     def do_fft(self, signal_matrix):
         """
         Maybe zero-padding is necessary, it could be done with:
         fftn(signal_matrix, [next pow of 2, next pow of 2, next pow of 2])
         """
-#        return pyfftw.interfaces.numpy_fft.fftn(signal_matrix, threads=4)
-        return anfft.fftn(signal_matrix)
-        return np.fft.fftn(signal_matrix)
-#        return np.fft.ifftn(signal_matrix)
+        if self.fft_module == 'anfft':
+            return anfft.fftn(signal_matrix)
+        else:
+            return np.fft.fftn(signal_matrix)
 
     def do_ifft(self, signal_matrix):
-#        return pyfftw.interfaces.numpy_fft.ifftn(signal_matrix, threads=4)
-        return anfft.ifftn(signal_matrix)
-        return np.fft.ifftn(signal_matrix)
+        if self.fft_module == 'anfft':
+            return anfft.ifftn(signal_matrix)
+        else:
+            return np.fft.ifftn(signal_matrix)
 
     def do_fftshift(self, signal_matrix):
         """
-        At the moment this function is of no use!
+        Shift the zero-frequency component to the center of the spectrum.
+        Fallback method, usually :meth:`shift_fft` does the job faster.
         """
         return np.fft.fftshift(signal_matrix)
 
     def do_ifftshift(self, signal_matrix):
         """
-        At the moment this function is of no use!
+        Shift the zero-frequency component to the left of the spectrum.
+        Fallback method, usually :meth:`shift_fft` does the job faster.
         """
         return np.fft.ifftshift(signal_matrix)
 
     def shift_fft(self, signal_matrix, center = None):
+        """
+        Shift the zero-frequency component to the center of the spectrum,
+        or to the left of the spectrum if applied twice.
+        Faster than np.fft.fftshift() and np.fft.ifftshift().
+        """
         if center is None:
             x_center = int(round(signal_matrix.shape[0] / 2.))
             y_center = int(round(signal_matrix.shape[1] / 2.))
@@ -78,7 +113,7 @@ class FFT_correlation_scoring(Scoring):
     def score(self, signal_matrix, position = None, maxRadius = None):
         """
         Computes the FFT-form of the comparison box and scores it against the
-        reference box,  which is in a conjugated-complex FFT-form
+        reference box, which is in a conjugated-complex FFT-form.
         """
         if isinstance(signal_matrix, DXBox):
             signal_clone = signal_matrix.box.copy()
@@ -86,7 +121,8 @@ class FFT_correlation_scoring(Scoring):
             signal_clone = signal_matrix.copy()
 
         if signal_clone.shape != self.box.shape:
-            raise NameError("ERROR in FFT_correlation_scoring.score: Grid dimensions differ. Cannot complete surface scoring!")
+            raise NameError("ERROR in FFT_correlation_scoring.score: Grid dime"
+                            "nsions differ. Cannot complete surface scoring!")
 
         #=======================================================================
         # Fourier Correlation Scoring
