@@ -6,4 +6,4 @@ cython Package
 
 .. toctree::
 
-    packages/cython/CalculateInteractionEnergyCython
+    packages/cython/interaction_explicit_sampling

@@ -17,7 +17,7 @@ if 'setuptools.extension' in sys.modules:
 cyHeaders = [get_include()]
 
 ### Cython Files that need compiling
-cyFileNames = ['cython/CalculateInteractionEnergyCython', 
+cyFileNames = ['cython/interaction_explicit_sampling', 
     'cython/dx_cython', 
     'cython/pdb_cython', 
     'cython/FFTCorrelationScoringCython', 

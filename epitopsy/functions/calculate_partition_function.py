@@ -2,9 +2,7 @@ __author__     = "Christoph Wilms, Jean-Noel Grad"
 __copyright__  = "Copyright 2013, Epitopsy"
 __date__       = "2013-03-07"
 __credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
-__doc__        = """Surface complementarity screening"""
-
-
+__doc__        = """Surface and charge complementarity screening"""
 
 import os
 import time
@@ -16,7 +14,7 @@ from epitopsy.APBS import APBSWrapper
 from epitopsy.DXFile import DXBox, DXReader, VDWBox
 from epitopsy.scoring.FFTCorrelationScoring import FFT_correlation_scoring
 from epitopsy.result.FFT_Result import FFT_Result
-from epitopsy.cython import CalculateInteractionEnergyCython
+from epitopsy.cython import interaction_explicit_sampling
 from epitopsy.tools import MathTools
 from epitopsy.tools.UtilityClasses import Progress_bar_countdown
 from epitopsy.tools.style import style
@@ -39,8 +37,8 @@ def run_APBS(pdb_path,
              verbose      = True):
     '''
     Compute the electrostatic potential of a protein using
-    :class:`APBS.APBSWrapper`, in preparation to a surface complementarity
-    screening with :func:`run_SCS`.
+    :class:`APBS.APBSWrapper`, in preparation for a surface and charge
+    complementarity screening with :func:`run_SCCS`.
     Following files will be produced, with **pdb_path** = ``protein.pdb`` and
     all other arguments to default:
     
@@ -123,7 +121,7 @@ def run_APBS(pdb_path,
         value of extend:	45
         box dim:	(161,161,161)
         Starting APBS ...
-        Finished.
+        Done.
     
     '''
     
@@ -198,31 +196,25 @@ def run_APBS(pdb_path,
         print("Done.")
 
 
-def run_SCS(pdb_path,
-            ligand_path,
-            APBS_dx_path        = '.',
-            number_of_rotations = 150,
-            write_top_hits      = False,
-            explicit_sampling   = False,
-            zipped              = False,
-            verbose             = True,
-            interior            = -15.,
-            no_return           = True):
+def run_SCCS(pdb_path,
+             ligand_path,
+             APBS_dx_path        = '.',
+             number_of_rotations = 150,
+             write_top_hits      = False,
+             explicit_sampling   = False,
+             zipped              = False,
+             verbose             = True,
+             interior            = -15.,
+             no_return           = True):
     '''
-    Screen a protein surface with a molecular probe.
-    
-    :class:`cython.FFTCorrelationScoringCython` is called to compute the FFT
-    of the DXfiles and :func:`CalculateInteractionEnergyCython.count_rotations`
-    to calculate the free binding energy. If **explicit_sampling** is ``True``,
-    :func:`CalculateInteractionEnergyCython.speed_up_brute_force` is used
-    instead. If **write_top_hits** is ``True``, a list of the highest scoring
-    ligand orientations are written in the working directory.
+    Surface and Charge Complementarity Screening: screen a protein surface with
+    a molecular probe using the Fast Fourier Transform.
     Generate several files, including:
     
     * :file:`protein_epi.dx`: the difference in Gibbs free energy in
       units of |kbT| for each grid point (),
     * :file:`protein_mic.dx.gz`: the number of free rotations on each grid
-      point
+      point (available microstates)
     
     The ESP calculated in APBS is dimensionless (it's divided by kT/|e|).
     We therefore don't have to multiply Phi by <math>\\beta = 1/kT</math>
@@ -238,23 +230,21 @@ def run_SCS(pdb_path,
     :param APBS_dx_path: path to the directory where the .dx files are stored
         (optional), by default search in the current directory
     :type  APBS_dx_path: str
-    :param number_of_rotations: how many orientations allowed for the ligand
-        (optional), default is 150
+    :param number_of_rotations: how many ligand rotations to sample
     :type  number_of_rotations: int
-    :param write_top_hits: write the top scoring conformations
+    :param write_top_hits: write the top scoring conformations if ``True``
     :type  write_top_hits: bool
     :param explicit_sampling: if ``True`` it does not use FFT correlation to
         detect overlapping orientations (optional), default is ``False``; this
         option does not work with **write_top_hits**
     :type  explicit_sampling: bool
     :param zipped: if ``True`` all DXBoxes will be gzipped, if ``False``, the
-        energy matrix and the LAS surface are not zipped (optional), default
-        is ``False``
+        energy matrix and the LAS surface are not zipped (default)
     :type  zipped: bool
-    :param verbose: print calculation details and progress bar on screen
-        (optional), default is ``True``
+    :param verbose: print calculation details and progress bar to screen if
+        ``True``
     :type  verbose: bool
-    :param interior: VdW penalty score delta (optional), negative, default -15
+    :param interior: VdW penalty score delta (optional), must be negative
     :type  interior: float
 
     :returns: ``None``, but create 2 files in the current working directory.
@@ -278,10 +268,10 @@ def run_SCS(pdb_path,
         Starting screening...
         0%                                            100%   time left
         #++++++++++++++++++++++++++++++++++++++++++++++++#   0:00:00        
-        Writing grids.
-        Writing energy.
-        Writing counter matrix.
-        Analyzing data.
+        Writing grids
+        Writing energy
+        Writing counter matrix
+        Analyzing data
         total time elapsed: 2.09 min
 
     '''
@@ -382,22 +372,23 @@ def run_SCS(pdb_path,
         
         # do the energy calculation in a cython script if requested
         if explicit_sampling == True:
-            interaction_energy, counter_matrix = CalculateInteractionEnergyCython.speed_up_brute_force(
-                    current_ligand_clone, vdwbox.box, espbox, counter_matrix, 0., interior)
+            microstates_energy, counter_matrix = (interaction_explicit_sampling
+                .explicit_sampling(current_ligand_clone, vdwbox.box, espbox,
+                                   counter_matrix, 0., interior))
             
-            partition_function += np.exp(-interaction_energy)
+            partition_function += np.exp(-microstates_energy)
         
         else:
-            # move the ligand to the center (0,0,0)
+            # move ligand to the box center (0,0,0)
             current_ligand_clone.translate(-current_ligand_clone.determine_geometric_center())
             
-            # snap ligand shape to grid, correlate and shift FFT
+            # snap ligand shape to grid and perform correlation
             pqr_vdw = current_ligand_clone.snap_vdw_to_box(vdwbox.box_mesh_size,
                                               vdwbox.box_dim, vdwbox.box_offset)
             vdw_correlation = vdw_fft.get_correlation(pqr_vdw)
             vdw_correlation = vdw_fft.shift_fft(vdw_correlation)
             
-            # snap ligand charges to grid, correlate and shift FFT
+            # snap ligand charges to grid and perform correlation
             pqr_esp = current_ligand_clone.snap_esp_to_dxbox(espbox)
             esp_correlation = esp_fft.get_correlation(pqr_esp)
             esp_correlation = esp_fft.shift_fft(esp_correlation)
