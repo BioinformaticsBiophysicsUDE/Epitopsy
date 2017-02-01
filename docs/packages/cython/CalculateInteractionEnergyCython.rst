@@ -24,51 +24,20 @@ Empty
 Module Contents
 ---------------
 
-.. function:: speed_up_brute_force(ligand_pqr, vdwbox_np, espbox, counter_matrix_np)
-
-    Calculate the sum of the electrostatic energy of a molecular probe **ligand_pqr**
-    (previously centered and rotated) with :func:`score_energy` over each grid
-    point not overlapping the protein. Furthermore, for every non-overlapping
-    grid point, the corresponding cell in the **counter_matrix** is
-    incremented by one. The energy calculated is adimensional and has to be
-    exponentiated by Numpy in subsequent code.
-
-    Retrieve all atoms from the PQR file
-    with :meth:`Structure.Structure_Template.get_all_atoms`, all atomic
-    positions with :func:`Structure.atom.get_coord`, all atomic
-    charges with :meth:`Structure.atom.get_info_1` and all atomic
-    volumes with :meth:`Structure.atom.get_info_2`.
-
-    :param ligand_pqr: the molecular probe
-    :type  ligand_pqr: :class:`Structure.PQRFile`
-    :param vdwbox_np: van der Waals box from an APBS calculation, as stored in
-        :attr:`DXFile.DXBox.box`
-    :type  vdwbox_np: np.array
-    :param espbox: electrostatic box from an APBS calculation
-    :type  espbox: :class:`DXFile.DXBox`
-    :param counter_matrix_np: list of grid points which do not result in an
-        overlapping between the ligand and the protein
-    :type  counter_matrix_np: np.array, ndim=3
-    
-    :returns: A tuple containing a matrix of the interaction energy calculated
-        by :func:`score_energy` and an updated **counter_matrix**.
-
-
 .. function:: score_energy(potbox, ligand_coords, charges)
 
     Multiply the atomic charge by the magnitude of the protein electrostatic
     potential *V* for each atom in the molecular probe. Sum over all atoms.
-
-    :math:`E = \sum_n^N q_n \left ( i,j,k \right ) \cdot V \left ( i,j,k \right )`
-
+    
+    :math:`E = \sum_n^N q_n \left( i,j,k \right) \cdot V \left( i,j,k \right)`
+    
     with i,j,k the coordinates on the grid.
-
-    :param potbox: value of the electrostatic potential *V* at each grid point
-        (from an APBS calculation), as stored in :attr:`DXFile.DXBox.box`
-    :type  potbox: np.array
+    
+    :param espbox: electrostatic box from an APBS calculation
+    :type  espbox: np.ndarray
     :param ligand_coords: atomic positions of the molecular probe, rotated and
         snapped to the grid
-    :type  ligand_coords: np.array
+    :type  ligand_coords: np.ndarray
     :param charges: all atomic charges from the PQR file
     :type  charges: list
     
@@ -80,11 +49,11 @@ Module Contents
 
     Calculate the X,Y,Z coordinates in Angstroms of a particular grid point
     whose indices in the Numpy matrix are given by **grid_coord**.
-
-    :math:`\displaystyle new\_grid\_coord[i] = grid\_coord[i] \cdot box\_mesh\_size[i] + box\_offset[i]`
-
+    
+    :math:`\displaystyle \text{new\_grid\_coord}[i] = \text{grid\_coord}[i] \cdot \text{box\_mesh\_size}[i] + \text{box\_offset}[i]`
+    
     See :func:`transform_real_to_box_space` for the reverse operation.
-
+    
     :param grid_coord: indices of a grid point from the Numpy matrix
         :attr:`DXFile.DXBox.box`
     :type  grid_coord: list
@@ -100,11 +69,11 @@ Module Contents
 
 .. function:: transform_real_to_box_space(grid_coord, box_mesh_size, box_offset)
 
-    Do the reverse of :func:`transform_box_to_real_space`: from X,Y,Z atomic
+    Do the opposite of :func:`transform_box_to_real_space`: from X,Y,Z atomic
     coordinates in Angstroms, find the closest grid point.
 
-    :math:`\displaystyle new\_grid\_coord[i] = \frac{\displaystyle grid\_coord[i] - box\_offset[i]}{\displaystyle box\_mesh\_size[i]}`
-
+    :math:`\displaystyle \text{new\_grid\_coord}[i] = \frac{\text{grid\_coord}[i] - \text{box\_offset}[i]}{\text{box\_mesh\_size}[i]}`
+    
     :param grid_coord: X,Y,Z atomic coordinates in Angstroms
     :type  grid_coord: list
     :param box_mesh_size: grid resolution in Angstroms, as stored in
@@ -121,7 +90,7 @@ Module Contents
 
     Compute the geometrical center of the molecular probe and move it to the
     coordinates of the grid point **coord**.
-
+    
     :param ligand_real_coords: coordinates of every atoms in the molecular probe
     :type  ligand_real_coords: list
     :param coord: coordinates of the grid point, as returned by
@@ -136,14 +105,13 @@ Module Contents
 
     Snap each atom in the molecular probe to the closest grid points. Make use
     of :func:`transform_real_to_box_space`.
-
+    
     :param ligand_real_coords: atomic coordinates of the molecular probe
-    :type  ligand_real_coords: np.array
-    :param box_mesh_size: grid resolution in Angstroms, as stored in
-        :attr:`DXFile.DXBox.box_mesh_size`
+    :type  ligand_real_coords: np.ndarray
+    :param box_mesh_size: grid resolution in Angstroms
     :type  box_mesh_size: list
     :param box_offset: vector between the grid origin and the DXBox geometrical
-        center in Angstroms, as stored in :attr:`DXFile.DXBox.box_offset`
+        center in Angstroms
     :type  box_offset: list
     
     :returns: A list of grid points (discretized molecular probe).
@@ -152,80 +120,44 @@ Module Contents
 .. function:: out_of_box(ligand_coords, box_dim)
 
     Check if the molecular probe has left the box.
-
+    
     :param ligand_coords: atomic positions of a discretized molecular probe,
         as obtained from :func:`transform_ligand_to_box`
-    :type  ligand_coords: np.array
-    :param box_dim: number of grid points in the X,Y,Z directions, as stored
-        in :attr:`DXFile.DXBox.box_dim`
+    :type  ligand_coords: np.ndarray
+    :param box_dim: number of grid points in the X,Y,Z directions
     :type  box_dim: list
     
-    :returns: ``True`` if the molecular probe reaches out of the DXBox,
-        ``False`` otherwise
+    :returns: ``True`` if the molecular probe left the box, ``False`` otherwise
 
 
 .. function:: is_overlapp(vdwbox, ligand_coords, vdw_radii, solvent_score, protein_score)
 
-    Check if the molecular probe is overlapping the protein. Internally,
-    find all grid points inside a sphere of radius **vdw_radii[i]** centered
-    around an atom **i** and check whether their respective values in the van
-    der Waals DXBox matrix is equal to **protein_score**.
-
-    :param vdwbox: van der Waals box from an APBS calculation, as stored in
-        :attr:`DXFile.DXBox.box`
-    :type  vdwbox: np.array
+    Check if the molecular probe overlaps with the protein.
+    
+    Method: for every atom in the ligand, find all grid points within the van
+    der Waals radius of that atom and return ``True`` if any of them is equal
+    to **protein_score**
+    
+    :param vdwbox: van der Waals box from an APBS calculation
+    :type  vdwbox: np.ndarray
     :param ligand_coords: atomic positions of a discretized molecular probe,
         as obtained from :func:`transform_ligand_to_box`
     :type  ligand_coords: np.array
     :param vdw_radii: atomic radii snapped to the grid (*i.e.* the quantity of
         grid point that can be aligned in the X,Y, and Z directions
-        respectively, typically comprised between 1 and 6)
-    :type  vdw_radii: np.array
+        respectively, typically between 1 and 6)
+    :type  vdw_radii: np.ndarray
     :param solvent_score: score for the solvent, usually 1.0
     :type  solvent_score: float
     :param protein_score: score for the protein, usually 0.0
     :type  protein_score: float
-
+    
     :returns: ``True`` if there is a least one grid point overlapping,
         ``False`` otherwise
 
 
-.. function:: count_rotations(shape_correlation, esp_correlation, counter_matrix, shape_correlation_cutoff)
-
-    Calculates the interaction energy using the results from the correlation
-    FFT. Make use of :func:`_count_rotations`.
-
-    :param shape_correlation: protein-ligand surface correlation matrix
-    :type  shape_correlation: np.array
-    :param esp_correlation: protein-ligand charge correlation matrix
-    :type  esp_correlation: np.array
-    :param counter_matrix: protein-ligand overlapping map
-    :type  counter_matrix: np.array
-    :param shape_correlation_cutoff: threshold for the correlation
-    :type  shape_correlation_cutoff: float
-    
-    :returns: A tuple containing the interaction energy (needs to be
-        exponentiated) and an updated counter matrix
-
-
-.. function:: _count_rotations(esp_correlation_np, shape_correlation_np, counter_matrix_np, interaction_energy_np, shape_correlation_cutoff)
-
-    Retrieve the energy from **esp_correlation_np** when there is a shape
-    correlation, and increment the counter matrix at the same time.
-
-    :param esp_correlation_np: protein-ligand charge correlation matrix
-    :type  esp_correlation_np: np.array
-    :param shape_correlation_np: protein-ligand surface correlation matrix
-    :type  shape_correlation_np: np.array
-    :param counter_matrix_np: protein-ligand overlapping map
-    :type  counter_matrix_np: np.array
-    :param interaction_energy_np: electrostatic energy matrix, usually filled
-        with zeros
-    :type  interaction_energy_np: np.array
-    :param shape_correlation_cutoff: threshold for the correlation
-    :type  shape_correlation_cutoff: float
-    
-    :returns: A tuple containing the interaction energy (needs to be
-        exponentiated) and an updated counter matrix
-
+.. automodule:: epitopsy.cython.CalculateInteractionEnergyCython
+    :members:
+    :undoc-members:
+    :show-inheritance:
 
