@@ -31,41 +31,6 @@ float16 = np.dtype(np.float16)
 float32 = np.dtype(np.float32)
 float64 = np.dtype(np.float64)
 
-@cython.boundscheck(False)
-cdef tuple _count_rotations(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
-        np.ndarray[np.float64_t, ndim=3] vdw_correlation_np,
-        np.ndarray[np.float64_t, ndim=3] counter_matrix_np,
-        np.ndarray[np.float64_t, ndim=3] interaction_energy_np):
-    cdef double[:,:,:] vdw_correlation = vdw_correlation_np
-    cdef double[:,:,:] esp_correlation = esp_correlation_np
-    cdef double[:,:,:] counter_matrix = counter_matrix_np
-    cdef double[:,:,:] interaction_energy = interaction_energy_np,
-    cdef int x,y,z
-    cdef float counter_add = 1.
-    cdef int xdim = vdw_correlation.shape[0]
-    cdef int ydim = vdw_correlation.shape[1]
-    cdef int zdim = vdw_correlation.shape[2]
-    # FFT precision / machine epsilon: threshold for float equality testing
-    cdef float vdw_correlation_eps = 0.0001
-    
-    for x in range(xdim):
-        for y in range(ydim):
-            for z in range(zdim):
-                if vdw_correlation[x,y,z] + vdw_correlation_eps > 0:
-                    counter_matrix[x, y, z] += 1
-                    interaction_energy[x, y, z] = esp_correlation[x, y, z]
-    return interaction_energy_np, counter_matrix_np
-
-def count_rotations(np.ndarray[np.float64_t, ndim=3] vdw_correlation,
-        np.ndarray[np.float64_t, ndim=3] esp_correlation,
-        np.ndarray[np.float64_t, ndim=3] counter_matrix):
-
-    interaction_energy = np.zeros([esp_correlation.shape[0],
-         esp_correlation.shape[1], esp_correlation.shape[2]])
-    interaction_energy, counter_matrix = _count_rotations(esp_correlation,
-        vdw_correlation, counter_matrix, interaction_energy)
-    return interaction_energy, counter_matrix
-
 #@cython.boundscheck(False)
 #cdef tuple calculateEnergy(np.ndarray[np.float64_t, ndim=3] esp_correlation_np,
 #        np.ndarray[np.float64_t, ndim=3] shape_correlation_np,

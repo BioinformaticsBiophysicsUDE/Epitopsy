@@ -402,12 +402,10 @@ def run_SCS(pdb_path,
             esp_correlation = esp_fft.get_correlation(pqr_esp)
             esp_correlation = esp_fft.shift_fft(esp_correlation)
             
-            # energy calculation in a cython script
-            interaction_energy, counter_matrix = CalculateInteractionEnergyCython.count_rotations(
-                vdw_correlation, esp_correlation, counter_matrix)
-            
-            # convert binding affinity to equilibrium constant
-            partition_function += np.exp(-interaction_energy)
+            # increment partition function with microstates energy
+            heaviside_mask = (vdw_correlation >= 0 - vdw_correlation_eps)
+            counter_matrix += heaviside_mask
+            partition_function += np.exp(-esp_correlation * heaviside_mask)
             
             # find best position of the ligand if requested
             if write_top_hits:
