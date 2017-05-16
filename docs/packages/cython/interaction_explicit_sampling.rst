@@ -1,8 +1,8 @@
 
-:mod:`CalculateInteractionEnergyCython` --- Compute protein-ligand free binding energy
-======================================================================================
+:mod:`interaction_explicit_sampling` --- Compute protein-ligand free binding energy
+===================================================================================
 
-.. module:: CalculateInteractionEnergyCython
+.. module:: interaction_explicit_sampling
    :synopsis: Compute protein-ligand free binding energy.
 .. moduleauthor:: Christoph Wilms <christoph.wilms@uni-due.de>
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
@@ -12,14 +12,14 @@ This module provides tools to compute the Gibbs free energy of binding
 between a ligand and a protein. It is meant to be used by
 :func:`calculate_partition_function`.
 
-.. _CalculateInteractionEnergyCython-syntax:
+.. _interaction_explicit_sampling-syntax:
 
 Module Syntax
 -------------
 
 Empty
 
-.. _contents-of-module-CalculateInteractionEnergyCython:
+.. _contents-of-module-interaction_explicit_sampling:
 
 Module Contents
 ---------------
@@ -156,7 +156,7 @@ Module Contents
         ``False`` otherwise
 
 
-.. automodule:: epitopsy.cython.CalculateInteractionEnergyCython
+.. automodule:: epitopsy.cython.interaction_explicit_sampling
     :members:
     :undoc-members:
     :show-inheritance:

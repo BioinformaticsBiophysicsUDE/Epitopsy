@@ -1,117 +1,100 @@
 import numpy as np
-
 from epitopsy.DXFile import VDWBox
 
-# conc = 0.01-0.1 mol/l
 
-def findVolLASPro(counter_box):
-
-    # read the counter matrix
-    #counter_matrix = read_dxfile(counter_matrix_path,'esp')
-
-    # find the maximum of performed rotations in this matrix and every point
-    # which has the this value in the matrix
-    max_v = np.amax(counter_box.box)
-#    solv_pos = np.nonzero(esp.box == max_v)
-    # find the real surface of the protein
+def find_LAS(counter_box):
+    """
+    Detect the Ligand Accessible Surface (LAS), defined as the center of a
+    molecular probe rolling on the protein van der Waals surface. The resulting
+    DXBox encodes the solvent as 1, the LAS as 2 the protein interior as 0.
+    
+    :param counter_box: microstates (number of allowed ligand rotations)
+    :type  counter_box: :class:`DXFile.VDWBox`
+    :returns: (:class:`DXFile.VDWBox`) LAS protein volume
+    """
+    # create a VDW box with 1's in the solvent (= ligand was allowed to rotate)
+    # and 0's inside the protein (= no rotation was allowed)
+    vdw = VDWBox(np.zeros(counter_box.box.shape),
+                 counter_box.box_mesh_size,
+                 counter_box.box_offset)
     solv_pos = np.nonzero(counter_box.box > 0)
-
-    # create a new box of the same dimension of esp and write a 1 everywhere
-    # where the rotation of the maximum value was found
-    new_box = np.zeros(counter_box.box.shape)
-    new_box[solv_pos] = 1
-
-    # create a vdw object and find the surface indices
-    vdw = VDWBox(new_box,counter_box.box_mesh_size,counter_box.box_offset)
+    vdw.box[solv_pos] = 1
+    
+    # encode the LAS with 2's (= ligand was allowed to rotate)
     vdw.flood()
     vdw.find_solvent_surface()
+    
+    return vdw
 
-    # find solvent, LAS , Protein
 
-    solv = np.nonzero(vdw.box == 1)
-    LAS = np.nonzero(vdw.box == 2)
-    prot = np.nonzero(vdw.box == 0)
+def calc_volume_solvent(protein_concentration, LAS_points_count,
+                        protein_points_count, mesh_size):
+    """
+    Compute the volume of solution containing exactly one protein, subtract
+    the volume of the protein to get the volume of solvent, divide by the mesh
+    size to get the theoretical number of grid points containing the solvent.
+    
+    :param protein_concentration: protein concentration in mol/L
+    :type  protein_concentration: float
+    :param LAS_points_count: number of grid points on the LAS
+    :type  LAS_points_count: int
+    :param protein_points_count: number of grid points below the LAS
+    :type  protein_points_count: int
+    :param mesh_size: mesh size in angstroms
+    :type  mesh_size: list
+    """
+    # given a concentration c, find the volume of solvent containing 1 molecule
+    vol_solvation_sphere = 1. / (6.02214129e23 * protein_concentration)
+    
+    # find the LAS volume and protein volume (much smaller than vol_solvation)
+    Angstrom_cube_to_liter = 1000 * (1e-10)**3  # volume of 1 A^3 in L
+    vol_grid_point = np.prod(mesh_size) * Angstrom_cube_to_liter
+    vol_LAS     = vol_grid_point * LAS_points_count
+    vol_protein = vol_grid_point * protein_points_count
+    
+    # deduce the volume of solvent
+    vol_outside_LAS = vol_solvation_sphere - vol_LAS - vol_protein
+    vol_outside_LAS_count = vol_outside_LAS / vol_grid_point
+    
+    return vol_outside_LAS_count
 
-    return solv, LAS, prot
 
-def calcDG(energy_box,counter_box,Temp=310,conc=None):
+def estimate_DG(energy_box, counter_box, protein_concentration=1., Temp=310.):
     '''
-    Calculates the binding free energy of protein to ligand in kJ/mol and
-    the k_D.
+    Compute the approximate binding free energy in kJ/mol and dissociation
+    constant, based on the energies found on the ligand accessible surface.
 
-    Args:
-        energy_box -> DXBox containing the energies
-        counter_box -> DXBox containing the number of possible rotations at
-                        each grid point
-        Temp -> Temperature, default 310
-        conc -> concentration
-
-    Returns:
-        A list containing the binding free energy of protein to ligand and
-        the k_D.
+    :param energy_box: energies
+    :type  energy_box: :class:`DXFile.DXBox`
+    :param counter_box: microstates (number of allowed ligand rotations)
+    :type  counter_box: :class:`DXFile.VDWBox`
+    :param Temp: temperature
+    :param Temp: float
+    :param protein_concentration: protein concentration (mol/L)
+    :param protein_concentration: float
+    :returns: (*tuple*) Binding free energy in kJ/mol and dissociation constant
     '''
-    # gas constant
-    R = 8.3144621
-
-    # get solvent, LAS and protein indices
-    SoLAPr = findVolLASPro(counter_box)
-
-    # read energy matrix
-    #EnMat = read_dxfile(energy_matrix_path, 'esp')
-
-    # calculate e^(-E/(k_B T)) and sum up
-    # energies are already in units of k_B T
-    #solvAr = EnMat.box[SoLAPr[0]]
-    #solvE = np.sum(np.exp(-solvAr))
-
-    LASAr = energy_box.box[SoLAPr[1]]
-    LASE = np.sum(np.exp(-1*LASAr))
-
-    if conc is None:
-        void = len(LASAr)
-    else:
-        void = calVoidVol(conc,SoLAPr[1],SoLAPr[2])
-
-    #print(str(calcConc(void,SoLAPr[1],SoLAPr[2]))+' mol/l')
-
-    # return DG estimate
+    # molar gas constant in J/mol/K
+    R = 8.3144598
+    
+    # number of grid points contained on the LAS and below the LAS
+    LAS = find_LAS(counter_box)
+    protein_points_count = np.sum(LAS.box == 0)
+    LAS_points_count     = np.sum(LAS.box == 2)
+    LAS_points = np.nonzero(LAS.box == 2)
+    
+    # compute total number of solvent grid points if the DXBox dimensions were
+    # extended to reach a concentration of *conc*
+    solvent_points_count = calc_volume_solvent(protein_concentration,
+              LAS_points_count, protein_points_count, energy_box.box_mesh_size)
+    
     # DG = - R T ln( K )
-    # K = sum( E_LAS ) / sum( E_nonLAS )
-    # E_LAS = exp( -E_{onLAS} / (k_B T) )
-    # E_nonLAS = exp( -E_{notonLAS} / (k_B T) )
-    return [(-1*R*Temp*(np.log(LASE/void))/1000), LASE]
+    # K =  [E_LAS] / [nonLAS]
+    # [LAS] = sum( exp( -E_{onLAS} / (k_B T) ) )
+    # [nonLAS] = sum( exp( -E_{notonLAS} / (k_B T) ) )
+    # E_{notonLAS} = 0 # in water
+    LAS_dG = energy_box.box[LAS_points]
+    LAS_K_sum = np.sum(np.exp(-LAS_dG))
+    return (-R*Temp*np.log(LAS_K_sum / solvent_points_count) / 1000, LAS_K_sum)
 
-def calcConc(void,LASpoints,ProteinPoints,grid=[0.5,0.5,0.5]):
 
-    '''
-    calculates the concentration of protein and ligand for a given LAS layer
-    and and the additional volume of the protein and a given volume which
-    constitutes the rest of the water in which all is soluted
-
-    all has to be given in grid points, the grid defines afterwards the volume
-    of each gridpoint
-    '''
-
-    mol = 6.02214129 * 10**23
-    in_liter = 10**-27
-    water = ((len(LASpoints)*grid[0]*grid[1]*grid[2] * in_liter)
-            + (void*grid[0]*grid[1]*grid[2] * in_liter))
-    protein = len(ProteinPoints)*grid[0]*grid[1]*grid[2] * in_liter
-    volume = protein+water
-    conc = 1/(mol*volume)
-    return conc
-
-def calVoidVol(conc,LASpoints,ProteinPoints,grid=[0.5,0.5,0.5]):
-
-    '''
-    calculates a void volume, from a given LAS-layer, a protein volume (both in
-    grid points) and a concentration in which the protein should be soluted'''
-
-    mol = 6.02214129 * 10**23
-    in_liter = 10**-27
-    vol = 1.0/(mol*float(conc))
-    waterLAS = len(LASpoints)*grid[0]*grid[1]*grid[2] * in_liter
-    protein = len(ProteinPoints)*grid[0]*grid[1]*grid[2]* in_liter
-    voidVol = vol-waterLAS-protein
-    voidpoints = voidVol/(grid[0]*grid[1]*grid[2] * in_liter)
-    return voidpoints

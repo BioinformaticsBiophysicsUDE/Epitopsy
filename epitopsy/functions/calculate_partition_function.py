@@ -2,7 +2,7 @@ __author__     = "Christoph Wilms, Jean-Noel Grad"
 __copyright__  = "Copyright 2013, Epitopsy"
 __date__       = "2013-03-07"
 __credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
-__doc__        = """Surface and charge complementarity screening"""
+__doc__        = '''Surface and charge complementarity screening'''
 
 import os
 import time
@@ -17,7 +17,6 @@ from epitopsy.result.FFT_Result import FFT_Result
 from epitopsy.cython import interaction_explicit_sampling
 from epitopsy.tools import MathTools
 from epitopsy.tools.UtilityClasses import Progress_bar_countdown
-from epitopsy.tools.style import style
 from epitopsy.tools.calc_vol_and_surface import calc_vol_and_surface
 
 
@@ -112,7 +111,7 @@ def run_APBS(pdb_path,
     
     Example::
     
-        >>> from epitopsy import calculate_partition_function3 as cpf
+        >>> from epitopsy import calculate_partition_function as cpf
         >>> cpf.run_APBS(pdb_path = "WT.B99990003.pdb", mesh_size = 3*[1.0,],
         ...              ligands = ["8025.pqr"], verbose = True)
         centered pdb:	False
@@ -120,7 +119,7 @@ def run_APBS(pdb_path,
         mesh size:	(1.0,1.0,1.0)
         value of extend:	45
         box dim:	(161,161,161)
-        Starting APBS ...
+        Running APBS ...
         Done.
     
     '''
@@ -179,7 +178,7 @@ def run_APBS(pdb_path,
         print("mesh size:\t({0},{1},{2}) Angstroms".format(*mesh_size))
         print("extension:\t{0} Angstroms".format(extend))
         print("box dim:\t({0:.0f},{1:.0f},{2:.0f})".format(*box_dim))
-        print("Starting APBS...")
+        print("Running APBS...")
     
     # run APBS
     apbs = APBSWrapper()
@@ -198,14 +197,16 @@ def run_APBS(pdb_path,
 
 def run_SCCS(pdb_path,
              ligand_path,
-             APBS_dx_path        = '.',
+             APBS_dx_path        = ".",
              number_of_rotations = 150,
              write_top_hits      = False,
              explicit_sampling   = False,
-             zipped              = False,
+             zipped              = ("mic",),
              verbose             = True,
              interior            = -15.,
-             no_return           = True):
+             protein_conc        = 1.,
+             no_return           = True,
+             normalization_mode  = None):
     '''
     Surface and Charge Complementarity Screening: screen a protein surface with
     a molecular probe using the Fast Fourier Transform.
@@ -216,7 +217,7 @@ def run_SCCS(pdb_path,
     * :file:`protein_mic.dx.gz`: the number of free rotations on each grid
       point (available microstates)
     
-    The ESP calculated in APBS is dimensionless (it's divided by kT/|e|).
+    The ESP calculated in APBS is dimensionless (it's divided by <math>kT/|e|</math>).
     We therefore don't have to multiply Phi by <math>\\beta = 1/kT</math>
     nor have to multiply the PQR charges by <math>|e|</math> when computing
     the Maxwell-Boltzmann probability of presence, i.e. <math>e^{-\\beta
@@ -238,12 +239,14 @@ def run_SCCS(pdb_path,
         detect overlapping orientations (optional), default is ``False``; this
         option does not work with **write_top_hits**
     :type  explicit_sampling: bool
-    :param zipped: if ``True`` all DXBoxes will be gzipped, if ``False``, the
-        energy matrix and the LAS surface are not zipped (default)
-    :type  zipped: bool
+    :param zipped: gzip all DXBoxes if ``True``, none if ``False``, use "epi"
+        or "mic" to select individual DXBoxes to gzip
+    :type  zipped: bool or tuple
     :param verbose: print calculation details and progress bar to screen if
         ``True``
     :type  verbose: bool
+    :type  protein_conc: protein concentration in mol/L (for energy summary)
+    :type  protein_conc: float
     :param interior: VdW penalty score delta (optional), must be negative
     :type  interior: float
 
@@ -255,7 +258,7 @@ def run_SCCS(pdb_path,
     
     Example::
     
-        >>> from epitopsy import calculate_partition_function3 as cpf
+        >>> from epitopsy import calculate_partition_function as cpf
         >>> cpf.run_APBS(pdb_path = "WT.B99990003.pdb", mesh_size = 3*[1.0,],
         ...              ligands = ["8025.pqr"], verbose = False)
         >>> cpf.run_SCS(pdb_path = "WT.B99990003.pdb", ligand_path = "8025.pqr")
@@ -282,10 +285,12 @@ def run_SCCS(pdb_path,
     pymol_threshold = 0.9e37
     basename = os.path.basename(pdb_path).replace(".pdb", "_{0}.dx")
     path_epi = basename.format("epi")
-    path_mic = basename.format("mic") + ".gz"
-    path_esp = os.path.join(APBS_dx_path, basename.format("esp"))
-    path_vdw = os.path.join(APBS_dx_path, basename.format("vdw"))
-    LAS_energy_path = style["LAS_box_file_path"]
+    path_mic = basename.format("mic")
+    path_esp = basename.format("esp")
+    path_vdw = basename.format("vdw")
+    if APBS_dx_path != '.':
+        path_esp = os.path.join(APBS_dx_path, path_esp)
+        path_vdw = os.path.join(APBS_dx_path, path_vdw)
     
     # rangecheck
     if not APBS_dx_path or not os.path.isdir(APBS_dx_path):
@@ -295,14 +300,17 @@ def run_SCCS(pdb_path,
     if not os.path.isfile(ligand_path):
         raise IOError("ligand_path cannot be read.")
     
-    if zipped:
-        if not LAS_energy_path.endswith(".gz"):
-            LAS_energy_path += ".gz"
-        if not path_epi.endswith(".gz"):
+    # select files to compress
+    if isinstance(zipped, basestring):
+        zipped = (zipped,)
+    if isinstance(zipped, list) or isinstance(zipped, tuple):
+        if "epi" in zipped:
             path_epi += ".gz"
-    else:
-        LAS_energy_path.rstrip(".gz")
-        path_epi.rstrip(".gz")
+        if "mic" in zipped:
+            path_mic += ".gz"
+    elif zipped:
+        path_epi = path_epi + ".gz"
+        path_mic = path_mic + ".gz"
     
     # load the ligand and count how many atoms have non-zero radius
     lig = PQRFile(ligand_path.replace(".pdb",".pqr"))
@@ -424,6 +432,7 @@ def run_SCCS(pdb_path,
     
     # compute binding affinity in units of kbT
     probability = partition_function / float(number_of_rotations) # normalize
+    #probability = partition_function / np.maximum(counter_matrix,1) # bad idea
     zero_indices = np.nonzero(probability == 0)   # flag zeros (log undefined)
     probability[zero_indices] = np.e              # zeros -> dummy values
     affinity = -np.log(probability)               # compute binding affinity
@@ -456,7 +465,7 @@ def run_SCCS(pdb_path,
         print("Writing energy")
     energy_box.setCommentHeader([" OpenDX file created by {} on {}".format(
                                           os.getenv("USER"), time.ctime()),
-        " using Epitopsy function run_SCS()",
+        " using Epitopsy function run_SCCS()",
         "   Interaction energy in kT (negative energies are attractive)",
         "     protein:     {}".format(pdb_path),
         "     ligand:      {}".format(ligand_path),
@@ -469,9 +478,9 @@ def run_SCCS(pdb_path,
     if verbose:
         print("Writing counter matrix")
     counter_box = DXBox(counter_matrix, espbox.box_mesh_size, espbox.box_offset)
-    energy_box.setCommentHeader(["OpenDX file created by {} on {}".format(
+    counter_box.setCommentHeader([" OpenDX file created by {} on {}".format(
                                           os.getenv("USER"), time.ctime()),
-        " using Epitopsy function run_SCS()",
+        " using Epitopsy function run_SCCS()",
         "   Number of available microstates (allowed rotations), integer value"
                                                                     " between",
         "   0 (no rotation) and {} (free rotation)".format(number_of_rotations),
@@ -485,8 +494,8 @@ def run_SCCS(pdb_path,
     # compute binding energies and write to file
     if verbose:
         print("Analyzing data")
-    calc_vol_and_surface(pdb_path, 1., zipped = zipped, energy_box = energy_box,
-                         counter_box = counter_box, raise_error = False)
+    calc_vol_and_surface(1, energy_box, counter_box, raise_error = False,
+                         conc = protein_conc)
     
     if verbose:
         total_time = time.time() - start_time
@@ -543,5 +552,107 @@ def calculate_interaction_energy(pdb_path,
             no_return           = False)
     
     return affinity
+
+
+def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
+    '''
+    Merge multiple energetic maps using the Maxwell-Boltzmann formula:
+    <math>E^{\\text{avg}} = -log\\(\\sum_i w_i e^{E_i}\\)</math>
+    
+    :param energy_paths: paths to the energy DXboxes
+    :type  energy_paths: list(str)
+    :param weights: weights, default is 1 for each box
+    :type  weights: list(float)
+    :param output_fmt: path to the output DXBoxes, with format
+    :type  output_fmt: str
+    
+    Example::
+    
+        >>> 
+
+    '''
+    if not weights:
+        weights = [1 for _ in range(len(energy_paths))]
+    merge_epi = output_fmt.format('epi')
+    merge_mic = output_fmt.format('mic')
+    if merge_epi == merge_mic:
+        raise ValueError('arg. output_fmt is incorrect, please read the doc')
+    
+    dxb = DXReader().parse(energy_paths[0], 'esp')
+    box = weights[0] * np.exp(-dxb.box)
+    for filename, weight in zip(energy_paths, weights)[1:]:
+        dxb = DXReader().parse(filename, 'esp')
+        box += weight * np.exp(-dxb.box)
+    box /= sum(weights)
+    dxb.box = -np.log(box)
+    dxb.write(merge_epi)
+
+def energy2occupancy(energy_path, microstates_path, output_path=None):
+    '''
+    Convert an energy grid to an occupancy grid.
+    
+    Example::
+    
+        >>> energy2occupancy('protein-centered_epi.dx',
+        ...                  'protein-centered_mic.dx.gz',
+        ...                  'protein-centered_occ.dx')
+    '''
+    if output_path is None:
+        if '_epi.dx' in energy_path:
+            output_path = energy_path.split('_epi.dx')[0] + '_occ.dx'
+        else:
+            raise ValueError('Please provide an output path for the occupancy.')
+    epi = DXReader().parse(energy_path, 'esp')
+    mic = DXReader().parse(microstates_path, 'vdw')
+    occ = epi
+    occ.box = np.exp(-epi.box) * np.array(mic.box >= 1, dtype=int)
+    occ.write(output_path)
+
+def microstates2LAS(microstates_path, output_path=None):
+    '''
+    Convert a microstate grid into a Ligand Accessible Surface grid, by listing
+    all grid points where no rotation was allowed.
+    
+    Example::
+    
+        >>> energy2occupancy('protein-centered_mic.dx.gz',
+        ...                  'protein-centered_occ.dx',
+        ...                  'protein-centered_las.dx')
+    '''
+    if output_path is None:
+        if '_mic.dx' in microstates_path:
+            output_path = microstates_path.split('_mic.dx')[0] + '_las.dx'
+        else:
+            raise ValueError('Please provide an output path for the LAS.')
+    dxb = DXReader().parse(microstates_path, 'vdw')
+    dxb.box = np.array(dxb.box == 0, dtype=float)
+    dxb.write(output_path)
+
+microstates2LAS('counter_matrix.dx.gz', 'protein-centered_las.dx')
+
+energy2occupancy('gibbs_free_energy.dx', 'counter_matrix.dx.gz', 'protein-centered_occ.dx')
+
+def ligand_maps(ligand_path, m):
+    '''
+    Merge multiple energetic maps using the Maxwell-Boltzmann formula:
+    <math>E^{\\text{avg}} = -log\\(\\sum_i w_i e^{E_i}\\)</math>
+    
+    :param energy_paths: paths to the energy DXboxes
+    :type  energy_paths: list(str)
+    :param weights: weights, default is 1 for each box
+    :type  weights: list(float)
+    :param output_fmt: path to the output DXBoxes, with format
+    :type  output_fmt: str
+    
+    Example::
+    
+        >>> 
+
+    '''
+    ligand = PQRFile(ligand_path)
+    ligand.translate(-ligand.determine_geometric_center())
+    #pqr_vdw = ligand.snap_vdw_to_box(vdwbox.box_mesh_size,
+    #                                          vdwbox.box_dim, vdwbox.box_offset)
+    #pqr_esp = ligand.snap_esp_to_dxbox(espbox)
 
 
