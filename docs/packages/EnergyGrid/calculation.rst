@@ -1,8 +1,8 @@
 
-:mod:`calculate_partition_function` --- Grid-based protein-ligand affinity screening
-====================================================================================
+:mod:`calculation` --- Grid-based protein-ligand affinity screening
+===================================================================
 
-.. module:: calculate_partition_function
+.. module:: calculation
    :synopsis: Grid-based protein-ligand affinity screening.
 .. moduleauthor:: Christoph Wilms <christoph.wilms@uni-due.de>
 .. sectionauthor:: Jean-Noel Grad <jean-noel.grad@uni-due.de>
@@ -51,7 +51,7 @@ has the highest probability of being present (in solution).
 .. |_| unicode:: 0xA0 
    :trim:
 
-.. _calculate_partition_function-syntax:
+.. _calculation-syntax:
 
 Module Syntax
 -------------
@@ -304,13 +304,13 @@ amount of time is lost to :func:`APBS.APBSWrapper.get_dxbox` and
     ===================================================================== ==== ==== ======== ============ ====== =====
 
 
-.. _contents-of-module-calculate_partition_function:
+.. _contents-of-module-calculation:
 
 Module Contents
 ---------------
 
-.. automodule:: epitopsy.functions.calculate_partition_function
-   :members:
-   :undoc-members:
-
+.. automodule:: epitopsy.EnergyGrid.calculation
+    :members:
+    :undoc-members:
+    :show-inheritance:
 

@@ -41,8 +41,7 @@ setup(
 		'epitopsy.Optimization',
 		'epitopsy.functions',
 		'epitopsy.cython',
-		'epitopsy.scoring',
-		'epitopsy.result'
+		'epitopsy.EnergyGrid'
 	],
     license='LICENSE.txt',
     description='Bioinforamtics Toolkit.',

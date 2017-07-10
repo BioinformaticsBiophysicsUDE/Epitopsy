@@ -13,10 +13,9 @@ Subpackages
 
 .. toctree::
 
+    epitopsy.EnergyGrid
     epitopsy.Optimization
     epitopsy.functions
-    epitopsy.result
-    epitopsy.scoring
     epitopsy.tools
     epitopsy.cython
 
