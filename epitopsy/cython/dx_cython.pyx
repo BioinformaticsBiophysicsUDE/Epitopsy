@@ -1,5 +1,6 @@
 # @author: Christoph Wilms
 
+from epitopsy.tools.MathTools import spherical_lattice_default
 import numpy as np
 
 # "cimport" is used to import special compile-time information
@@ -773,65 +774,280 @@ cdef np.ndarray _find_solvent_surface(float protein_score, float solvent_score,
 
     return box_np
 
-def simulated_annealing(box, runs=50, search_min=True, conv_temp=0.00001, gamma=0.25):
-    # by default, simulated annealing will search for minima
-    if search_min:
-        return c_simulated_annealing(box, runs, conv_temp, gamma)
-    else:
-        return c_simulated_annealing(-box, runs, conv_temp, gamma)
 
-cdef np.ndarray[np.int16_t] c_simulated_annealing(np.ndarray[np.float64_t, ndim=3] box, 
-                                int runs, float conv_temp, float gamma):
-    cdef int max_x, max_y, max_z
-    max_x = box.shape[0]
-    max_y = box.shape[1]
-    max_z = box.shape[2]
+def simulated_annealing(box, runs=50, Tini=1.0, gamma=0.25, block_size=100,
+                        convergence_T=1e-4, convergence_rejections=None,
+                        step_size=1, adaptative_step_size=True,
+                        acceptance_ratio_upper=70, acceptance_ratio_lower=30,
+                        seed=None, return_full_chains=False):
+    '''
+    Local minima search by simulated annealing.
+    
+    From several starting positions uniformly distributed on a sphere centered
+    around the protein, run a Markov chain with a temperature schedule. The
+    probability of transition from the current state to the next step is 1 when
+    the next state has lower energy, or is proportionnal to the exponential of
+    the energy difference divided by the temperature otherwise. The temperature
+    decreases steadily until the Markov chain is unable to progress anymore.
+    
+    More formally, the transition probability :math:`P(x_1 \\to w_2, T)`
+    between two states :math:`x_1` and :math:`x_2` with energy difference
+    :math:`\\Delta E = E_2 - E_1` at temperature T is given by the Metropolis
+    criterion:
+    
+    .. math::
+    
+         P(x_1 \\to x_2, T) = \\begin{cases}
+                                    e^{-\\Delta E/T} & \\Delta E > 0 \\\\
+                                    1                & \\Delta E \\leq 0
+                              \\end{cases}
+    
+    The annealing schedule is geometric. After each block of :math:`n`
+    iterations at temperature :math:`T_i`, temperature :math:`T_{i+1}` is
+    calculated as :math:`T_{i+1} = T_i \cdot (1 - \\gamma)` with
+    :math:`\\gamma` the geometric temperature factor. The chain stops after
+    reaching a limit temperature :math:`T_{\\text{min}}`; the maximal number
+    of iterations is:
+    
+    .. math::
+    
+         n \\cdot \\left \\lceil
+                             \\dfrac{\\log_{10}\\left(T_{\\text{min}}\\right)
+                                   - \\log_{10}\\left(T_{\\text{ini}}\\right)}
+                                    {\\log_{10}\\left(1-\\gamma\\right)}
+                  \\right \\rceil
+    
+    The chain may stop sooner if no jump was made in :math:`3 \\cdot n` steps.
+    
+    To decrease the time spent sampling far away from the protein surface and
+    avoid getting trapped into noise too early, the algorithm provides an
+    optional adaptative step size mechanism. The step size increases
+    when too many moves are accepted (*i.e.* the chain is sampling far away
+    from a local minimum) and decreases when too many moves are rejected
+    (*i.e.* the chain is sampling near or inside a local minimum). This
+    approach was adapted from the variable step size method used to speed-up
+    simulated annealing in continuous sample spaces.
+    
+    When the grid box is not cubic, the sphere will be stretched into an
+    spheroid (oblate or prolate). This deformation does not preserve the
+    uniform distribution, but the bias only becomes visible when one box
+    dimension is twice as large as another dimension. At this point however,
+    the protein topology is probably very complex, and a different
+    distribution should probably be used.
+    
+    The simulated annealing algorithm was published in:
+    
+    * S. Kirkpatrick, C. D. Gelatt and M. P. Vecchi, Optimization by simulated
+      annealing, *Science (New York, N.Y.)* **1983**, *220(4598)*: 671-680.
+      DOI: `10.1126/science.220.4598.671
+      <http://dx.doi.org/10.1126/science.220.4598.671>`_
+    * V. Cerny, Thermodynamical approach to the traveling salesman problem: An
+      efficient simulation algorithm, *Journal of Optimization Theory and Applications*
+      **1985**, *45(1)*: 41--51. DOI: `10.1007/BF00940812
+      <http://dx.doi.org/10.1007/BF00940812>`_
+    
+    The variable step size (VSS) method was published in:
+    
+    * Jon M. Sutter and John H. Kalivas, Convergence of generalized simulated
+      annealing with variable step size with application towards parameter
+      estimations of linear and nonlinear models, *Analytical Chemistry*
+      **1991**, *63(20)*: 2383--2386. DOI: `10.1021/ac00020a034
+      <http://dx.doi.org/10.1021/ac00020a034>`_
+    
+    Discussion on VSS:
+    
+    * Edwin E. Tucker, John H. Kalivas and Jon M. Sutter, Exchange of Comments
+      on Convergence of generalized simulated annealing with variable step
+      size with application towards parameter estimations of linear and
+      nonlinear models, *Analytical Chemistry* **1992**, *64(10)*: 1199--1200.
+      DOI: `10.1021/ac00034a021 <http://dx.doi.org/10.1021/ac00034a021>`_
+    
+    Application of VSS:
+    
+    * Kimberly Hitchcock, John H. Kalivas and Jon M. Sutter,
+      Computer-generated multicomponent calibration designs for optimal
+      analysis sample predictions, *Journal of Chemometrics* **1992**, *6(2)*:
+      85--96. DOI: `10.1002/cem.1180060206
+      <http://dx.doi.org/10.1002/cem.1180060206>`_
+    
+    :param box: energy grid
+    :type  box: np.array
+    :param runs: number of independent runs
+    :type  runs: int
+    :param Tini: initial temperature
+    :type  Tini: float
+    :param gamma: geometric temperature factor
+    :type  gamma: float
+    :param block_size: number of iterations between each temperature decrease
+    :type  block_size: int
+    :param convergence_T: stop when this temperature is reached
+    :type  convergence_T: float
+    :param convergence_rejections: stop when the chain did not move for that
+       many steps, leave ``None`` to stop after 3 \* **block_size** or use 0
+       to stop only once :math:`T_{\\text{min}}` is reached
+    :type  convergence_rejections: int
+    :param step_size: step size
+    :type  step_size: int
+    :param adaptative_step_size: if ``True``, the step size is changed
+        dynamically, default is ``True``
+    :type  adaptative_step_size: bool
+    :param acceptance_ratio_upper: if **adaptative_step_size** is ``True``,
+       minimum number of accepted moves in a temperature block before the step
+       size is decremented
+    :type  acceptance_ratio_upper: int
+    :param acceptance_ratio_lower: if **adaptative_step_size** is ``True``,
+       maximum number of accepted moves in a temperature block before the step
+       size is incremented
+    :type  acceptance_ratio_lower: int
+    :param seed: numpy random generator seed (positive integer), value will be
+       incremented after each run, so that run #1 with seed 500 is identical to
+       run #11 with seed 490
+    :type  seed: int
+    :param return_full_chains: return the full Markov paths, default is to
+       return only the converged solutions
+    :type  return_full_chains: np.array
+    
+    :returns: List of local minima grid coordinates (n,l,m);
+       if **return_full_chains** is ``True`` however, the list will take the
+       form [(run, n, l, m, n_new, l_new, m_new, iterations in curent block,
+       step size, accepted moves in current block), ...]
+    :rtype: :class:`numpy.ndarray[:,3]` or :class:`numpy.ndarray[:,10]`
+    '''
+    if seed is None:
+        seed = np.random.randint(500)
+    if convergence_rejections is None:
+        convergence_rejections = 3 * block_size
+    return c_simulated_annealing(box, runs, Tini, gamma, block_size,
+          convergence_T, convergence_rejections, step_size,
+          adaptative_step_size, acceptance_ratio_upper,
+          acceptance_ratio_lower, seed, return_full_chains)
 
-    cdef int delta
-    cdef int step
-    cdef int acc
-    cdef float T
+
+cdef np.ndarray[np.int16_t] c_simulated_annealing(
+    np.ndarray[np.float64_t, ndim=3] box, int runs, float Tini, float gamma,
+    int block_size, float convergence_T, int convergence_rejections,
+    int step_size, int adaptative_step_size, int acceptance_ratio_upper,
+    int acceptance_ratio_lower, int seed, int return_full_chains):
+    '''
+    See :func:`simulated_annealing`.
+    '''
+    
+    cdef int max_x = box.shape[0]
+    cdef int max_y = box.shape[1]
+    cdef int max_z = box.shape[2]
     cdef int x, y, z
     cdef int xnew, ynew, znew
-    cdef np.ndarray L = np.zeros([runs, 3], dtype=np.int16)
-
+    cdef int xshift, yshift, zshift
+    cdef int delta
+    cdef int delta_ini
+    cdef int step
+    cdef int accepted_moves_in_block
+    cdef int consecutive_rejections
+    cdef int acc
+    cdef float T
+    cdef float DeltaE
+    cdef int acc_stop
+    
+    # maximal umber of iterations
+    cdef int max_iter = int(block_size * np.ceil(np.log10(convergence_T)
+                                               / np.log10(1 - gamma)))
+    cdef int iterations
+    
+    # Markov chain stops after n consecutive rejections
+    if convergence_rejections <= 0: # infinite
+        acc_stop = max_iter
+    
+    # if full Markov chains are requested, create a large 2D Numpy array
+    # to store run, 
+    cdef np.ndarray[np.int16_t, ndim=2] output
+    cdef int output_incr = 0
+    if return_full_chains:
+        # values: run ID, x, y, z, xnew, ynew, znew,
+        # iterations in curent block, delta, accepted moves in current block
+        output = np.zeros([runs * max_iter, 10], dtype=np.int16)
+    else:
+        # values: xend, yend, zend
+        output = np.zeros([runs, 3], dtype=np.int16)
+    
+    # GSA vs. VSGSA
+    if adaptative_step_size:
+        # initial step size is 1/30th the grid box dimensions, yet at least 3
+        delta_ini = max(3, int(np.round((max_x + max_y + max_z) / 3. / 30.)))
+    else:
+        delta_ini = step_size
+    
+    # initial positions: uniform distribution on a sphere or spheroid
+    # (depending on the box shape), stretched to less than half the
+    # box dimensions
+    sphere_lattice = np.array(spherical_lattice_default(runs), dtype=float)
+    sphere_lattice[:,0] = np.fix(max_x / 2.5 * sphere_lattice[:,0]) + max_x//2
+    sphere_lattice[:,1] = np.fix(max_y / 2.5 * sphere_lattice[:,1]) + max_y//2
+    sphere_lattice[:,2] = np.fix(max_z / 2.5 * sphere_lattice[:,2]) + max_z//2
+    cdef np.ndarray[np.int16_t, ndim=2] sphere = np.array(sphere_lattice,
+                                                          dtype=np.int16)
+    
     for run in range(runs):
-        T = 4.0
-        new_starting_point = random_sphere([max_x, max_y, max_z])
-        x = new_starting_point[0]
-        y = new_starting_point[1]
-        z = new_starting_point[2]
-        delta = 2
+        np.random.seed(seed + run)
+        T = Tini
+        x, y, z = sphere[run]
+        delta = delta_ini
         step = 0
-        acc = 0
-        while T > conv_temp:
+        accepted_moves_in_block = 0
+        consecutive_rejections = 0
+        iterations = 0
+        # main loop, stop when the minimum temperature is reached or when the
+        # system doesn't evolve anymore
+        while T > convergence_T and consecutive_rejections < acc_stop:
             step += 1
-            if step == 100:
+            # decrease temperature if end of a temperature block
+            if step == block_size:
                 T *= (1.0 - gamma)
-                if acc < 30:
-                    delta = max(1, int(round(delta/2)))
-                elif acc > 70:
-                    delta = int(round(delta*2))
+                if adaptative_step_size:
+                    # too many jumps were accepted => we are probably far away
+                    # from any minimum of energy and should increment the step
+                    # size to reach the nearest minimum faster;
+                    # too many jumps were rejected => we are probably in an
+                    # energy minimum and should decrement the step size to
+                    # stay near it
+                    if accepted_moves_in_block > acceptance_ratio_upper:
+                        delta += 1
+                    elif accepted_moves_in_block < acceptance_ratio_lower:
+                        delta = max(1, delta - 1)
                 step = 0
-                acc = 0
-            xnew = (x + np.random.randint(-delta, delta) ) % max_x
-            ynew = (y + np.random.randint(-delta, delta) ) % max_y
-            znew = (z + np.random.randint(-delta, delta) ) % max_z
-            #this case is handled seperately because math.exp can cause errors for too large exponents
-            if box[xnew, ynew, znew] < box[x, y, z] or \
-               np.random.rand() < np.math.exp(- ( box[xnew, ynew, znew] - box[x, y, z]) / T):
-                x = xnew
-                y = ynew
-                z = znew
-                acc += 1
-        L[run] = np.array([x,y,z])
-    return L
+                accepted_moves_in_block = 0
+            
+            # draw next position at random, excluding vector [0,0,0] (no jump)
+            xshift, yshift, zshift = (0, 0, 0)
+            while xshift == 0 and yshift == 0 and zshift == 0:
+                xshift, yshift, zshift = np.random.randint(-delta, delta+1, 3)
+            xnew = x + xshift
+            ynew = y + yshift
+            znew = z + zshift
+            
+            # store full Markov state if requested
+            if return_full_chains:
+                output[output_incr] = np.array([run + 1, x, y, z,
+                                    xnew, ynew, znew, iterations//block_size,
+                                    delta, accepted_moves_in_block])
+                output_incr += 1
+            
+            # check if move is accepted
+            consecutive_rejections += 1
+            if xnew >= 0 and xnew < max_x and ynew >= 0 and ynew < max_y \
+                                          and znew >= 0 and znew < max_z:
+                Delta_E = box[xnew, ynew, znew] - box[x, y, z]
+                if Delta_E <= 0 or np.math.exp(-Delta_E / T) > np.random.rand():
+                    x = xnew
+                    y = ynew
+                    z = znew
+                    accepted_moves_in_block += 1
+                    consecutive_rejections = 0
+            iterations += 1
+        
+        if not return_full_chains:
+            output[run] = np.array([x,y,z])
+    
+    if return_full_chains:
+        output = output[0:output_incr,:]
+    return output
 
-def random_sphere(shape):
-    phi = np.random.rand() * 2 * np.math.pi
-    theta = np.random.rand() * np.math.pi
-    r = np.min(shape)/2
-    x = r * (1 + np.math.sin(phi) * np.math.sin(theta) )
-    y = r * (1 + np.math.cos(phi) * np.math.sin(theta) )
-    z = r * (1 + np.math.cos(theta) )
-    return int(x), int(y), int(z)
