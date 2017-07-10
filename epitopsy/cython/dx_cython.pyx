@@ -1,6 +1,5 @@
-"""
-@author: Christoph Wilms
-"""
+# @author: Christoph Wilms
+
 import numpy as np
 
 # "cimport" is used to import special compile-time information
@@ -34,65 +33,11 @@ float64 = np.dtype(np.float64)
 cdef float _vec_distance(int x1, int y1, int z1, int x2, int y2, int z2):
     return sqrt((x2-x1)*(x2-x1) + (y2-y1)*(y2-y1) + (z2-z1)*(z2-z1))
 
-def read_dxfile_depreciated(filename, box_type):
-    if not(os.path.isabs(filename)):
-        filename = os.path.join(os.getcwd(), filename)
-
-    cdef int countX = 0
-    cdef int countY = 0
-    cdef int countZ = 0
-    cdef long counter = 0
-    cdef np.ndarray[np.int64_t,ndim=1] dimension = np.zeros(3,dtype=np.int64)
-    cdef np.ndarray[np.float64_t,ndim=1] offset = np.zeros(3,dtype=np.float64)
-    cdef np.ndarray[np.float64_t,ndim=1] meshsize = np.zeros(3,dtype=np.float64)
-    dimensionPattern = re.compile('(\\d+) (\\d+) (\\d+)$')
-    lastHeaderLinePattern = re.compile('^object 3')
-    objectPattern = re.compile('^object 1')
-    valuePattern = re.compile('^[-]?\\d+\\.\\d+[eE][+-]\\d+')
-    # this has been tested and it works
-    originPattern = re.compile('^origin ([-]?\\d+.\\d+[eE]?[+-]?\\d+?) ([-]?\\d+.\\d+[eE]?[-+]?\\d+?) ([-]?\\d+.\\d+[eE]?[+-]?\\d+?)')
-
-    if filename.endswith('.gz'):
-        with gzip.open(filename) as infile:
-            content = infile.readlines()
-    else:
-        with open(filename) as infile:
-            content = infile.readlines()
-
-    cdef int delta_counter = 0
-    cdef np.ndarray[np.float64_t,ndim=1] box
-    for line in content:
-        if not line.startswith('#'):
-            if line.startswith('object 1'):
-                matchedObject = dimensionPattern.search(line)
-                dimension[0] = int(matchedObject.group(1))
-                dimension[1] = int(matchedObject.group(2))
-                dimension[2] = int(matchedObject.group(3))
-                box = np.zeros(dimension[0] * dimension[1] * dimension[2],dtype=np.float64)
-            elif line.startswith('origin'):
-                matchedOrigin = line.split(' ')
-                offset[0] = float(matchedOrigin[1])
-                offset[1] = float(matchedOrigin[2])
-                offset[2] = float(matchedOrigin[3])
-            elif line.startswith('delta'):
-                    delta_split = line.split()
-                    meshsize[delta_counter] = float(delta_split[delta_counter+1])
-                    delta_counter += 1
-
-            if valuePattern.match(line):
-                numbers_list = line.strip().split(' ')
-                for item in numbers_list:
-                    box[counter] = float(item)
-                    counter += 1
-
-    cdef np.ndarray[np.float64_t,ndim=3] box_3d = box.reshape(dimension)
-
-    return [box_3d, meshsize, offset]
 
 def read_dxfile(filename, box_type):
     if not(os.path.isabs(filename)):
         filename = os.path.join(os.getcwd(), filename)
-
+    
     cdef int countX = 0
     cdef int countY = 0
     cdef int countZ = 0
@@ -106,14 +51,16 @@ def read_dxfile(filename, box_type):
     valuePattern = re.compile('^[-]?\\d+\\.\\d+[eE][+-]\\d+')
     # this has been tested and it works
     originPattern = re.compile('^origin ([-]?\\d+.\\d+[eE]?[+-]?\\d+?) ([-]?\\d+.\\d+[eE]?[-+]?\\d+?) ([-]?\\d+.\\d+[eE]?[+-]?\\d+?)')
-
+    
+    # load file
     if filename.endswith('.gz'):
         with gzip.open(filename) as infile:
             content = infile.readlines()
     else:
         with open(filename) as infile:
             content = infile.readlines()
-
+    
+    # read metadata
     cdef int delta_counter = 0
     cdef np.ndarray[np.float64_t,ndim=1] box
     cdef long i_start
@@ -137,7 +84,8 @@ def read_dxfile(filename, box_type):
 
             if valuePattern.match(line):
                 break
-
+    
+    # read grid values
     cdef long i,j
     cdef long n_elements = dimension[0] * dimension[1] * dimension[2]
     cdef long i_end = 1 + i_start + <long> ceil( (<double> n_elements) / 3.)
@@ -147,10 +95,11 @@ def read_dxfile(filename, box_type):
             if counter < n_elements:
                 box[counter] = float(line_content[j])
                 counter += 1
-
+    
     cdef np.ndarray[np.float64_t,ndim=3] box_3d = box.reshape(dimension)
-
+    
     return [box_3d, meshsize, offset]
+
 
 def write_box(outfile, np.ndarray[np.float64_t,ndim=3]box_np,int values_per_line):
     cdef int value_count = 0
@@ -169,14 +118,155 @@ def write_box(outfile, np.ndarray[np.float64_t,ndim=3]box_np,int values_per_line
                     value_count = 0
     return None
 
+
+def flood_fill(np.ndarray[np.float64_t, ndim=3] box_np not None,
+              seed_faces = True):
+    '''
+    A 6-way flood-fill algorithm using a queue for 3D volumetric maps.
+    
+    Example:
+    
+    .. code-block:: none
+        
+        initial      seeding      flooding     filling
+        1 1 1 1 1    2 1 1 1 2    2 2 2 2 2    1 1 1 1 1
+        1 0 0 1 1    1 0 0 1 1    2 0 0 2 2    1 0 0 1 1
+        1 0 1 0 1    1 0 1 0 1    2 0 1 0 2    1 0 0 0 1
+        1 0 0 0 1 => 1 0 0 0 1 => 2 0 0 0 2 => 1 0 0 0 1
+        1 0 0 1 1    1 0 0 1 1    2 0 0 2 2    1 0 0 1 1
+        1 0 0 0 1    1 0 0 0 1    2 0 0 0 2    1 0 0 0 1
+        1 1 1 1 1    2 1 1 1 2    2 2 2 2 2    1 1 1 1 1
+    
+    where 1's represent the solvent and 0's the protein interior.
+    
+    The algorithm starts by seeding the box 8 corners (or the 6 faces) if they
+    are not occupied by the protein, resulting in N seeds. The algorithm walks
+    through these N seeds and checks their 6 neighbors; if they contain
+    solvent, they are added to the seeds queue, resulting in M new seeds. The
+    algorithm repeats the process for these M seeds until no new seed is found.
+    Solvent voxels that could not be flooded are considered inaccessible and
+    filled with the protein score.
+    '''
+    cdef np.float64_t proteinScore = 0
+    cdef np.float64_t solventScore = 1
+    cdef np.float64_t floodedScore = 2
+    cdef double[:,:,:] box = box_np
+    cdef int xdim = box.shape[0]
+    cdef int ydim = box.shape[1]
+    cdef int zdim = box.shape[2]
+    cdef int i, j
+    cdef int x, y, z    # seed coordinates
+    cdef int nx, ny, nz # neighbor coordinates
+    
+    # shift vectors for 6-way neighbors in 3D space
+    cdef np.ndarray[np.int64_t,ndim=2] neighbors = np.array([[+1, 0, 0],
+                                                             [ 0,+1, 0],
+                                                             [ 0, 0,+1],
+                                                             [-1, 0, 0],
+                                                             [ 0,-1, 0],
+                                                             [ 0, 0,-1]])
+    cdef int neighbor_size = neighbors.shape[0]
+    
+    # seed queue
+    cdef np.ndarray[np.int64_t,ndim=2] seed_queue = np.zeros(
+                                      [xdim * ydim * zdim, 3], dtype=np.int64)
+    cdef int seed_queue_index_start = 0
+    cdef int seed_queue_index_end = 0
+    cdef int seed_queue_index_end_backtrack = 0
+    
+    if seed_faces:
+        # find seeds in the 6 faces
+        for face in [1, 2, 3]:
+            if face == 1:
+                range_x = [0, xdim-1]
+            else:
+                range_x = range(xdim)
+            if face == 2:
+                range_y = [0, ydim-1]
+            else:
+                range_y = range(ydim)
+            if face == 3:
+                range_z = [0, zdim-1]
+            else:
+                range_z = range(zdim)
+            for x in range_x:
+                for y in range_y:
+                    for z in range_z:
+                        if box[x,y,z] == 1:
+                            box[x,y,z] = floodedScore
+                            seed_queue[seed_queue_index_end, 0] = x
+                            seed_queue[seed_queue_index_end, 1] = y
+                            seed_queue[seed_queue_index_end, 2] = z
+                            seed_queue_index_end += 1
+        if seed_queue_index_end == 0:
+            raise ValueError('Solvent box faces are occupied by the protein')
+    else:
+        # find seeds in the 8 corners
+        for x,y,z in [(0,0,0), (xdim-1,0,0), (0,ydim-1,0), (0,0,zdim-1),
+                      (xdim-1,ydim-1,0), (xdim-1,0,zdim-1), (0,ydim-1,zdim-1),
+                      (xdim-1,ydim-1,zdim-1)]:
+            if box[x,y,z] == 1:
+                box[x,y,z] = floodedScore
+                seed_queue[seed_queue_index_end,:] = (x,y,z)
+                seed_queue_index_end += 1
+        if seed_queue_index_end == 0:
+            raise ValueError('Solvent box corners are occupied by the protein')
+    
+    # flood box (assign floodedScore to solvent voxels accessible from seeds)
+    while True:
+        seed_queue_index_end_backtrack = seed_queue_index_end
+        # scan seeds found in the last iteration
+        for i in range(seed_queue_index_start, seed_queue_index_end):
+            x = seed_queue[i, 0]
+            y = seed_queue[i, 1]
+            z = seed_queue[i, 2]
+            # scan 6-way neighbors
+            for j in range(neighbors.shape[0]):
+                # position of neighbor
+                nx = x + neighbors[j, 0]
+                ny = y + neighbors[j, 1]
+                nz = z + neighbors[j, 2]
+                # skip if neighbor outside box boundaries
+                # if neighbor is a solvent, add to the seed queue
+                if (nx >= 0 and nx < xdim and ny >= 0 and ny < ydim and
+                    nz >= 0 and nz < zdim):
+                    if box[nx,ny,nz] == solventScore:
+                        box[nx, ny, nz] = floodedScore
+                        seed_queue[seed_queue_index_end, 0] = nx
+                        seed_queue[seed_queue_index_end, 1] = ny
+                        seed_queue[seed_queue_index_end, 2] = nz
+                        seed_queue_index_end += 1
+        
+        # exit loop if no neighbor remains
+        if seed_queue_index_end_backtrack == seed_queue_index_end:
+            break
+        else:
+            seed_queue_index_start = seed_queue_index_end_backtrack
+    
+    # fill box (assign proteinScore to solvent voxels which were not flooded)
+    for x in range(xdim):
+        for y in range(ydim):
+            for z in range(zdim):
+                if box[x,y,z] == floodedScore:
+                    box[x,y,z] = solventScore
+                else:
+                    box[x,y,z] = proteinScore
+    
+    return box_np
+
+
 def flood(np.ndarray[np.float64_t, ndim=3] box_np not None,
         np.ndarray[np.int64_t, ndim=2] neighbors):
     """
     The VDW grid is a grid of 0's and 1's, like this:
-            1 1 1 1
-            1 0 0 1
-            1 0 1 1
-            1 1 1 1
+    
+    .. code-block:: none
+    
+        1 1 1 1
+        1 0 0 1
+        1 0 1 1
+        1 1 1 1
+    
     The algorithm starts at [0,0,0] and appends the neighbors, which
     have a value equal to a solvent grid node (i.e. 1), to the
     newFront-list. After all neighbor nodes from the first list have
@@ -255,10 +345,14 @@ def floodxy(np.ndarray[np.float64_t, ndim=3] box_np not None,
         np.ndarray[np.int64_t, ndim=2] neighbors):
     """
     The VDW grid is a grid of 0's and 1's, like this:
-            1 1 1 1
-            1 0 0 1
-            1 0 1 1
-            1 1 1 1
+    
+    .. code-block:: none
+    
+        1 1 1 1
+        1 0 0 1
+        1 0 1 1
+        1 1 1 1
+    
     The algorithm starts at [0,0,0] and appends the neighbors, which
     have a value equal to a solvent grid node (i.e. 1), to the
     newFront-list. After all neighbor nodes from the first list have
@@ -334,6 +428,7 @@ def get_sas(np.ndarray[np.float64_t, ndim=3] box,
         protein_score, solvent_score, probe_radius):
     return _get_sas(box, <float> protein_score, <float> solvent_score,
                     <float> probe_radius)
+
 
 cdef np.ndarray _get_sas(np.ndarray[np.float64_t, ndim=3] box,
         float protein_score, float solvent_score, float probe_radius):
@@ -454,6 +549,7 @@ def determineActualInnerPeptideNodes(np.ndarray[np.float64_t, ndim=3] box,
                         innerNodes.append([x, y, z])
     return innerNodes
 
+
 def extendSurface(int iterations, np.ndarray[np.float64_t, ndim=3] box,
         solventScore_ext, peptideScore_ext,
         np.ndarray[np.int64_t, ndim = 2] neighbors):
@@ -499,6 +595,7 @@ def extendSurface(int iterations, np.ndarray[np.float64_t, ndim=3] box,
             surface_nodes = np.array(newSurfaceNodes,dtype=np.int64)
     return box
 
+
 cdef np.ndarray switch_value(np.ndarray[np.float64_t, ndim =3] box,
                                           int xdim, int ydim, int zdim,
                                           np.float64_t value_to_switch,
@@ -510,6 +607,7 @@ cdef np.ndarray switch_value(np.ndarray[np.float64_t, ndim =3] box,
                     box[x,y,z] = new_value
 
     return box
+
 
 def extend_nice_surface(int iterations, np.ndarray[np.float64_t, ndim=3] box,
         solventScore_ext, peptideScore_ext, dummy_score_ext,
@@ -568,6 +666,7 @@ def find_protein_surface(protein_score, solvent_score, surface_score,
     return _find_protein_surface(<float> protein_score, <float> solvent_score,
                                  <float> surface_score, box)
 
+
 cdef double[:,:,:] check_protein_neighbor(double[:,:,:] box, int xdim, int ydim,
        int zdim, int x, int y, int z, float solvent_score, float surface_score):
     cdef int i,j,k
@@ -591,6 +690,7 @@ cdef double[:,:,:] check_protein_neighbor(double[:,:,:] box, int xdim, int ydim,
 
     return box
 
+
 cdef np.ndarray _find_protein_surface(float protein_score, float solvent_score,
                   float surface_score,
                   np.ndarray[np.float64_t, ndim=3] box_np):
@@ -611,29 +711,6 @@ cdef np.ndarray _find_protein_surface(float protein_score, float solvent_score,
                 if box[x,y,z] == protein_score:
                     box = check_protein_neighbor(box, xdim, ydim, zdim, x, y, z,
                             solvent_score, surface_score)
-#                    stop = 0
-#                    # check neighbor grid points
-#                    for i from -1 <= i <= 1:
-#                        if stop == 1:
-#                            break
-#                        for j from -1 <= j <= 1:
-#                            if stop == 1:
-#                                break
-#                            for k from -1 <= k <= 1:
-#                                if i == 0 and j == 0 and k == 0:
-#                                    continue
-#                                else:
-#                                    posx = x + i
-#                                    posy = y + j
-#                                    posz = z + k
-#
-#                                    if (posx >= 0 and posx < xdim
-#                                        and posy >= 0 and posy < ydim
-#                                        and posz >= 0 and posz < zdim):
-#                                        if box[posx,posy,posz] == solvent_score:
-#                                            box[x,y,z] = surface_score
-#                                            stop = 1
-#                                            break
     return box_np
 
 
@@ -648,6 +725,7 @@ def find_solvent_surface(protein_score, solvent_score, surface_score,
     """
     return _find_solvent_surface(<float> protein_score, <float> solvent_score,
                                  <float> surface_score, box)
+
 
 cdef double[:,:,:] check_surface_neighbor(double[:,:,:] box, int xdim, int ydim,
        int zdim, int x, int y, int z, float protein_score, float surface_score):
@@ -671,6 +749,7 @@ cdef double[:,:,:] check_surface_neighbor(double[:,:,:] box, int xdim, int ydim,
                             return box
 
     return box
+
 
 cdef np.ndarray _find_solvent_surface(float protein_score, float solvent_score,
                   float surface_score, np.ndarray[np.float64_t, ndim=3] box_np):
