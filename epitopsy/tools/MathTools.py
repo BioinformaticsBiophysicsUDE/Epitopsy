@@ -337,3 +337,41 @@ def fix_grid_size(box_dim, nlev=4):
 
     return np.array(fixed_dimension)
 
+
+def PCA_base(coord):
+    '''
+    Compute the unit vectors of a basis that maximizes the spread of atomic
+    coordinates on the x-axis, then the y-axis and the z-axis.
+    
+    The PCA of a collection of atomic coordinates returns a base with
+    determinant :math:`\pm 1`. Molecules with stereocenters are orientable,
+    therefore a base with determinant :math:`+1` preserves the molecule
+    topology while a base with determinant :math:`-1` introduces a reflection.
+    The reflection component is removed to avoid inverting all stereocenters.
+    
+    :param coord: Atomic coordinates, usually the subset of C-alpha atoms
+    :type  coord: :class:`numpy.ndarray`\[:,3\]
+    :returns: Set of basis vectors, without reflection
+    :returntype: :class:`numpy.ndarray`\[3,3\]
+    '''
+    covariance = np.cov(coord.T)
+    eigenvalues, eigenvectors = np.linalg.eigh(covariance)
+    eigenvectors = eigenvectors[:, np.argsort(eigenvalues)[::-1]]
+    if np.linalg.det(eigenvectors) < 0:
+        eigenvectors *= -1
+    return eigenvectors
+
+
+def PCA_projection(eigenvectors, coord):
+    '''
+    Project atomic positions in a new basis set.
+    
+    :param coord: Atomic coordinates
+    :type  coord: :class:`numpy.ndarray`\[:,3\]
+    :param eigenvectors: Set of basis vectors
+    :type  eigenvectors: :class:`numpy.ndarray`\[3,3\]
+    :returns: Updated coordinates
+    :rettype: :class:`numpy.ndarray`\[:,3\]
+    '''
+    return np.dot(eigenvectors.T, coord.T).T
+
