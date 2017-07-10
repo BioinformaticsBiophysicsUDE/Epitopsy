@@ -440,7 +440,7 @@ def scan(pdb_path,
         else:
             # move ligand center to the box center
             current_ligand_clone.translate(-current_ligand_clone.determine_geometric_center())
-            current_ligand_clone.translate(vdwbox.box_center)
+            #current_ligand_clone.translate(vdwbox.box_center)
             
             # snap ligand shape to grid and perform correlation
             pqr_vdw = current_ligand_clone.snap_vdw_to_box(vdwbox.box_mesh_size,
