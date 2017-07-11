@@ -587,6 +587,42 @@ class Structure_Template(object):
                     [min_vec[2], max_vec[2]]]
         return np.array(extremes)
 
+    def get_PCA_base(self):
+        '''
+        Compute the unit vectors of a basis that maximizes the spread of atomic
+        coordinates on the x-axis, then the y-axis, and then the z-axis.
+        
+        :param coord: Atomic coordinates, usually the subset of C-alpha atoms
+        :type  coord: :class:`numpy.ndarray`[:,3]
+        :returns: Set of basis vectors
+        :returntype: :class:`numpy.ndarray`[3,3]
+        '''
+        coord_CA = np.array([a.coord for c in self.structure for r in c
+                                     for a in r if a.name == 'CA'])
+        return MathTools.PCA_base(coord_CA)
+    
+    def apply_PCA_projection(self, base=None):
+        '''
+        Compute atomic positions in a new basis set. Useful to center and
+        rotate a protein before an APBS calculation using a rectangular box,
+        so as to reduce the box dimension.
+        
+        :param base: Set of basis vectors (optional), if ``None``,
+           perform a PCA on the molecule first
+        :type  base: :class:`numpy.ndarray`[3,3]
+        '''
+        if base is None:
+            base = self.get_PCA_base()
+        coord = np.array(self.get_all_atom_coords())
+        coord -= coord.mean(axis=0)
+        coord_new = MathTools.PCA_projection(base, coord)
+        i = 0
+        for c in self.structure:
+            for r in c:
+                for a in r:
+                    a.coord = coord_new[i,:]
+                    i += 1
+
     def get_radius_of_gyration(self):
         '''
         This method calculates the radius of gyration. It is the maximum
@@ -1755,7 +1791,7 @@ class PQRFile(Structure_Template):
         structure.add(model)
 
         for line in content:
-            if len(line) > 81:
+            if len(line) > 81 and line[0:6] != 'REMARK':
                 raise AttributeError("Wrong formatted pqr files, line is longer than 81 characters!\n{0}".format(line))
             if (line[0:4] != 'ATOM' and line[0:6] != 'HETATM' and
                     line[0:3] != 'TER' and line[0:3] != 'END' and
