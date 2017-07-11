@@ -11,3 +11,7 @@ class TestCases(unittest.TestCase):
     def test_PDBFile_void_instation(self):
         # just to have something to start from
         pdb = PDBFile()
+
+if __name__ == '__main__':
+    unittest.main()
+
