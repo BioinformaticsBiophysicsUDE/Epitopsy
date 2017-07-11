@@ -113,17 +113,16 @@ def electrostatics(pdb_path,
     :type  box_type: list
     :param verbose: print calculation details on screen if ``True`` (optional)
     :type  verbose: bool
-
-    :returns: ``None``, but files are created in the directory of **pdb_path**
+    
     :raises AttributeError: if the protein in **pdb_path** has a chain break
     
     Example::
     
-        >>> from epitopsy import energyGrid
+        >>> from epitopsy import EnergyGrid
         >>> m = 0.8
         >>> protein_path = '5b1l-protein.pdb'
         >>> ligand_path  = '5b1l-DNA-fragment.pqr'
-        >>> energyGrid.electrostatics(protein_path, [ligand_path],
+        >>> EnergyGrid.electrostatics(protein_path, [ligand_path],
         ...                           mesh_size=3*[m,],
         ...                           center_pdb=False, verbose=True)
         protein:	5b1l-protein.pdb
@@ -252,11 +251,12 @@ def scan(pdb_path,
     * :file:`protein_mic.dx.gz`: the number of free rotations on each grid
       point (available microstates)
     
-    The ESP calculated in APBS is dimensionless (units of :math:`kT/|e|`).
-    We therefore don't have to multiply Phi by :math:`\\beta = 1/kT`
-    nor have to multiply the PQR charges by :math:`|e|` when computing
-    the Maxwell-Boltzmann probability of presence, i.e. :math:`e^{-\\beta
-    \\cdot \\Phi \\cdot q} = e^{-\\Phi^{APBS} \\cdot q^{PQR}}`.
+    The ESP calculated in APBS (:math:`\\Phi`) is dimensionless (units of
+    :math:`k_{\\text{B}}T/|e|`). We therefore don't have to multiply
+    :math:`\\Phi` by :math:`\\beta = 1/k_{\\text{B}}T` nor have to multiply 
+    the PQR charges (:math:`q`) by :math:`|e|` when computing the
+    Maxwell-Boltzmann probability of presence, i.e. :math:`\\Delta G =
+    e^{-\\Phi \\cdot q}`.
     
     :param pdb_path: path to the protein PDB file
     :type  pdb_path: str
@@ -289,7 +289,6 @@ def scan(pdb_path,
        from a corner
     :type  flood: str
 
-    :returns: ``None``, but create 2 files in the current working directory.
     :raises AttributeError: if **ligand_path** has no vdw information
     :raises IOError: if **APBS_dx_path**, **pdb_path** or **ligand_path**
         cannot be read
@@ -311,7 +310,7 @@ def scan(pdb_path,
         box dim:	(225,225,225)
         Running APBS...
         Done.
-        >>> energyGrid.scan(protein_path, ligand_path, APBS_dx_path='.')
+        >>> EnergyGrid.scan(protein_path, ligand_path, APBS_dx_path='.')
         This is the setup on Tue May 16 21:27:15 2017...
         non-zero vdw atoms of ligand:	441 / 445
         box dim:	(225,225,225)
@@ -517,7 +516,7 @@ def scan(pdb_path,
         print("Writing energy")
     energy_box.setCommentHeader([" OpenDX file created by {} on {}".format(
                                           os.getenv("USER"), time.ctime()),
-        " using function Epitopsy.energyGrid.scan()",
+        " using function Epitopsy.EnergyGrid.scan()",
         "   Interaction energy in kT (negative energies are attractive)",
         "     protein:     {}".format(os.path.relpath(pdb_path)),
         "     ligand:      {}".format(os.path.relpath(ligand_path)),
@@ -532,7 +531,7 @@ def scan(pdb_path,
     counter_box = DXBox(counter_matrix, espbox.box_mesh_size, espbox.box_offset)
     counter_box.setCommentHeader([" OpenDX file created by {} on {}".format(
                                           os.getenv("USER"), time.ctime()),
-        " using function Epitopsy.energyGrid.scan()",
+        " using function Epitopsy.EnergyGrid.scan()",
         "   Number of available microstates (allowed rotations), integer value"
                                                                     " between",
         "   0 (no rotation) and {} (free rotation)".format(number_of_rotations),
@@ -830,8 +829,8 @@ def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
     
     Example::
     
-        >>> from epitopsy import energyGrid
-        >>> energyGrid.merge(["1krn/Ahx-open/1krn_epi.dx",
+        >>> from epitopsy import EnergyGrid
+        >>> EnergyGrid.merge(["1krn/Ahx-open/1krn_epi.dx",
         ...                   "1krn/Ahx-folded/1krn_epi.dx",
         ...                   "2pk4/Ahx-open/2pk4_epi.dx",
         ...                   "2pk4/Ahx-folded/2pk4_epi.dx",
@@ -851,7 +850,7 @@ def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
     comments = [' OpenDX file created by {} on {}'.format(os.getenv('USER'),
                                                           time.ctime()),
                 ' using the following function call:',
-                '   energyGrid.merge(["{}"'.format(os.path.relpath(
+                '   EnergyGrid.merge(["{}"'.format(os.path.relpath(
                                                      energy_paths[0]))]
     for path in energy_paths[1:]:
         comments[-1] = comments[-1] + ','
