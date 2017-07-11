@@ -10,4 +10,5 @@ Following pages cover the features of Epitopsy, the installation procedure and t
    overview
    license
    installation
+   tutorial
 
