@@ -56,7 +56,7 @@ class DXBox(object):
     Z = 2
 
     # next neighbors are in direct contact!
-    next_neighbors = np.zeros([6, 3], dtype = np.int)
+    next_neighbors = np.zeros([6, 3], dtype = np.int64)
     # [-1, 0, 0]
     next_neighbors[0, 0] = -1
     # [0, -1, 0]
@@ -71,7 +71,7 @@ class DXBox(object):
     next_neighbors[5, 2] = 1
 
     # neighbors are all around the origin/seed
-    all_neighbors = np.zeros([26, 3], dtype = np.int)
+    all_neighbors = np.zeros([26, 3], dtype = np.int64)
     counter = 0
     for i in range(-1,2):
         for j in range(-1,2):
@@ -85,7 +85,7 @@ class DXBox(object):
                     counter = counter + 1
 
     # all neighbors in xy!
-    all_neighbors_xy = np.zeros([8, 3], dtype = np.int)
+    all_neighbors_xy = np.zeros([8, 3], dtype = np.int64)
     counter = 0
     for i in range(-1,2):
         for j in range(-1,2):
