@@ -301,43 +301,6 @@ def get_neighbor_angle_set(n_rotations, max_dist):
     return angle_set
 
 
-def fix_grid_size(box_dim, nlev=4):
-    '''
-    Due to a multilevel approach APBS requires the grid to be of certain sizes
-    (see the APBS manual for more information). Valid dimensions will be as
-    large or larger than **box_dim**.
-
-    :param box_dim: proposed APBS grid dimensions
-    :type  box_dim: tuple(int,int,int)
-    :param nlev: depth of the multilevel hierarchy
-    :type  nlev: int
-    :returns: Valid APBS grid dimensions
-    :returntype: :class:`numpy.ndarray[3]`
-    '''
-    def calculate_valid_dimension(c, nlev=4):
-        '''
-        Test a grid dimension c.
-        
-        :param c: test grid dimension
-        :type  c: int
-        :param nlev: depth of the multilevel hierarchy
-        :type  nlev: int
-        :returns: APBS grid dimension
-        :returntype: int
-        '''
-        return int((c * (np.power(2.0, nlev + 1)) + 1))
-
-    # validate dimensions
-    fixed_dimension = []
-    for i in range(len(box_dim)):
-        c = 0
-        while(box_dim[i] > calculate_valid_dimension(c, nlev)):
-            c = c + 1
-        fixed_dimension.append(calculate_valid_dimension(c, nlev))
-
-    return np.array(fixed_dimension)
-
-
 def PCA_base(coord):
     '''
     Compute the unit vectors of a basis that maximizes the spread of atomic

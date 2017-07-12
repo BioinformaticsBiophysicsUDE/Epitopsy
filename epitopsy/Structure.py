@@ -1197,14 +1197,11 @@ class Structure_Template(object):
         for atom in self.structure.get_atoms():
             atom.transform(rot_matrix, trans_vector)
 
-    def get_dxbox_dim(self, box_mesh_size, extend = None, cubic_box = True,
-                      nlev = 4):
+    def get_dxbox_dim(self, box_mesh_size, extend=None, cubic_box=False,
+                      nlev=4):
         '''
-        This method returns the dimensions of a dxbox. The calculation is
-        copied from the InFile class. If there have been changes this result
-        might be wrong!
-        The center of the box is the geometric center of the protein if not
-        otherwise specified.
+        Calculate the dimensions of an APBS box large enough to contain the
+        protein. The box center is taken as the protein geometric center.
         '''
         box_mesh_size = np.array(box_mesh_size)
         if cubic_box is True:
@@ -1223,7 +1220,8 @@ class Structure_Template(object):
 
 
         box_dim = np.ceil(box_dim / box_mesh_size)
-        box_dim = MathTools.fix_grid_size(box_dim, nlev)
+        from epitopsy.APBS import fix_grid_size
+        box_dim = fix_grid_size(box_dim, nlev)
 
         return box_dim
 

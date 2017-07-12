@@ -12,7 +12,6 @@ import numpy as np
 import epitopsy
 from epitopsy.Structure import PDBFile, PQRFile
 from epitopsy.DXFile import DXReader
-from epitopsy.tools.MathTools import fix_grid_size
 
 class APBSWrapper:
     '''
@@ -661,22 +660,6 @@ class InFile:
         self.gridSizeZ = (np.ceil(diameterZ / self.getMeshSizeZ()) + padding * 2)
         self.fixGridSize()
 
-    def calculateValidDimension(self, c):
-        '''
-        Due to a multilevel approach APBS requires the grid to be of certain sizes.
-        (See APBS manual for more information)
-
-        self method ensures,  that chosen grid dimensions meet these requirements.
-        Current grid dimensions will be enlarged accordingly.
-
-        Args:
-            c -> Test grid dimension.
-
-        Returns:
-            Integer number that has the correct dimension.
-        '''
-        return int((c * (np.power(2.0, self.nlev + 1)) + 1))
-
     def  fixGridSize(self):
         fixed_size = fix_grid_size([self.gridSizeX,
                 self.gridSizeY, self.gridSizeZ])
@@ -1241,3 +1224,40 @@ class InFile:
             for k, v in data_dict.iteritems():
                 print(k, v)
             raise AttributeError('Invalid arguments!')
+
+
+def fix_grid_size(proposed_box_dim, nlev=4):
+    '''
+    Due to a multilevel approach APBS requires the grid to be of certain sizes.
+    More specifically, given a non-zero integer *c* and a multilevel hierarchy
+    depth *l*, the APBS grid dimension is calculated as :math:`n = c2^{l+1}+1`.
+    The proposed box dimensions will be inflated as necessary.
+    
+    :param proposed_box_dim: proposed APBS grid dimensions
+    :type  proposed_box_dim: tuple(int,int,int)
+    :param nlev: depth of the multilevel hierarchy
+    :type  nlev: int
+    :returns: Valid APBS grid dimensions
+    :returntype: :class:`numpy.ndarray[3]`
+    
+    Examples::
+    
+        >>> from epitopsy.APBS import fix_grid_size
+        >>> # valid APBS dimensions are not affected
+        >>> fix_grid_size([33, 65, 129])
+        array([ 33,  65, 129])
+        >>> # invalid APBS dimensions are inflated
+        >>> fix_grid_size([32, 66, 120])
+        array([ 33,  97, 129])
+    '''
+    calc_dime = lambda c, l=4: c * 2 ** (l + 1) + 1
+    
+    dime = []
+    for i in range(len(proposed_box_dim)):
+        c = 1
+        while proposed_box_dim[i] > calc_dime(c, nlev):
+            c += 1
+        dime.append(calc_dime(c, nlev))
+    
+    return np.array(dime)
+

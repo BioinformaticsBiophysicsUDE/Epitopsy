@@ -10,7 +10,7 @@ import shutil
 import numpy as np
 
 from epitopsy.Structure import PDBFile, PQRFile
-from epitopsy.APBS import APBSWrapper, InFile
+from epitopsy import APBS
 from epitopsy.DXFile import DXBox, DXReader, VDWBox
 from epitopsy.cython import interaction_explicit_sampling
 from epitopsy.tools import MathTools
@@ -53,7 +53,7 @@ def electrostatics(pdb_path,
     to **box_dim**, but the custom box must be large enough to contain the
     protein + ligand. Compliance to the `APBS dime format
     <http://www.poissonboltzmann.org/docs/apbs-overview/#elec-keyword-dime>`_
-    is assessed by :func:`MathTools.fix_grid_size` and the number of grid
+    is assessed by :func:`APBS.fix_grid_size` and the number of grid
     points will be adjusted upwards if necessary.
     
     With **center_pdb**, the protein is ensured to be at the center of the
@@ -189,7 +189,7 @@ def electrostatics(pdb_path,
                           for ligand in ligands]) + 2
         box_dim = pdb_struct.get_dxbox_dim(mesh_size, extend, cubic_box)
     else:
-        new_box_dim = MathTools.fix_grid_size(box_dim) # check supplied dime
+        new_box_dim = APBS.fix_grid_size(box_dim) # check supplied dime
         if np.any(new_box_dim != box_dim):
             if verbose:
                 print("fixed grid size {0} -> {1}".format(box_dim, new_box_dim))
@@ -214,7 +214,7 @@ def electrostatics(pdb_path,
         print("Running APBS...")
     
     # run APBS
-    apbs = APBSWrapper()
+    apbs = APBS.APBSWrapper()
     apbs.get_dxbox(pdb_path=pdb_name, mesh_size=mesh_size,
                    pqr_path=pqr_name, box_dim=box_dim,
                    box_center=box_center,
@@ -928,8 +928,8 @@ def Calculate_Ligand_Interaction_Energy(pdb_path, ligand_path, mesh_size):
     '''
     Run electrostatic calculations:
     '''
-    apbs = APBSWrapper("apbs", "pdb2pqr")
-    template_in = InFile("", "", "", mesh_size)
+    apbs = APBS.APBSWrapper("apbs", "pdb2pqr")
+    template_in = APBS.InFile("", "", "", mesh_size)
     '''
     Padding is some kind of extension, so i need to pad it by
     the length of the pqr-structure and add 2, because snapping the 
