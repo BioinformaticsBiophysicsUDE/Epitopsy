@@ -600,10 +600,8 @@ class InFile:
         self.calcforce = "no"
 
         if box_center is None:
-            # if no dimension is available, determine ma
-            self.setGridCenter(PQRFile(self.pqr_path).determine_geometric_center())
-        else:
-            self.setGridCenter(box_center)
+            box_center = PQRFile(self.pqr_path).determine_geometric_center()
+        self.setGridCenter(box_center)
 
         self.setMeshSize(box_mesh_size)
 
@@ -623,7 +621,8 @@ class InFile:
 
             if extend is not None:
                 # mesh_size: x = y = z
-                box_dim = np.ceil(box_dim / np.array(box_mesh_size)) + 2 * extend / box_mesh_size[0]
+                box_dim = np.ceil(box_dim / np.array(box_mesh_size)) \
+                          + 2 * extend / np.array(box_mesh_size)
             else:
                 box_dim = np.ceil(box_dim / np.array(box_mesh_size))
 
@@ -735,15 +734,16 @@ class InFile:
                                                                     self.gridSizeY,
                                                                     self.gridSizeZ)
         # starting grid length
-        instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(self.gridSizeX * self.meshSizeX,
-                                                        self.gridSizeY * self.meshSizeY,
-                                                        self.gridSizeZ * self.meshSizeZ)
+        instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(
+                (self.gridSizeX - 1) * self.meshSizeX,
+                (self.gridSizeY - 1) * self.meshSizeY,
+                (self.gridSizeZ - 1) * self.meshSizeZ)
         # fine mesh domain length in a multigrid focusing calculation
         shrink_fac = 1.
         instructions = instructions + "\tfglen {0:.2f} {1:.2f} {2:.2f}\n".format(
-                self.gridSizeX * self.meshSizeX * shrink_fac,
-                self.gridSizeY * self.meshSizeY * shrink_fac,
-                self.gridSizeZ * self.meshSizeZ * shrink_fac)
+                (self.gridSizeX - 1) * self.meshSizeX * shrink_fac,
+                (self.gridSizeY - 1) * self.meshSizeY * shrink_fac,
+                (self.gridSizeZ - 1) * self.meshSizeZ * shrink_fac)
         # center grid at position given by the center of the pdb
         instructions = instructions + '\tcgcent {x} {y} {z}\n'.format(x=self.centerX, y=self.centerY, z=self.centerZ)
         # center of the fine grid (in a focusing calculation)
@@ -843,15 +843,16 @@ class InFile:
                                                                         self.gridSizeY,
                                                                         self.gridSizeZ)
             # starting grid length
-            instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(self.gridSizeX * self.meshSizeX,
-                                                            self.gridSizeY * self.meshSizeY,
-                                                            self.gridSizeZ * self.meshSizeZ)
+            instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(
+                    (self.gridSizeX - 1) * self.meshSizeX,
+                    (self.gridSizeY - 1) * self.meshSizeY,
+                    (self.gridSizeZ - 1) * self.meshSizeZ)
             # fine mesh domain length in a multigrid focusing calculation
             shrink_fac = 1.
             instructions = instructions + "\tfglen {0:.2f} {1:.2f} {2:.2f}\n".format(
-                    self.gridSizeX * self.meshSizeX * shrink_fac,
-                    self.gridSizeY * self.meshSizeY * shrink_fac,
-                    self.gridSizeZ * self.meshSizeZ * shrink_fac)
+                    (self.gridSizeX - 1) * self.meshSizeX * shrink_fac,
+                    (self.gridSizeY - 1) * self.meshSizeY * shrink_fac,
+                    (self.gridSizeZ - 1) * self.meshSizeZ * shrink_fac)
 
             # center grid at position given by the center of the pdb
             instructions = instructions + '\tcgcent {x} {y} {z}\n'.format(
@@ -948,15 +949,16 @@ class InFile:
                                                                         self.gridSizeY,
                                                                         self.gridSizeZ)
             # starting grid length
-            instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(self.gridSizeX * self.meshSizeX,
-                                                            self.gridSizeY * self.meshSizeY,
-                                                            self.gridSizeZ * self.meshSizeZ)
+            instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(
+                    (self.gridSizeX - 1) * self.meshSizeX,
+                    (self.gridSizeY - 1) * self.meshSizeY,
+                    (self.gridSizeZ - 1) * self.meshSizeZ)
             # fine mesh domain length in a multigrid focusing calculation
             shrink_fac = 1.
             instructions = instructions + "\tfglen {0:.2f} {1:.2f} {2:.2f}\n".format(
-                    self.gridSizeX * self.meshSizeX * shrink_fac,
-                    self.gridSizeY * self.meshSizeY * shrink_fac,
-                    self.gridSizeZ * self.meshSizeZ * shrink_fac)
+                    (self.gridSizeX - 1) * self.meshSizeX * shrink_fac,
+                    (self.gridSizeY - 1) * self.meshSizeY * shrink_fac,
+                    (self.gridSizeZ - 1) * self.meshSizeZ * shrink_fac)
 
             # center grid at position given by the center of the pdb
             instructions = instructions + '\tcgcent {x} {y} {z}\n'.format(
@@ -1017,9 +1019,10 @@ class InFile:
             instructions = instructions + 'elec name {0}\n'.format(elec_name)
             instructions = instructions + '\t{0}\n'.format(self.elec_type)
             # grid size, needs to be: c*2^(l+1) + 1
-            instructions = instructions + '\tdime {0} {1} {2}\n'.format(self.gridSizeX,
-                                                                        self.gridSizeY,
-                                                                        self.gridSizeZ)
+            instructions = instructions + '\tdime {0} {1} {2}\n'.format(
+                    (self.gridSizeX - 1) * self.meshSizeX,
+                    (self.gridSizeY - 1) * self.meshSizeY,
+                    (self.gridSizeZ - 1) * self.meshSizeZ)
             # starting grid length
             instructions = instructions + "\tcglen {0:.2f} {1:.2f} {2:.2f}\n".format(self.gridSizeX * self.meshSizeX,
                                                             self.gridSizeY * self.meshSizeY,
@@ -1027,9 +1030,9 @@ class InFile:
             # fine mesh domain length in a multigrid focusing calculation
             shrink_fac = 1.
             instructions = instructions + "\tfglen {0:.2f} {1:.2f} {2:.2f}\n".format(
-                    self.gridSizeX * self.meshSizeX * shrink_fac,
-                    self.gridSizeY * self.meshSizeY * shrink_fac,
-                    self.gridSizeZ * self.meshSizeZ * shrink_fac)
+                    (self.gridSizeX - 1) * self.meshSizeX * shrink_fac,
+                    (self.gridSizeY - 1) * self.meshSizeY * shrink_fac,
+                    (self.gridSizeZ - 1) * self.meshSizeZ * shrink_fac)
 
             # center grid at position given by the center of the pdb
             instructions = instructions + '\tcgcent {x} {y} {z}\n'.format(
