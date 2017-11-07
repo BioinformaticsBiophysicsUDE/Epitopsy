@@ -3,7 +3,7 @@ import re
 import numpy as np
 
 from epitopsy.Structure import PDBFile, PQRFile
-from epitopsy.DXFile import read_dxfile, DXBox
+from epitopsy.DXFile import read_dxfile, DXBox, VDWBox
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
 from sklearn.metrics import silhouette_samples
@@ -188,19 +188,37 @@ def microstates2LEV(microstates_path, output_path=None):
         else:
             raise ValueError('Please provide an output path for the LEV.')
     dxb = read_dxfile(microstates_path, 'vdw')
-    dxb.box = np.array(dxb.box == 0, dtype=float)
-    dxb.write(output_path)
+    eps = np.sum(np.abs(dxb.box - dxb.box.astype(int)))
+    eps /= np.prod(dxb.box.shape)
+    if eps > 1e-5:
+        raise ValueError('The DXBox contains floating point values.\nPlease '
+                         'check the argument, it should be an integer DXBox.')
+    dxb.box = np.array(dxb.box < 1e-10, dtype=float)
+    out = VDWBox(dxb.box, dxb.box_mesh_size, dxb.box_offset)
+    out.setCommentHeader([
+        'Output of function Epitopsy.EnergyGrid.tools.microstates2LEV(',
+        '  "{}"'.format(microstates_path),
+        '  "{}")'.format(output_path),
+        '1\'s inside the ligand excluded volume and 0\'s outside'])
+    out.write(output_path)
 
 
-def ligand_grids(ligand_path, m):
+def ligand_grids(ligand_path, box_mesh_size, box_dim=None, box_offset=None,
+                 box_type=('vdw', 'crg')):
     '''
     Create grids for the ligand charges and ligand Van der Waals surface.
-    Useful to visualize how the ligand is interpreted by Epitopsy.
+    Help visualize how the ligand is interpreted by Epitopsy.
     
-    :param ligand_path: paths to the ligand
+    :param ligand_path: paths to the ligand PQR file
     :type  ligand_path: str
-    :param m: grid mesh size
-    :type  m: tuple(float)
+    :param box_mesh_size: mesh size
+    :type  box_mesh_size: tuple(float,float,float)
+    :param box_dim: box dimesions (optional), by default use the ligand size
+    :type  box_dim: tuple(int,int,int)
+    :param box_offset: box origin (optional), default is the ligand center
+    :type  box_offset: tuple(float,float,float)
+    :param box_type: grids to compute: charges ('crg') or radii ('vdw')
+    :type  box_type: tuple(str) or str
     
     Example::
     
@@ -208,11 +226,36 @@ def ligand_grids(ligand_path, m):
         >>> EnergyGrid.ligand_grids('sulfate.pqr', 3*[0.8,])
     
     '''
+    if isinstance(box_type, basestring):
+        box_type = (box_type,)
+    
+    # read ligand
     ligand = PQRFile(ligand_path)
-    ligand.translate(-ligand.determine_geometric_center())
-    #pqr_vdw = ligand.snap_vdw_to_box(vdwbox.box_mesh_size,
-    #                                          vdwbox.box_dim, vdwbox.box_offset)
-    #pqr_esp = ligand.snap_esp_to_dxbox(espbox)
+    if box_dim is None:
+        box_dim = ligand.get_dxbox_dim(box_mesh_size)
+    if box_offset is None:
+        box_offset = ligand.determine_center_of_extremes()
+    
+    # compute grids
+    for btype in box_type:
+        output_file = '{1}_{0}.dx'.format(btype,
+           os.path.basename(ligand_path)[::-1].split('.', 1)[1][::-1])
+        if btype == 'vdw':
+            box = ligand.snap_vdw_to_box(box_mesh_size, box_dim, box_offset)
+            vdwbox = DXBox(box=box, meshsize=box_mesh_size, offset=box_offset)
+            vdwbox.setCommentHeader([
+               'Output of function Epitopsy.EnergyGrid.tools.ligand_grids()',
+               'Van der Waals grid of ligand {}'.format(ligand_path)])
+            vdwbox.write(output_file)
+        elif btype == 'crg':
+            box = ligand.snap_crg_to_box(box_mesh_size, box_dim, box_offset)
+            crgbox = DXBox(box=box, meshsize=box_mesh_size, offset=box_offset)
+            crgbox.setCommentHeader([
+               'Output of function Epitopsy.EnergyGrid.tools.ligand_grids()',
+               'Partial charges grid of ligand {}'.format(ligand_path)])
+            crgbox.write(output_file)
+        else:
+            raise ValueError('Unknown box type "{}"'.format(btype))
 
 
 def remove_trailing_digits(input_path, output_path, decimals):
