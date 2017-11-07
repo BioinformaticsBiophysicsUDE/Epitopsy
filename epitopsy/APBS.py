@@ -5,6 +5,7 @@ Created on Jan 10,  2012
 '''
 
 import os
+import re
 import stat
 import subprocess
 import numpy as np
@@ -83,6 +84,28 @@ class APBSWrapper:
             raise MemoryError('APBS job requires {:.1f} GB of RAM ({:.1f} GB '
                               'available), the calculation might freeze the OS'
                               .format(mem_required, mem_available))
+        
+        # fix HETATM records in large proteins
+        pqr_path = apbsInParameters.pqr_path
+        pqr_original = open(pqr_path).read()
+        pqr_fixed = re.sub('HETATM(?=\d)', 'ATOM  ', pqr_original)
+        if pqr_fixed != pqr_original:
+            note = '''\
+REMARK   5 NOTE: several "HETATM" records were changed to type "ATOM".
+REMARK   5       This change is necessary for APBS version <= 1.4.1 where
+REMARK   5       a whitespace character must be present between "HETATM"
+REMARK   5       and the atom_number, otherwise the line is ignored.
+REMARK   5       This is usually the case for atom_number >= 10000.
+REMARK   5'''
+            i = 0
+            pattern = '(?:\n|^)(REMARK +6 |ATOM  |HETATM)'
+            for m in re.finditer(pattern, pqr_fixed):
+                i = m.start()
+                if pqr_fixed[i] == '\n':
+                    i += 1
+                break
+            pqr_fixed = pqr_fixed[:i] + note + '\n' + pqr_fixed[i:]
+            open(pqr_path, 'w').write(pqr_fixed)
         
         # run APBS
         p = subprocess.Popen([self.APBSPath, inFilename],
