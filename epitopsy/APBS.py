@@ -8,6 +8,7 @@ import os
 import stat
 import subprocess
 import numpy as np
+import psutil
 
 import epitopsy
 from epitopsy.Structure import PDBFile, PQRFile
@@ -49,20 +50,44 @@ class APBSWrapper:
                 pdb2pqr_argv=pdb2pqr_argv)
 
 
-    def runAPBS(self, apbsInParameters, inFilename):
+    def runAPBS(self, apbsInParameters, inFilename, APBS_RAM_threshold=1.):
         '''
-        Args:
-            apbsInParameters -> Contains all neccessary parameters.
-            inFilename -> Name of the inputfile for apbs.
-
-        Returns:
-            None.
+        Run APBS.
+        
+        :param apbsInParameters: all neccessary parameters
+        :type  apbsInParameters: :class:`InFile`
+        :param inFilename: name of the inputfile
+        :type  inFilename: str
+        :param APBS_RAM_threshold: how many gigabytes of RAM should remain
+           available to the operating system during the APBS calculation
+        :type  APBS_RAM_threshold: float
+        :raises MemoryError: if not enough free RAM for the calculation to run
         '''
         if not(os.path.exists(apbsInParameters.pqr_path)):
-            raise NameError('Error running APBS: File not found: {0}'.format(apbsInParameters.getPQRFilePath()))
+            raise NameError('Error running APBS: File not found: {0}'.format(
+                                           apbsInParameters.getPQRFilePath()))
         apbsInParameters.write(inFilename)
-
-        p = subprocess.Popen([self.APBSPath, inFilename], stdout = subprocess.PIPE, stderr = subprocess.PIPE)
+        
+        # RAM manager
+        # coarse grid: at most 256 bytes per grid cell
+        # fine grid: at most 224 bytes per grid cell
+        mem_required = 256 / 1024.**3 * float(apbsInParameters.gridSizeX) \
+                                      * float(apbsInParameters.gridSizeY) \
+                                      * float(apbsInParameters.gridSizeZ)
+        mem_available = psutil.virtual_memory().available / 1024.**3
+        if mem_available < mem_required:
+            raise MemoryError('APBS job requires {:.1f} GB of RAM ({:.1f} GB '
+                              'available), cannot run the calculation.'
+                              .format(mem_required, mem_available))
+        elif mem_available < mem_required + APBS_RAM_threshold:
+            raise MemoryError('APBS job requires {:.1f} GB of RAM ({:.1f} GB '
+                              'available), the calculation might freeze the OS'
+                              .format(mem_required, mem_available))
+        
+        # run APBS
+        p = subprocess.Popen([self.APBSPath, inFilename],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
         apbs_output, apbs_error = p.communicate()
 
         apbs_error = apbs_error.split('\n')
@@ -72,7 +97,7 @@ class APBSWrapper:
         # an end of file during the calculation
         for line in apbs_error:
             if line.startswith('Error while parsing input file.'):
-                raise AttributeError('Error while parsing input file to apbs.')
+                raise AttributeError('Error while parsing input file to APBS.')
 
         for line in apbs_output:
             # find debye length
