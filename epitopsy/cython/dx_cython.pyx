@@ -956,6 +956,8 @@ cdef np.ndarray[np.int16_t] c_simulated_annealing(
     # Markov chain stops after n consecutive rejections
     if convergence_rejections <= 0: # infinite
         acc_stop = max_iter
+    else:
+        acc_stop = convergence_rejections
     
     # if full Markov chains are requested, create a large 2D Numpy array
     # to store run, 
