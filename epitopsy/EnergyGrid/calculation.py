@@ -7,6 +7,7 @@ __doc__        = '''Surface and charge complementarity screening'''
 import os
 import time
 import shutil
+import warnings
 import numpy as np
 
 from epitopsy.Structure import PDBFile, PQRFile
@@ -214,7 +215,7 @@ def electrostatics(protein,
 def scan(pdb_path,
              ligand_path,
              APBS_dx_path        = ".",
-             number_of_rotations = 150,
+             rotation_protocol   = None,
              write_top_hits      = False,
              explicit_sampling   = False,
              zipped              = ("mic",),
@@ -249,8 +250,8 @@ def scan(pdb_path,
     :param APBS_dx_path: path to the directory where the .dx files are stored
         (optional), by default search in the current directory
     :type  APBS_dx_path: str
-    :param number_of_rotations: how many ligand rotations to sample
-    :type  number_of_rotations: int
+    :param rotation_protocol: object handling the ligand rotation
+    :type  rotation_protocol: :class:`MathTools.RotationProtocol`
     :param write_top_hits: write the top scoring conformations if ``True``
     :type  write_top_hits: bool
     :param explicit_sampling: if ``True`` it does not use FFT correlation to
@@ -285,7 +286,7 @@ def scan(pdb_path,
         >>> ligand_path  = '5b1l-DNA-fragment.pqr'
         >>> EnergyGrid.electrostatics(protein_path, [ligand_path],
         ...                           mesh_size=3*[m,],
-        ...                           center_pdb=False, verbose=True)
+        ...                           transform=None, verbose=True)
         protein:	5b1l-protein.pdb
         centered:	False
         mesh size:	(0.8,0.8,0.8) Angstroms
@@ -361,10 +362,18 @@ def scan(pdb_path,
     # read the APBS VDW volume, 1's in the solvent and 0's inside protein
     vdwbox = DXReader().parse(path_vdw, "vdw")
     
-    # create a list of independent rotations using a golden section algorithm
-    # (warning: with the Gonzalez algorithm, N + 1 coordinates may be returned)
-    angle_stack = MathTools.get_euler_angles_for_equal_distributed_rotation(number_of_rotations)
-    number_of_rotations = len(angle_stack)
+    # check rotation protocol
+    if rotation_protocol is None:
+        rotation_protocol = MathTools.RotationProtocolFibonacci(150)
+    if hasattr(rotation_protocol, "suitable_for_FFT") \
+       and rotation_protocol.suitable_for_FFT is not True:
+        if isinstance(rotation_protocol.suitable_for_FFT, basestring):
+            reason = rotation_protocol.suitable_for_FFT
+        else:
+            reason = "no reason was provided"
+        msg = "This rotation function is not suitable for FFT correlation:\n{}"
+        warnings.warn(msg.format(reason), UserWarning)
+    number_of_rotations = len(rotation_protocol)
     
     # print details
     if verbose:
@@ -392,6 +401,13 @@ def scan(pdb_path,
     vdw_fft = FFT_correlation_scoring(vdwbox.box)   # FFT of the protein VDW
     esp_fft = FFT_correlation_scoring(espbox.box)   # FFT of the protein ESP
     
+    # prepare ligand
+    if len(lig.get_all_atoms()) > 3:
+        lig.apply_PCA_projection(selection='all')    # reset ligand rotation
+    geom_center = lig.determine_center_of_extremes() # get *geometric* center
+    lig.translate(-geom_center)                      # move to geom center
+    coordinates = np.array([atom.coord for atom in lig.get_all_atoms()])
+    
     # store position the highest scoring ligand poses
     if write_top_hits:
         shape_results = FFT_Result()
@@ -400,39 +416,39 @@ def scan(pdb_path,
     
     if verbose:
         print("Start screening...")
-        progress_bar = Progress_bar_countdown(len(angle_stack), countdown=True, refresh=5)
+        progress_bar = Progress_bar_countdown(number_of_rotations,
+                                              countdown=True, refresh=5)
         start_time = time.time()
     
     # start screening
-    for angle_element in angle_stack:
-        # get angles
-        phi, theta, psi = angle_element
-        # clone and rotate the ligand
-        current_ligand_clone = PQRFile(ligand_path)
-        current_ligand_clone.translate_origin_and_rotate(phi, theta, psi)
+    for i in range(len(rotation_protocol)):
+        coord = rotation_protocol.apply(coordinates, i)
+        for i, atom in enumerate(lig.get_all_atoms()):
+            atom.coord = coord[i]
         
         # do the energy calculation in a cython script if requested
         if explicit_sampling == True:
             microstates_energy, counter_matrix = (interaction_explicit_sampling
-                .explicit_sampling(current_ligand_clone, vdwbox.box, espbox,
+                .explicit_sampling(lig, vdwbox.box, espbox,
                                    counter_matrix, 0., interior))
-            
             partition_function += np.exp(-microstates_energy)
         
         else:
-            # move ligand center to the box center
-            current_ligand_clone.translate(-current_ligand_clone.determine_geometric_center())
-            #current_ligand_clone.translate(vdwbox.box_center)
+            # match ligand center with the box center
+            lig.translate(vdwbox.box_center)
             
             # snap ligand shape to grid and perform correlation
-            pqr_vdw = current_ligand_clone.snap_vdw_to_box(vdwbox.box_mesh_size,
-                                              vdwbox.box_dim, vdwbox.box_offset)
+            pqr_vdw = lig.snap_vdw_to_box(vdwbox.box_mesh_size,
+                                          vdwbox.box_dim,
+                                          vdwbox.box_offset)
             vdw_correlation = vdw_fft.get_correlation(pqr_vdw)
             vdw_correlation = vdw_fft.shift_fft(vdw_correlation)
             
             # snap ligand charges to grid and perform correlation
-            pqr_esp = current_ligand_clone.snap_esp_to_dxbox(espbox)
-            esp_correlation = esp_fft.get_correlation(pqr_esp)
+            pqr_crg = lig.snap_crg_to_box(espbox.box_mesh_size,
+                                          espbox.box_dim,
+                                          espbox.box_offset)
+            esp_correlation = esp_fft.get_correlation(pqr_crg)
             esp_correlation = esp_fft.shift_fft(esp_correlation)
             
             # increment partition function with microstates energy
@@ -466,7 +482,6 @@ def scan(pdb_path,
     
     # compute binding affinity in units of kbT
     probability = partition_function / float(number_of_rotations) # normalize
-    #probability = partition_function / np.maximum(counter_matrix,1) # bad idea
     zero_indices = np.nonzero(probability == 0)   # flag zeros (log undefined)
     probability[zero_indices] = np.e              # zeros -> dummy values
     affinity = -np.log(probability)               # compute binding affinity
@@ -497,32 +512,30 @@ def scan(pdb_path,
     # write DXBoxes to disk
     if verbose:
         print("Writing energy")
-    energy_box.setCommentHeader([" OpenDX file created by {} on {}".format(
-                                          os.getenv("USER"), time.ctime()),
-        " using function Epitopsy.EnergyGrid.scan()",
-        "   Interaction energy in kT (negative energies are attractive)",
-        "     protein:     {}".format(os.path.relpath(pdb_path)),
-        "     ligand:      {}".format(os.path.relpath(ligand_path)),
-        "     APBS esp:    {}".format(os.path.relpath(path_esp)),
-        "     APBS vdw:    {}".format(os.path.relpath(path_vdw)),
-        "     microstates: {}".format(os.path.relpath(path_mic))])
+    energy_box.setCommentHeader([
+        "Output of function epitopsy.EnergyGrid.calculation.scan()",
+        "Interaction energy in kT (negative values are attractive). Filenames:",
+        "   protein:     {}".format(os.path.relpath(pdb_path)),
+        "   ligand:      {}".format(os.path.relpath(ligand_path)),
+        "   APBS esp:    {}".format(os.path.relpath(path_esp)),
+        "   APBS vdw:    {}".format(os.path.relpath(path_vdw)),
+        "   microstates: {}".format(os.path.relpath(path_mic))])
     energy_box.write(path_epi)
     
     # save counter_matrix
     if verbose:
         print("Writing counter matrix")
     counter_box = DXBox(counter_matrix, espbox.box_mesh_size, espbox.box_offset)
-    counter_box.setCommentHeader([" OpenDX file created by {} on {}".format(
-                                          os.getenv("USER"), time.ctime()),
-        " using function Epitopsy.EnergyGrid.scan()",
-        "   Number of available microstates (allowed rotations), integer value"
-                                                                    " between",
-        "   0 (no rotation) and {} (free rotation)".format(number_of_rotations),
-        "     protein:  {}".format(os.path.relpath(pdb_path)),
-        "     ligand:   {}".format(os.path.relpath(ligand_path)),
-        "     APBS esp: {}".format(os.path.relpath(path_esp)),
-        "     APBS vdw: {}".format(os.path.relpath(path_vdw)),
-        "     energies: {}".format(os.path.relpath(path_epi))])
+    counter_box.setCommentHeader([
+        "Output of function epitopsy.EnergyGrid.calculation.scan()",
+        "Number of available microstates (allowed rotations), integer value",
+        "between 0 (no rotation) and {} (free rotation). Filenames:".format(
+        number_of_rotations),
+        "   protein:  {}".format(os.path.relpath(pdb_path)),
+        "   ligand:   {}".format(os.path.relpath(ligand_path)),
+        "   APBS esp: {}".format(os.path.relpath(path_esp)),
+        "   APBS vdw: {}".format(os.path.relpath(path_vdw)),
+        "   energies: {}".format(os.path.relpath(path_epi))])
     counter_box.write(path_mic)
     
     # compute binding energies and write to file
