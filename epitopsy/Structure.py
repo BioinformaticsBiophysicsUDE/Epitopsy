@@ -486,9 +486,9 @@ class Structure_Template(object):
         '''
         centerVector = np.zeros(3)
         extremes = self.determine_coordinate_extremes(atoms)
-        centerVector[0] = extremes[0][0] + ((extremes[0][1] - extremes[0][0]) / 2.0)
-        centerVector[1] = extremes[1][0] + ((extremes[1][1] - extremes[1][0]) / 2.0)
-        centerVector[2] = extremes[2][0] + ((extremes[2][1] - extremes[2][0]) / 2.0)
+        centerVector[0] = (extremes[0][1] + extremes[0][0]) / 2.0
+        centerVector[1] = (extremes[1][1] + extremes[1][0]) / 2.0
+        centerVector[2] = (extremes[2][1] + extremes[2][0]) / 2.0
         return centerVector
 
     def determine_center_of_extremes(self):
@@ -582,26 +582,34 @@ class Structure_Template(object):
         atom_coord = np.array(atom_coord)
         min_vec = np.amin(atom_coord, 0)
         max_vec = np.amax(atom_coord, 0)
-        extremes = [[min_vec[0], max_vec[0]],
-                    [min_vec[1], max_vec[1]],
-                    [min_vec[2], max_vec[2]]]
-        return np.array(extremes)
+        return np.array(zip(min_vec, max_vec))
 
-    def get_PCA_base(self):
+    def get_PCA_base(self, selection='CA'):
         '''
         Compute the unit vectors of a basis that maximizes the spread of atomic
         coordinates on the x-axis, then the y-axis, and then the z-axis.
         
-        :param coord: Atomic coordinates, usually the subset of C-alpha atoms
-        :type  coord: :class:`numpy.ndarray`[:,3]
+        :param selection: subset of atoms to use for the PCA, default is
+           all C-alpha atoms ('CA'), for non-proteins please choose between
+           non-hydrogens ('noH') and all ('all')
+        :type  selection: str
         :returns: Set of basis vectors
         :returntype: :class:`numpy.ndarray`[3,3]
         '''
-        coord_CA = np.array([a.coord for c in self.structure for r in c
-                                     for a in r if a.name == 'CA'])
-        return MathTools.PCA_base(coord_CA)
+        if selection == 'CA':
+            coord = np.array([a.coord for c in self.structure for r in c
+                                      for a in r if a.name == 'CA'])
+        elif selection == 'noH':
+            coord = np.array([a.coord for c in self.structure for r in c
+                                      for a in r if a.elem != 'H'])
+        elif selection == 'all':
+            coord = np.array([a.coord for c in self.structure for r in c
+                                      for a in r])
+        else:
+            raise ValueError('Selection not understood: "{}"'.format(selection))
+        return MathTools.PCA_base(coord)
     
-    def apply_PCA_projection(self, base=None):
+    def apply_PCA_projection(self, base=None, selection='CA'):
         '''
         Compute atomic positions in a new basis set. Useful to center and
         rotate a protein before an APBS calculation using a rectangular box,
@@ -612,7 +620,7 @@ class Structure_Template(object):
         :type  base: :class:`numpy.ndarray`[3,3]
         '''
         if base is None:
-            base = self.get_PCA_base()
+            base = self.get_PCA_base(selection=selection)
         coord = np.array(self.get_all_atom_coords())
         coord -= coord.mean(axis=0)
         coord_new = MathTools.PCA_projection(base, coord)
@@ -996,30 +1004,31 @@ class Structure_Template(object):
         This method snaps a structure to a given dxbox. If the structure is
         a pqr it uses the supplied vdw radii otherwise it uses the variable
         'vdw_radii' for each atom.
-
+        
         If any coordinate lies outside the box an error will be printed to the
         standard output.
-
-        Args:
-            box_mesh_size -> mesh size [m,m,m]
-            box_dim -> [x,y,z]
-            box_offset -> [x_o,y_o,z_o]
-            warning -> Boolean, print an error, if the structure does not fit
-                completely into the given box dimensions
-            vdw_radii -> If this is a pdb file there are no other radii#
-                available (in Angstroem)
-            increase_vdw_by -> can be used to blow up the radii of each atom
-                (in Angstroem)
-
-        Returns:
-            Numpy array with 0's outside and 1's inside the protein.
+        
+        :param box_mesh_size: mesh size
+        :type  box_mesh_size: tuple(float,float,float)
+        :param box_dim: box dimesions
+        :type  box_dim: tuple(int,int,int)
+        :param box_offset: box origin
+        :type  box_offset: tuple(float,float,float)
+        :param warning: print an error if the structure does not fit
+           completely into the given box dimensions
+        :type  warning: bool
+        :param vdw_radii: default vdw radius if not a PQR file (Angstroms)
+        :type  vdw_radii: float
+        :param increase_vdw_by: increase all vdw radii by a constant (Angstroms)
+        :type  increase_vdw_by: float
+        :returns: OpenDX box with 0's outside the molecule and 1's inside
+        :returntype: :class:`np.ndarray[:,:,:]`
         '''
         vdw_box = np.zeros(box_dim)
         mesh_size = float(box_mesh_size[0])
-#        if box_mesh_size[0] == box_mesh_size[1] == box_mesh_size[2]:
-#            mesh_size = float(box_mesh_size[0])
-#        else:
-#            raise ValueError("Meshsize does not match: {0}".format(box_mesh_size))
+        if not (box_mesh_size[0] == box_mesh_size[1] == box_mesh_size[2]):
+            print ('WARNING: mesh size different depending on the direction, '
+                   'using only the x-axis to snap vdw radii to grid space')
 
         # list which stores the coordinates of all atoms
         coordinates = []
@@ -1216,8 +1225,7 @@ class Structure_Template(object):
 
         if extend is not None:
             # add extend in each direction
-            box_dim = box_dim + 2. * float(extend)
-
+            box_dim = box_dim + 2 * float(extend)
 
         box_dim = np.ceil(box_dim / box_mesh_size)
         from epitopsy.APBS import fix_grid_size
@@ -1238,7 +1246,7 @@ class Structure_Template(object):
             A list box_offset: [x_o,y_o,z_o].
         '''
         box_offset = np.array(box_center) - (np.array(box_mesh_size) *
-                                                np.ceil(np.array(box_dim) / 2.))
+                                             np.array(box_dim) // 2)
         return box_offset
 
     def get_hydrophobic_potential(self, box_mesh_size, box_dim, box_offset):
@@ -1919,32 +1927,43 @@ class PQRFile(Structure_Template):
                               chain_id, resseq, icode, x, y, z, info_1, info_2)
 
 
-    def snap_esp_to_dxbox(self, dxbox, warning = True):
+    def snap_crg_to_box(self, box_mesh_size, box_dim, box_offset, warning=True):
         '''
         This method snaps the charge for each atom of this pqr structure to a
         given dxbox. The new array contains the charge in the unit of Coulomb.
-
+        
         If any coordinate lies outside the box an error will be printed to the
         standard output.
-
+        
         Be carefull!!! If you use a neutral probe and you mesh size is to
         large the dipole effect is not visible!
-
-        Args:
-            dxbox -> a dxbox object
-            warning -> either True or False
-
-        Returns:
-            A numpy array with the charges in units of e at the center of each
-            atom.
+        
+        :param box_mesh_size: mesh size
+        :type  box_mesh_size: tuple(float,float,float)
+        :param box_dim: box dimesions
+        :type  box_dim: tuple(int,int,int)
+        :param box_offset: box origin
+        :type  box_offset: tuple(float,float,float)
+        :param warning: print an error if the structure does not fit
+           completely into the given box dimensions
+        :type  warning: bool
+        :returns: OpenDX box with Coulomb charges at the center of every atom
+        :returntype: :class:`np.ndarray[:,:,:]`
         '''
-        dim = dxbox.box_dim
-        esp_box = np.zeros(dim)
+        esp_box = np.zeros(box_dim)
+        mesh_size = float(box_mesh_size[0])
+        if not (box_mesh_size[0] == box_mesh_size[1] == box_mesh_size[2]):
+            print ('WARNING: mesh size different depending on the direction, '
+                   'using only the x-axis to snap vdw radii to grid space')
+        
         # list which stores the coordinates of all atoms
         coordinates = []
 
-        # list which contains vdw_radii
+        # list which contains charges
         esp_charge_list = []
+
+        # we need a dxbox, because it lets us transform the coordinates
+        dxbox = DXBox(esp_box, box_mesh_size, box_offset)
 
         # error warning
         error_warning = False
@@ -1954,8 +1973,8 @@ class PQRFile(Structure_Template):
         for atom in self.structure.get_atoms():
             box_coord = list(dxbox.transform_real_to_box_space(list(atom.get_coord())))
             # we do not want to leave the box!
-            if(0 <= box_coord[0] < dim[0] and 0 <= box_coord[1] < dim[1]
-               and 0 <= box_coord[2] < dim[2]):
+            if(0 <= box_coord[0] < box_dim[0] and 0 <= box_coord[1] < box_dim[1]
+               and 0 <= box_coord[2] < box_dim[2]):
                 # check if coordinates already in the list
                 if box_coord not in coordinates:
                     coordinates.append(box_coord)
@@ -1963,9 +1982,8 @@ class PQRFile(Structure_Template):
                     esp_charge_list.append(atom.get_info_1())
                 else:
                     position_index = coordinates.index(box_coord)
-                    old_charge = esp_charge_list[position_index]
-                    new_charge = atom.get_info_1()
-                    esp_charge_list[position_index] = old_charge + new_charge
+                    # add new charge to the old one
+                    esp_charge_list[position_index] += atom.get_info_1()
 
             else:
                 error_warning = True

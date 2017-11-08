@@ -19,7 +19,7 @@ from epitopsy.EnergyGrid.FFT import FFT_correlation_scoring
 from epitopsy.EnergyGrid.analysis import calc_vol_and_surface, FFT_Result
 
 
-def electrostatics(pdb_path,
+def electrostatics(protein,
              ligands,
              mesh_size    = (1.,1.,1.),
              temp         = 310.,
@@ -27,28 +27,25 @@ def electrostatics(pdb_path,
              cubic_box    = False,
              extend       = None,
              box_dim      = None,
-             center_pdb   = False,
-             rotate_pdb   = False,
-             align_pdb    = None,
+             transform    = 'center+rotate',
+             align        = None,
              box_center   = (0, 0, 0),
-             box_type     = ("esp", "vdw"),
-             use_pdb2pqr  = True,
+             box_type     = ('esp', 'vdw'),
              pdb2pqr_argv = None,
              verbose      = True):
     '''
-    Compute the electrostatic potential of a protein using
-    :class:`APBS.APBSWrapper`, in preparation for a correlation with
-    :func:`scan`. Following files will be produced, with
-    **pdb_path** = ``protein.pdb`` and all other arguments to default:
+    Compute the electrostatic potential of a protein in preparation for a
+    correlation with :func:`scan`.
     
-    * :file:`protein.in`: the APBS script
-    * :file:`protein.pqr`: PQR file of the protein, unless already provided
-    * :file:`protein_esp.dx`: electrostatic potential DXBox
-    * :file:`protein_vdw.dx`: van der Waals DXBox
-    * :file:`io.mc`: APBS log file
+    PDB2PQR will convert the PDB file to a PQR file while preserving common
+    ions (calcium, zinc, sulfate, see
+    :meth:`Structure.PDBFile.get_pqr_structure`). For uncommon ions
+    and non-standard residues, please supply a custom PQR file in **protein**.
+    APBS will carry out the electrostatic calculation 
+    (see :class:`APBS.APBSWrapper`).
     
-    By default, the box dimensions (*dime*) are calculated from the protein in
-    **pdb_path** and from the diameter of the largest ligand in **ligands**,
+    By default, the box dimensions (*dime*) are calculated from the structure
+    in **protein** and from the diameter of the largest ligand in **ligands**,
     plus 2 Angstroms in the 6 directions. Custom box dimensions can be supplied
     to **box_dim**, but the custom box must be large enough to contain the
     protein + ligand. Compliance to the `APBS dime format
@@ -56,20 +53,8 @@ def electrostatics(pdb_path,
     is assessed by :func:`APBS.fix_grid_size` and the number of grid
     points will be adjusted upwards if necessary.
     
-    With **center_pdb**, the protein is ensured to be at the center of the
-    DXBox (this might result in a smaller DXBox if **cubic_box** is ``True``). 
-    If one wants to compare the electrostatic potential of different proteins
-    which have been already aligned, it is better to leave **center_pdb** to
-    ``False``.
-    
-    If **use_pdb2pqr** is ``True``, PDB2PQR is called to generate a PQR file
-    from the protein PDB file (optionally using **ph** to change the
-    protonation state), otherwise the user should supply a PQR file in
-    the working directory, with identical basename but with the extension
-    ".pdb" changed to ".pqr".
-    
-    :param pdb_path: path to the protein PDB file
-    :type  pdb_path: str
+    :param protein: path to the protein PDB or PQR file
+    :type  protein: str
     :param mesh_size: grid mesh size in all three dimensions (optional),
         default is 1.0 Angstrom
     :type  mesh_size: list
@@ -78,23 +63,18 @@ def electrostatics(pdb_path,
     :param ph: pH for protonation state determination in PDB2PQR (optional),
         default is ``None``
     :type  ph: float
-    :param use_pdb2pqr: use pdb2pqr to generate the PQR from **pdb_path**;
-        if ``False``, a PQR with the same name, but ending with '.pqr' has
-        to be in the same folder
-    :type  use_pdb2pqr: bool
     :param pdb2pqr_argv: additional arguments to PDB2PQR (optional), namely
         ["--assign-only"], or ["--assign-only", "--noopt"]
     :type  pdb2pqr_argv: list
-    :param center_pdb: if ``True`` the PDB structure will be centered at
-        **box_center** (optional), default is ``False``
-    :type  center_pdb: bool
-    :param rotate_pdb: if ``True`` the PDB structure will be centered and
-        rotated using PCA **box_center** (optional), default is ``False``
-    :type  rotate_pdb: bool
-    :param align_pdb: structure onto which to superimpose **pdb_path**
-       (optional), can be a tuple giving the structure and the atom names
-       to use for alignment
-    :type  align_pdb: str or :class:`epitopsy.Structure.PDBFile` or
+    :param transform: structure transformation: `'center+rotate'` to center and
+        rotate, `'center'` to center, ``None`` to leave the structure intact,
+        `'superimpose'` to superimpose onto another protein provided in
+        **align**
+    :type  transform: str
+    :param align: structure onto which to superimpose **protein** (optional),
+       can be a tuple giving the structure filename and the atom names to use
+       for alignment, only the structure filename or another protein object
+    :type  align: str or :class:`Structure.PDBFile` or
        tuple(str, tuple(str))
     :param box_center: center of the APBS box (optional), default is [0,0,0]
     :type  box_center: array
@@ -107,14 +87,10 @@ def electrostatics(pdb_path,
     :param cubic_box: use a cubic box if ``True`` (optional)
     :type  cubic_box: bool
     :param box_type: types of boxes APBS should write to disk (optional), by
-        default ["esp","vdw"] as they are mandatory for :func:`run_SCS`,
-        "smol" can be useful for further processing outside Epitopsy
-        (["esp","vdw","smol"])
-    :type  box_type: list
-    :param verbose: print calculation details on screen if ``True`` (optional)
+        default ['esp', 'vdw'] as they are mandatory for :func:`scan`
+    :type  box_type: list(str)
+    :param verbose: print calculation details to screen if ``True`` (optional)
     :type  verbose: bool
-    
-    :raises AttributeError: if the protein in **pdb_path** has a chain break
     
     Example::
     
@@ -123,8 +99,7 @@ def electrostatics(pdb_path,
         >>> protein_path = '5b1l-protein.pdb'
         >>> ligand_path  = '5b1l-DNA-fragment.pqr'
         >>> EnergyGrid.electrostatics(protein_path, [ligand_path],
-        ...                           mesh_size=3*[m,],
-        ...                           center_pdb=False, verbose=True)
+        ...                           mesh_size=3*[m,], verbose=True)
         protein:	5b1l-protein.pdb
         centered:	False
         mesh size:	(0.8,0.8,0.8) Angstroms
@@ -133,53 +108,70 @@ def electrostatics(pdb_path,
         Running APBS...
         Done.
     
+    will produce:
+    
+    * :file:`5b1l-protein.pqr`: PQR file of the protein
+    * :file:`5b1l-protein.in`: APBS input file
+    * :file:`5b1l-protein_esp.dx`: electrostatic potential DXBox
+    * :file:`5b1l-protein_vdw.dx`: van der Waals DXBox
+    * :file:`io.mc`: APBS log file
     '''
     
     if isinstance(ligands, basestring):
         ligands = [ligands]
-    pdb_path = os.path.abspath(pdb_path)
-    pqr_path = pdb_path.replace('.pdb', '.pqr')
-    pdb_name = os.path.basename(pdb_path)
-    pqr_name = os.path.basename(pqr_path)
-    ligands = [os.path.abspath(x) for x in ligands]
-    for filename in [pdb_path] + ligands:
+    for filename in [protein] + ligands:
         if not os.path.isfile(filename):
             raise IOError("File {0} cannot be read.".format(filename))
     
     # if PDB file is located outside current working directory, copy it here
-    if os.path.abspath(pdb_name) != pdb_path:
-        shutil.copy(pdb_path, pdb_name)
+    protein_local = os.path.basename(protein)
+    if protein_local != os.path.relpath(protein):
+        shutil.copy(protein, protein_local)
     
-    # load PDB file
-    pdb_struct = PDBFile(pdb_path)
+    ligands = [os.path.abspath(x) for x in ligands]
+    protein = os.path.abspath(protein_local)
     
-    # rotate then center PDB at **box_center** if requested
-    if rotate_pdb:
-        pdb_struct.apply_PCA_projection()
-        center_pdb = True
-    # center PDB at **box_center** if requested
-    if center_pdb:
-        pdb_coord = pdb_struct.determine_geometric_center()
-        new_coord = np.array(box_center)
-        pdb_struct.translate(new_coord - pdb_coord)
-        pdb_struct.save_to_file(pdb_struct.structure_path)
-    # alternatively, superimpose on reference structure
-    elif align_pdb is not None:
-        if not (isinstance(align_pdb, list) or isinstance(align_pdb, tuple)):
-            align_template = align_pdb
+    # load PDB/PQR structure
+    ext = protein.split('.')[-1].lower().rstrip('~')
+    if ext == 'pdb':
+        pro_struct = PDBFile(protein)
+    elif ext == 'pqr':
+        pro_struct = PQRFile(protein)
+    else:
+        raise ValueError('Unknown file extension "{}"'.format(ext))
+    
+    # center, rotate or align protein structure
+    if transform in ('super', 'superimpose', 'align'):
+        if not (isinstance(align, list) or isinstance(align, tuple)):
+            align_template = align
             align_atoms = None
-        elif len(align_pdb) == 1:
-            align_template = align_pdb[0]
+        elif len(align) == 1:
+            align_template = align[0]
             align_atoms = None
         else:
-            align_template = align_pdb[0]
-            align_atoms = align_pdb[1]
+            align_template = align[0]
+            align_atoms = align[1]
         if isinstance(align_template, basestring):
-            align_template = PDBFile(align_template)
-        elif not isinstance(align_template, PDBFile):
-            raise TypeError('Argument align_pdb should be str or PDBFile')
-        pdb_struct.superimpose_self_onto_given_pdb(align_template, align_atoms)
-        pdb_struct.save_to_file(pdb_struct.structure_path)
+            ext = align_template.split('.')[-1].lower().rstrip('~')
+            if ext == 'pdb':
+                ref = PDBFile(align_template)
+            elif ext == 'pqr':
+                ref = PQRFile(align_template)
+            else:
+                raise ValueError('Unknown file extension "{}"'.format(ext))
+        else:
+            ref = align_template
+        if not (isinstance(ref, PDBFile) or isinstance(ref, PQRFile)):
+            raise TypeError('Argument align should be str or PDBFile')
+        pro_struct.superimpose_self_onto_given_pdb(ref, align_atoms)
+        pro_struct.save_to_file(pro_struct.structure_path)
+    elif transform in ('center', 'center+rotate'):
+        if transform == 'center+rotate':
+            pro_struct.apply_PCA_projection()
+        pro_coord = pro_struct.determine_geometric_center()
+        new_coord = np.array(box_center)
+        pro_struct.translate(new_coord - pro_coord)
+        pro_struct.save_to_file(pro_struct.structure_path)
     
     # calculate DXBox dime from the PDB structure, or use supplied dime
     if not box_dim:
@@ -187,27 +179,18 @@ def electrostatics(pdb_path,
         if extend is None:
             extend = max([int(PQRFile(ligand).determine_max_diameter()) 
                           for ligand in ligands]) + 2
-        box_dim = pdb_struct.get_dxbox_dim(mesh_size, extend, cubic_box)
+        box_dim = pro_struct.get_dxbox_dim(mesh_size, extend, cubic_box)
     else:
         new_box_dim = APBS.fix_grid_size(box_dim) # check supplied dime
         if np.any(new_box_dim != box_dim):
             if verbose:
-                print("fixed grid size {0} -> {1}".format(box_dim, new_box_dim))
+                print('fixed box_dim: {0} -> {1}'.format(box_dim, new_box_dim))
             box_dim = new_box_dim
-    
-    # use PDB2PQR if requested
-    if use_pdb2pqr is True or center_pdb is True or rotate_pdb is True \
-       or align_pdb is not None:
-        # APBS wrapper will automatically call PDB2PQR
-        pqr_path = None
-        pqr_name = None
-    elif os.path.abspath(pqr_name) != pqr_path:
-        shutil.copy(pqr_path, pqr_name)
     
     # print details
     if verbose:
-        print("protein:\t{0}".format(os.path.split(pdb_path)[-1]))
-        print("centered:\t{0}".format(center_pdb))
+        print("protein:\t{0}".format(os.path.split(protein)[-1]))
+        print("transform:\t{0}".format(transform))
         print("mesh size:\t({0},{1},{2}) Angstroms".format(*mesh_size))
         print("extension:\t{0} Angstroms".format(extend))
         print("box dim:\t({0:.0f},{1:.0f},{2:.0f})".format(*box_dim))
@@ -215,14 +198,14 @@ def electrostatics(pdb_path,
     
     # run APBS
     apbs = APBS.APBSWrapper()
-    apbs.get_dxbox(pdb_path=pdb_name, mesh_size=mesh_size,
-                   pqr_path=pqr_name, box_dim=box_dim,
+    apbs.get_dxbox(protein, mesh_size,
+                   box_dim=box_dim,
                    box_center=box_center,
                    box_type=box_type,
                    cubic_box=cubic_box,
                    temperature=temp, ph=ph,
                    pdb2pqr_argv=pdb2pqr_argv,
-                   no_return = True)
+                   no_return=True)
     
     if verbose:
         print("Done.")
@@ -558,16 +541,16 @@ def scan(pdb_path,
 
 def scan_multiconformational(protein_paths, ligand_paths,
                              elec_kwargs=None, scan_kwargs=None,
-                             align_structures=False,
-                             operation_on_first=None):
+                             transform_on_first='center+rotate'):
     '''
     Compute energy grids for multiple protein and ligand conformations.
     
-    When **align_structures** is ``True``, the first structure will be passed
-    to :func:`electrostatics` without altering **elec_kwargs**, and subsequent
-    structures will be passed with a modified **elec_kwargs** where keys
-    ``center_pdb`` and ``rotate_pdb`` are set to ``False`` and ``align_pdb``
-    is set to ``True``.
+    Merged energies are only meaningful when the protein structures have been
+    superimposed. By default the first structure is centered and rotated, while
+    subsequent structures are superimposed on the first. Make sure the atom
+    order is identical in all proteins, otherwise superimposition will fail.
+    If you have already carried out the superimposition outside Epitopsy,
+    please set **transform_on_first** to ``None``.
     
     :param protein_paths: paths to the protein PDB files
     :type  protein_paths: list(str) or str
@@ -577,16 +560,11 @@ def scan_multiconformational(protein_paths, ligand_paths,
     :type  elec_kwargs: dict
     :param scan_kwargs: optional arguments for :func:`scan`
     :type  scan_kwargs: dict
-    :param align_structures: if ``True``, superimpose structures in
-       **protein_paths** onto the first one; the first one will be centered
-       unless **elec_kwargs** has a key ``'rotate_pdb'`` set to ``True``
-    :type  align_structures: bool
-    :param operation_on_first: if **align_structures** is ``True``, the
-       first structure in **protein_paths** should either be centered or
-       rotated using this argument (``'center'`` or ``'rotate'``), if left to
-       ``None``, the first protein structure will be used as is
-    :type  operation_on_first: str
-
+    :param transform_on_first: structure transformation: `'center+rotate'` to
+        center and rotate, `'center'` to center, ``None`` to leave the
+        structure intact
+    :type  transform_on_first: str
+    
     Example::
     
         >>> from epitopsy import EnergyGrid
@@ -630,11 +608,26 @@ def scan_multiconformational(protein_paths, ligand_paths,
             protein2_mic.dx.gz
     
     '''
+    if transform_on_first not in ('center+rotate', 'center', None):
+        raise ValueError('Unknown transform "{}"'.format(transform_on_first))
     # keyword arguments
     if elec_kwargs is None:
         elec_kwargs = {}
     if scan_kwargs is None:
         scan_kwargs = {}
+    if len(protein_paths) >= 2:
+        # with 2 proteins or more, the 'transform' keyword is important
+        if transform_on_first:
+            for key in ('transform', 'align'):
+                if key in elec_kwargs:
+                    raise KeyError('Cannot forward argument "{}" to function '
+                                   'electrostatics(): use argument "transform_'
+                                   'on_first" of function scan_multiconformati'
+                                   'onal()'.format(key))
+        else:
+            if 'transform' not in elec_kwargs:
+                elec_kwargs['transform'] = None
+                print('WARNING: "transform" in elec_kwargs set to None')
     # file paths
     if isinstance(protein_paths, str):
         protein_paths = [protein_paths]
@@ -642,57 +635,33 @@ def scan_multiconformational(protein_paths, ligand_paths,
         ligand_paths = [ligand_paths]
     protein_paths = [os.path.realpath(path) for path in protein_paths]
     ligand_paths  = [os.path.realpath(path) for path in  ligand_paths]
-    if align_structures:
-        template = None
-        if operation_on_first not in ('center', 'rotate', None, False):
-            raise ValueError('Argument operation_on_first is incorrect.')
+    reference_protein = None
     
     # compute APBS and energy grids
     for i, protein_path in enumerate(protein_paths):
         # create a subfolder for the protein
-        dirname = os.path.basename(protein_path).split('.')[0]
+        dirname = os.path.basename(protein_path).rstrip('~')[:-4]
         if os.path.isdir(dirname): # erase folder if it already exists
             shutil.rmtree(dirname)
         os.makedirs(dirname)
         os.chdir(dirname)
-        # copy the PDB file
+        # copy the PDB/PQR file
         shutil.copyfile(protein_path, os.path.basename(protein_path))
-        # copy the PQR file, but only if the PDB structure is not translated
-        if elec_kwargs.get('use_pdb2pqr', True) == False and \
-           elec_kwargs.get('center_pdb', True) == False and \
-           elec_kwargs.get('rotate_pdb', True) == False and \
-           elec_kwargs.get('align_pdb', None) is None and \
-           align_structures == False:
-            shutil.copyfile(protein_path.replace('.pdb', '.pqr'),
-                   os.path.basename(protein_path.replace('.pdb', '.pqr')))
         protein_path = os.path.realpath(os.path.basename(protein_path))
-        # align structures if requested
+        # handle structure transformation
         kwargs = elec_kwargs.copy()
-        if align_structures:
+        if transform_on_first:
+            # first structure is transformed, others are superimposed
             if i == 0:
-                template = protein_path
-                kwargs['use_pdb2pqr'] = True
-                kwargs['align_pdb'] = None
-                if operation_on_first == 'center':
-                    kwargs['center_pdb'] = True
-                    kwargs['rotate_pdb'] = False
-                elif operation_on_first == 'rotate':
-                    kwargs['center_pdb'] = False
-                    kwargs['rotate_pdb'] = True
-                else:
-                    kwargs['center_pdb'] = False
-                    kwargs['rotate_pdb'] = False
-                """if kwargs.get('center_pdb') != True and \
-                   kwargs.get('rotate_pdb') != True:
-                    kwargs['center_pdb'] = True
-                    kwargs['rotate_pdb'] = False"""
+                kwargs['transform'] = transform_on_first
             else:
-                kwargs['use_pdb2pqr'] = True
-                kwargs['center_pdb'] = False
-                kwargs['rotate_pdb'] = False
-                kwargs['align_pdb'] = (template, ['CA'])
+                kwargs['transform'] = 'superimpose'
+                kwargs['align'] = reference_protein
         # compute the electrostatic grid
         electrostatics(protein_path, ligand_paths, **kwargs)
+        if transform_on_first and i == 0:
+            reference_protein = protein_path
+        # carry out energy calculations
         for ligand_path in ligand_paths:
             # create a subfolder for the ligand
             dirname = os.path.basename(ligand_path).split('.')[0]
@@ -840,26 +809,24 @@ def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
 
     '''
     if not weights:
-        weights = [1 for _ in range(len(energy_paths))]
+        weights = len(energy_paths) * [1,]
     merge_epi = output_fmt.format('epi')
     merge_mic = output_fmt.format('mic')
     if merge_epi == merge_mic:
         raise ValueError('arg. output_fmt is incorrect, please read the doc')
     
     # prepare DXBox comment
-    comments = [' OpenDX file created by {} on {}'.format(os.getenv('USER'),
-                                                          time.ctime()),
-                ' using the following function call:',
-                '   EnergyGrid.merge(["{}"'.format(os.path.relpath(
-                                                     energy_paths[0]))]
+    comments = ['Output of function epitopsy.EnergyGrid.calculation.merge(',
+                '  ["{}"'.format(os.path.relpath(energy_paths[0]))]
     for path in energy_paths[1:]:
         comments[-1] = comments[-1] + ','
-        comments.append(20 * ' ' + ' "{}"'.format(os.path.relpath(path)))
+        comments.append('   "{}"'.format(os.path.relpath(path)))
     if not weights:
         comments[-1] = comments[-1] + '])'
     else:
         comments[-1] = comments[-1] + '],'
-        comments.append(20 * ' ' + 'weights={})'.format(weights))
+        comments.append('  weights=[{}])'.format(
+                        ', '.join('{:.3f}'.format(w) for w in weights)))
     
     weights = np.array(weights, dtype=float) / np.sum(weights)
     

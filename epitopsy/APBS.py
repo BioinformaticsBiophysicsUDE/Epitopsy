@@ -136,107 +136,71 @@ REMARK   5'''
 
         #os.remove('io.mc')
 
-    def get_dxbox(self, pdb_path, mesh_size, no_return = False, **kwds):
+    def get_dxbox(self, protein_path, mesh_size, no_return = False, **kwds):
         '''
         This method starts pdb2pqr and apbs and returns the specified boxes.
         Be careful with absolute paths!
 
-        Args:
-            pdb_path -> path to the structure
-            mesh_size -> grid dimensions
-            --- below are optional
-            pqr_path -> if None is supplied, it uses pdb2pqr to calculate one
-            box_dim -> if box dimensions and a box center are supplied, it
-                will not use the pdb for the construction of the
-                box. Furthermore it is not possible to extend a
-                box, if the box properties are supplied.
-            box_center -> determine the center of the box. If None is
-                supplied, it calculates the center of the pqr file.
-            extend -> Extend grid by the given number of Angstroems
-            box_type -> specify the returned objects: 'esp', 'vdw', 'smol'
-            cubic_box -> if the box is generated from the pqr file, it can
-                be made to be cubic
-            close_boundaries -> if True it uses another algorithm for the
-                boundary conditions of the box which
-                yields better results but is slower
-            temperatur -> well it is the Temperatur in Kelvin
-            ph -> it's the pH
-
-        Returns:
-            A dictionary with DXBox objects, which keys are the requested
-            box types.
+        :param protein_path: path to the structure
+        :type  protein_path: str
+        :param mesh_size: grid mesh size in all three dimensions
+        :type  mesh_size: tuple(int)
+        :param temperature: temperature for APBS (optional), default is 310 K
+        :type  temperature: float
+        :param ph: pH for protonation state determination in PDB2PQR
+            (optional), default is ``None``
+        :type  ph: float
+        :param pdb2pqr_argv: additional arguments to PDB2PQR (optional), for
+            example ["--assign-only"] or ["--assign-only", "--noopt"]
+        :type  pdb2pqr_argv: list(str)
+        :param box_center: APBS box center (optional), default is [0,0,0]
+        :type  box_center: list(float)
+        :param box_dim: override box dimensions with custom values (optional),
+            but values must comply to the APBS *dime* format
+        :type  box_dim: list(int)
+        :param extend: custom box size extension (optional)
+        :type  extend: float
+        :param cubic_box: use a cubic box if ``True`` (optional)
+        :type  cubic_box: bool
+        :param close_boundaries: use multiple Debye-Huckel model to initialize
+            potential at the boundaries if ``True`` (optional)
+        :type  close_boundaries: bool
+        :param box_type: types of boxes APBS should write to disk (optional),
+            by default ['esp','vdw']
+        :type  box_type: list(str)
+        :returns: DXBox objects stored by box types.
+        :returntype: dict(str,:class:`DXFile.DXBox`)
         '''
-        if 'box_dim' in kwds:
-            box_dim = kwds['box_dim']
+        if not os.path.exists(protein_path):
+            raise ValueError('Could not find file "{0}"'.format(protein_path))
+        
+        box_dim = kwds.get('box_dim')
+        box_center = kwds.get('box_center')
+        extend = kwds.get('extend')
+        box_type = kwds.get('box_type', ['esp', 'vdw'])
+        cubic_box = kwds.get('cubic_box', True)
+        close_boundaries = kwds.get('close_boundaries', True)
+        temperature = kwds.get('temperature', 310)
+        ph = kwds.get('ph')
+        pdb2pqr_argv = kwds.get('pdb2pqr_argv', [])
+        if isinstance(pdb2pqr_argv, basestring):
+            pdb2pqr_argv = [pdb2pqr_argv]
+        
+        # process protein structure
+        ext = protein_path.split('.')[-1].lower().rstrip('~')
+        if ext == 'pqr':
+            pqr_path = protein_path
+        elif ext == 'pdb':
+            pdb = PDBFile(protein_path)
+            pqr_path = protein_path.replace('.pdb', '.pqr')
+            if ph is not None:
+                pdb2pqr_argv.append('--with-ph={0}'.format(ph))
+            pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv = pdb2pqr_argv)
+            pqr.save_to_file(pqr_path)
         else:
-            box_dim = None
-        if 'box_center' in kwds:
-            box_center = kwds['box_center']
-        else:
-            box_center = None
-        if 'extend' in kwds:
-            extend = kwds['extend']
-        else:
-            extend = None
-        if 'box_type' in kwds:
-            box_type = kwds['box_type']
-        else:
-            box_type = ['esp', 'vdw']
-        if 'cubic_box' in kwds:
-            cubic_box = kwds['cubic_box']
-        else:
-            cubic_box = True
-        if 'close_boundaries' in kwds:
-            close_boundaries = kwds['close_boundaries']
-        else:
-            close_boundaries = True
-        if 'temperature' in kwds:
-            temperature = kwds['temperature']
-        else:
-            temperature = 310
-        if 'ph' in kwds:
-            ph = kwds['ph']
-        else:
-            ph = None
-
-        pdb = PDBFile(pdb_path)
-        if 'pqr_path' in kwds:
-            pqr_path = kwds['pqr_path']
-
-            if pqr_path is None:
-                # this could somehow happen
-                # if the given path is None, calculate it
-                pqr_path = pdb_path.replace('.pdb', '.pqr')
-                pdb2pqr_argv = []
-
-                if 'pdb2pqr_argv' in kwds:
-                    pdb2pqr_argv = kwds['pdb2pqr_argv']
-                if ph is None:
-                    pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
-                    pqr.save_to_file(pqr_path)
-                else:
-                    pdb2pqr_argv.append("--with-ph={0}".format(ph))
-                    pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
-                    pqr.save_to_file(pqr_path)
-
-            else:
-                # the pqr path should exist
-                if not os.path.exists(pqr_path):
-                    raise ValueError("Could not find pqr path: {0}".format(pqr_path))
-
-        else:
-            pqr_path = pdb_path.replace('.pdb', '.pqr')
-            pdb2pqr_argv = []
-            if 'pdb2pqr_argv' in kwds:
-                pdb2pqr_argv = kwds['pdb2pqr_argv']
-            if ph is None:
-                pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
-                pqr.save_to_file(pqr_path)
-            else:
-                pdb2pqr_argv.append("--with-ph={0}".format(ph))
-                pqr = pdb.get_pqr_structure(pqr_path, pdb2pqr_argv=pdb2pqr_argv)
-                pqr.save_to_file(pqr_path)
-
+            raise ValueError('Unknown file extension "{}"'.format(ext))
+        
+        # generate APBS input file
         template_in = InFile(pqr_path = pqr_path,
                              calculation_type = 'potential',
                              box_mesh_size = mesh_size,
@@ -248,7 +212,7 @@ REMARK   5'''
         template_in.temp = temperature
 
         if close_boundaries:
-            template_in.bcfl = "mdh"
+            template_in.bcfl = 'mdh'
         else:
             template_in.bcfl = 'sdh'
 
