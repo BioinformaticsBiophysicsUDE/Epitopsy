@@ -1,11 +1,9 @@
+import re
+import urllib, urllib2
 import collections
-
 import numpy as np
-
 from Bio import AlignIO, SeqIO, Seq, SeqRecord, pairwise2
 from Bio.SubsMat import MatrixInfo as matlist
-import urllib, urllib2
-import re
 
 alignment_alphabet = {'-':1, 'A':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8,
                       'I':9, 'K':10, 'L':11, 'M':12, 'N':13, 'P':14, 'Q':15,
@@ -13,36 +11,74 @@ alignment_alphabet = {'-':1, 'A':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8,
 
 def make_alignment_upper_case(orig_aln):
     '''
-    Uses the alignment and transforms all characters to upper case.
+    Transform all characters to uppercase.
 
-    Args:
-        orig_aln -> biopython alignment
+    :param orig_aln: Biopython alignment
+    :type  orig_aln: :class:`Bio.Align.MultipleSeqAlignment`
 
-    Returns:
-        An upper case biopython alignment
+    :returns: Uppercase Biopython alignment, for
+       :class:`Bio.Align.MultipleSeqAlignment`.
+    :rtype: list(:class:`Bio.SeqRecord.SeqRecord`)
+
+    Example::
+
+        >>> alignment = AlignIO.read(open('seq.txt', 'rU'), 'fasta')
+        >>> print alignment
+        SingleLetterAlphabet() alignment with 3 rows and 178 columns
+        iigp--gr-gfgkrrhpkkltplaykqfipnvaekt...sgg 3M1N:A|PDBID|CHAIN|SEQUENCE
+        iigp--grpgfgkrrhpkkltplaykqfipnvaekt...sgg PRO1:A|NAME1|CHAIN|SEQUENCE
+        iigpxxgrcgfgkrrhpkkltplaykqfipnvaekt...sgg PRO2:A|NAME2|CHAIN|SEQUENCE
+        >>> new_alignment = Sequence.make_alignment_upper_case(alignment)
+        >>> print Align.MultipleSeqAlignment(new_alignment)
+        Alphabet() alignment with 3 rows and 178 columns
+        IIGP--GR-GFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG 3M1N:A|PDBID|CHAIN|SEQUENCE
+        IIGP--GRPGFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG PRO1:A|NAME1|CHAIN|SEQUENCE
+        IIGPXXGRCGFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG PRO2:A|NAME2|CHAIN|SEQUENCE
+
     '''
-    #### copy alignment
     aln = []
     for record in orig_aln:
-        aln.append(SeqRecord.SeqRecord(Seq.Seq(record.seq.tostring().upper()), record.id, description=record.description))
+        aln.append(SeqRecord.SeqRecord(Seq.Seq(record.seq.tostring().upper()),
+                                   record.id, description=record.description))
     return aln
 
 def make_alignment_clean(orig_aln):
     '''
-    Uses the alignment, removes sequences with non standard amino acids and
-    reduces the alignment size if unnecessary gaps are there (this may happen,
-    if a sequence has been removed).
+    Delete sequences with non standard amino acids and reduce alignment size
+    if unnecessary gaps are found (may happen when sequences are deleted).
 
-    Args:
-        orig_aln -> biopython alignment
+    :param orig_aln: Biopython alignment
+    :type  orig_aln: :class:`Bio.Align.MultipleSeqAlignment`
 
-    Returns:
-        A clean biopython alignment
+    :returns: Clean Biopython alignment, for
+       :class:`Bio.Align.MultipleSeqAlignment`.
+    :rtype: list(:class:`Bio.SeqRecord.SeqRecord`)
+
+    Example::
+
+        >>> alignment = AlignIO.read(open('seq.txt', 'rU'), 'fasta')
+        >>> print alignment
+        SingleLetterAlphabet() alignment with 3 rows and 178 columns
+        IIGP--GR-GFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG 3M1N:A|PDBID|CHAIN|SEQUENCE
+        IIGP--GRPGFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG PRO1:A|NAME1|CHAIN|SEQUENCE
+        IIGPXXGRCGFGKRRHPKKLTPLAYKQFIPNVAEKT...SGG PRO2:A|NAME2|CHAIN|SEQUENCE
+        >>> clean_alignment = Sequence.make_alignment_clean(alignment)
+        input size: 3 x 178 (#seq x len(seq))
+        output size: 2 x 176
+        >>> print Align.MultipleSeqAlignment(clean_alignment)
+        Alphabet() alignment with 2 rows and 176 columns
+        IIGPGR-GFGKRRHPKKLTPLAYKQFIPNVAEKTLG...SGG 3M1N:A|PDBID|CHAIN|SEQUENCE
+        IIGPGRPGFGKRRHPKKLTPLAYKQFIPNVAEKTLG...SGG PRO1:A|NAME1|CHAIN|SEQUENCE
+        >>> # 3rd sequence with 'X' was deleted; two leading gaps were removed
+
+    ..
+        >>> for rec in clean_alignment:
+        ...     print "%s...%s %s" % (rec.seq[:44], rec.seq[-3:], rec.id)
+
     '''
     #### acceptable amino acids
-    aa_list = ['-', 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I',
-            'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S',
-            'T', 'V', 'W', 'Y']
+    aa_list = ['-', 'A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M',
+               'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 
     #### copy alignment
     aln = []
@@ -99,12 +135,18 @@ def make_alignment_clean(orig_aln):
 
 def format_stockholm_to_fasta(input_path, output_path):
     '''
-    Change the format of an stockholm formatted alignment ot an fasta formatted
-    alignment.
+    Open a stockholm formatted alignment file located at **input_path** and
+    write the corresponding fasta formatted alignment to **output_path**.
 
-    Args:
-        input_path -> path to the stockholm formatted format
-        output_path -> path to the new fasta alignment
+    :param input_path: path to the stockholm formatted alignment
+    :type  input_path: str
+    :param output_path: path to the new fasta formatted alignment
+    :type  output_path: str
+
+    Example::
+
+        >>> Sequence.format_stockholm_to_fasta('stock.txt', 'fasta.txt')
+
     '''
     aln = AlignIO.read(input_path, 'stockholm')
     with open(output_path, "w") as f:
@@ -112,16 +154,30 @@ def format_stockholm_to_fasta(input_path, output_path):
 
 
 def get_pairwise_alignment(ref_seq, query_seq):
-    """
-    Args:
-        ref_seq -> string of the reference sequence
-        query_seq -> string of the query sequence
+    '''
+    Match the query sequence **query_seq** with the reference sequence
+    **ref_seq** and return the corresponding aligned sequences in a
+    dictionary with keys ('ref_seq', 'query_seq'). It uses the first
+    calculated alignment; equally scored alignments are not considered.
 
-    Returns:
-        A dictionary with keys ("ref_seq", "query_seq") and the corresponding
-        aligned sequences. It uses the first calculated alignment, equally
-        scored alignments are not considered.
-    """
+    :param ref_seq: string of the reference sequence
+    :type  ref_seq: str
+    :param query_seq: string of the query sequence
+    :type  query_seq: str
+
+    :returns: Aligned sequences
+    :rtype: dict
+
+    Example::
+
+        >>> align = Sequence.get_pairwise_alignment('IIGPTTGRGFGKRR',
+        ...                                         'IIGPGGGRGFGKRR')
+        >>> for seq in align.values():
+        ...     print seq
+        IIGPTTG--RGFGKRR
+        IIGP--GGGRGFGKRR
+
+    '''
     result = {}
     matrix = matlist.blosum62
     ref = re.sub(r"[^ACDEFGHIKLMNPQRSTVWY]",'',ref_seq.upper())
@@ -137,13 +193,34 @@ def get_pairwise_alignment(ref_seq, query_seq):
 
 def get_almost_conserved_columns(aln, cutoff=0.95):
     '''
-    Args:
-        aln -> biopython alignment
+    
+    Return a list of the positions in the aligned sequence where the amino
+    acid with the highest occurence has a frequency larger than the cutoff
+    ('-' is also counted as an amino acid). The column index starts with 1!
 
-    Returns:
-        A list with the columns, where the amino acid with the highest
-        frequency has a frequency larger than the cutoff. The columns
-        start with 1!
+    :param aln: Biopython alignment
+    :type  aln: :class:`Bio.Align.MultipleSeqAlignment`
+    :param cutoff: minimal occurence
+    :type  cutoff: float
+
+    :returns: list with the columns index
+    :rtype: list(int)
+
+    Example::
+
+        >>> alignment = AlignIO.read(open('fasta.txt', 'rU'), 'fasta')
+        >>> c = Sequence.get_almost_conserved_columns(alignment)
+        >>> print c
+        [1, 3, 4, 7, 8, 10, 11, 12, 14, 16]
+        >>> # Result visualization
+        >>> print alignment; print ''.join('+' if x in c else '-' for x
+        ...  in range(1,alignment.get_alignment_length()+1)) + ' (at 95+%)'
+        SingleLetterAlphabet() alignment with 3 rows and 16 columns
+        IKGP--GR-GFGPRRH prot1
+        IIGPRGGRPGFGKRVH prot2
+        IIGPGGGRCGFGKRVH prot3
+        +-++--++-+++-+-+ (at 95+%)
+
     '''
     N = len(aln[0])
     M = len(aln)
@@ -161,26 +238,25 @@ def get_almost_conserved_columns(aln, cutoff=0.95):
     return cons_list
 
 def uniprot_mapping(fromtype, totype, identifier):
-    """Takes an identifier, and types of identifier
-    (to and from), and calls the UniProt mapping service.
-    To get the right identifiers, visit 
-    http://www.uniprot.org/faq/28#conversion.
+    '''
+    Take an identifier and types of identifier (to and from) and call the
+    UniProt mapping service. To get the right identifiers, visit
+    http://www.uniprot.org/faq/28#conversion
 
-    Args: 
-        fromtype -> type of current identifier
-        totype -> needed identifier type
-        identifier -> protein identifier
+    :param fromtype: type of current identifier
+    :type  fromtype: str
+    :param totype: needed identifier type
+    :type  totype: str
+    :param identifier: protein identifier
+    :type  identifier: str
 
-    Returns:
-        protein identifier of type specified in totype
-    """
+    :returns: Protein identifier of type **totype**.
+    :rtype: str
+    '''
     base = 'http://www.uniprot.org'
     tool = 'mapping'
-    params = {'from':fromtype,
-    'to':totype,
-    'format':'tab',
-    'query':identifier,
-    }
+    params = {'from': fromtype, 'to': totype,
+              'format': 'tab', 'query': identifier}
     #urllib turns the dictionary params into an encoded url suffix
     data = urllib.urlencode(params)
     #construct the UniProt URL

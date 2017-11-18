@@ -1,8 +1,8 @@
-'''
-Created on 10.01.2012
+__author__     = "Christoph Wilms, Jean-Noel Grad"
+__copyright__  = "Copyright 2012, Epitopsy"
+__date__       = "2012-01-10"
+__credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
 
-@author: chris
-'''
 import os
 import sys
 import re
@@ -15,24 +15,23 @@ import warnings
 from sklearn.cluster import KMeans
 from epitopsy.cython import dx_cython
 
+
 class DXBox(object):
     '''
     Container for an OpenDX box.
-    Typically used to store the output of an APBS calculation.
-    
+
     :param box: 3D box
-    :type  box: np.ndarray
+    :type  box: :class:`np.array[:,:,:]`
     :param box_mesh_size: box mesh size in Angstroms
-    :type  box_mesh_size: tuple
+    :type  box_mesh_size: :class:`np.array[3]`
     :param box_offset: box offset in Angstroms
-    :type  box_offset: tuple
-    
-    
+    :type  box_offset: :class:`np.array[3]`
+
     An OpenDX box with dimensions (9,1,1) and mesh sizze (1, 1, 1) has the
     following structure:
-    
+
     .. code-block:: none
-        
+
          ___ ___ ___ ___ ___ ___ ___ ___ ___
         | . | . | . | . | . | . | . | . | . |
         |___|___|___|___|___|___|___|___|___|
@@ -40,46 +39,49 @@ class DXBox(object):
         ------------------------------------->
         (-4)             (0)             (4) 
                        x-axis
-    
+
     where the 5th grid point is exactly centered at the origin (0,0,0) and
     contains the volume from (-0.5,-0.5,-0.5) to (+0.5,+0.5,+0.5).
     The box origin gives the coordinates of the grid point at the center.
-    
-    Different softwares interpret the DXBox data differently:
-    
-        * APBS: grid centers (cgcent/fgcent) correspond to the box origin,
-           grid lengths (cglen/fglen) correspoond to the distance between
-           the extrema grid points; eg. an APBS box with dimensions
-           33x97x161 with mesh size 1 needs cglen set to 32x96x160
-        * PyMOL: a DXBox with dimensions 33x97x161 will be displayed as a
-           32x96x160 parallelogram whose corners lie on the extrema grid
-           points. Each face of the parallelogram with be shaved by half a
-           mesh size.
-    
+
+    Different softwares interpret DXBox data differently:
+
+    * APBS: grid centers (cgcent/fgcent) correspond to the box origin,
+      grid lengths (cglen/fglen) correspoond to the distance between
+      the extrema grid points; eg. an APBS box with dimensions
+      33x97x161 with mesh size 1 needs cglen set to 32x96x160
+    * PyMOL: a DXBox with dimensions 33x97x161 will be displayed as a
+      32x96x160 parallelogram whose corners lie on the extrema grid points.
+      Each face of the parallelogram with be shaved by half a mesh size.
+
     .. attribute:: box
-    
-        (**np.ndarray**) 3D array storing OpenDX box grid points.
-        
+
+        (:class:`np.array[:,:,:]`) 3D array storing OpenDX box grid points.
+
     .. attribute:: box_dim
-    
-        (**np.array**) Box shape.
-        
+
+        (:class:`np.array[3]`) Box shape.
+
     .. attribute:: box_mesh_size
-    
-        (**np.array**) Box mesh resolution in Angstroms.
-        
+
+        (:class:`np.array[3]`) Box mesh resolution in Angstroms.
+
     .. attribute:: box_offset
-    
-        (**np.array**) Box offset in Angstroms.
-        
+
+        (:class:`np.array[3]`) Box offset in Angstroms.
+
     .. attribute:: box_center
-    
-        (**np.array**) Box center in Angstroms.
-        
+
+        (:class:`np.array[3]`) Box center in Angstroms.
+
     .. attribute:: file_path
-    
-        (**str**) Filepath.
-    
+
+        (**str**) Path to the .dx file.
+
+    .. attribute:: comment_header
+
+        (**str**) OpenDX header.
+
     '''
     X = 0
     Y = 1
@@ -147,7 +149,7 @@ class DXBox(object):
     all_neighbors_xy[7, 0] = 1
     all_neighbors_xy[7, 1] = 1
 
-    def __init__(self, box = None, meshsize = None, offset = None):
+    def __init__(self, box=None, meshsize=None, offset=None):
         if box is None and meshsize is None and offset is None:
             pass
         else:
@@ -162,39 +164,64 @@ class DXBox(object):
         self.file_path = None
 
     def getDimensionX(self):
+        '''
+        :getter: Get box dimension on the X-axis
+        :type: int
+        '''
         if self.box_dim is not None:
             return self.box_dim[0]
         else:
             return None
 
     def getDimensionY(self):
+        '''
+        :getter: Get box dimension on the Y-axis
+        :type: int
+        '''
         if self.box_dim is not None:
             return self.box_dim[1]
         else:
             return None
 
     def getDimensionZ(self):
+        '''
+        :getter: Get box dimension on the Z-axis
+        :type: int
+        '''
         if self.box_dim is not None:
             return self.box_dim[2]
         else:
             return None
 
-    def setDimensions(self, dim, y = 0, z = 0):
+    def setDimensions(self, dim, y=0, z=0):
+        '''
+        :setter: Sets box dimensions
+        :type: tuple(int)
+        '''
         if isinstance(dim, list):
             self.box_dim = np.array(dim)
         else:
             self.box_dim = np.array([dim, y, z])
 
     def getDimensions(self):
+        '''
+        :getter: Get box dimensions
+        :type: :class:`np.array[3]`
+        '''
         return self.box_dim
 
     def getMaxSideLength(self):
+        '''
+        :getter: Get box largest dimension
+        :type: int
+        '''
         if self.box_dim is not None:
             return np.max(self.box_dim)
         else:
             return None
 
-    def setCommentHeader(self, comment, as_is=False, timestamp=True, username=False):
+    def setCommentHeader(self, comment, as_is=False, timestamp=True,
+                         username=False):
         '''
         Add a comment in the DX file header. Automatically add '#' at the
         beginning of a line.
@@ -206,7 +233,7 @@ class DXBox(object):
         :type  as_is: bool
         :param timestamp: add a timestamp
         :type  timestamp: bool
-        :param username: add a usernamem can be a custom string
+        :param username: add a username, can be a custom string
         :type  username: bool or str
         '''
         if isinstance(comment, basestring):
@@ -217,8 +244,8 @@ class DXBox(object):
         if not as_is:
             if lines and max(len(x) for x in lines) > 78:
                 long_lines = '\n'.join('- ' + x for x in lines if len(x) > 78)
-                warnings.warn("OpenDX comment lines shouldn't be more than 78 "
-                              "characters long:\n{}".format(long_lines))
+                warnings.warn('OpenDX comment lines shouldn\'t be more than '
+                              '78 characters long:\n{}'.format(long_lines))
             lines.insert(0, 'OpenDX file created by Epitopsy')
             lines.insert(1, '')
             if username:
@@ -234,7 +261,7 @@ class DXBox(object):
 
     # I switched the variables compared to Niko,  because that way
     # I just need one function
-    def makeCubic(self, fillInValue, sidelength = 'noValue'):
+    def makeCubic(self, fillInValue, sidelength='noValue'):
         if sidelength == 'noValue':
             sidelength = self.getMaxSideLength()
         self.enlargeBox([sidelength, sidelength, sidelength], fillInValue)
@@ -253,17 +280,11 @@ class DXBox(object):
 
         return tuple(self.box_dim) == tuple(other_dxbox.box_dim)
 
-    def translate(self, dx, dy = 0, dz = 0):
+    def translate(self, dx, dy=0, dz=0):
         '''
-         * Translates all nodes by the given distance along each axis. The box is continuous,  thus nodes which are translated
-         * over the right edge of the grid are reintroduced at the left edge.
-         * <p>
-         * Example:
-         * <p>
-         * With the grid x-Dimension being 97 and the node at x-positon 96 being translated by 3 along the x-axis,  the nodes
-         * new x-position will be 2.
-         * <code>x = (x+dx)%dimx</code>
-         * TODO: changed,  check if new method is correct!
+        Translates all nodes by the given distance along each axis. The box
+        is continuous, thus nodes which are translated over the right edge
+        of the grid are reintroduced at the left edge.
         '''
         if isinstance(dx, list):
             dz = dx[self.Z]
@@ -278,58 +299,50 @@ class DXBox(object):
 
     def getNodesByValue(self, value):
         '''
-        * Gets a list of all nodes which hold the given numerical value.
+        Gets a list of all nodes which holds one of the given numerical values.
         '''
-        print('Use np.nonzero(self.box == value)!')
-
-    '''
-     * Gets a list of all nodes which holds one of the given numerical values.
-     * @param value array with values to searched for
-     * @return Vector-List of all nodes with one of the supplied values
-    '''
+        raise RuntimeError('Use np.nonzero(self.box == value)!')
 
     def getNodesWithoutValue(self, value):
         '''
-         * Gets a list of all nodes which DO NOT hold the given numerical value.
-         * @param value value to NOT searche for
-         * @return Vector-List of all nodes without supplied value
+        Gets a list of all nodes which DO NOT hold the given numerical value.
         '''
-        print('Use np.nonzero(self.box != value)!')
-
+        raise RuntimeError('Use np.nonzero(self.box != value)!')
 
     def multiply(self, factor_dxbox):
         if self.has_same_size_as(factor_dxbox):
             self.box = self.box * factor_dxbox.box
         else:
-            print("Box sizes mismatch!!!")
+            raise ValueError("Box sizes mismatch!!!")
 
     def subtract(self, substrahend_dxbox):
         if self.has_same_size_as(substrahend_dxbox):
             self.box = self.box - substrahend_dxbox.box
         else:
-            print("Box sizes mismatch!!!")
+            raise ValueError("Box sizes mismatch!!!")
 
     def determineEpitopeNodes(self, nodes, atoms, meshSize, radius):
         '''
-        * Method takes a list of nodes and returns these which are
-        * epitope-associated.
-        * Nodes which reside within the supplied distance from at least
-        * one of the supplied residues are considered epitope-associated.
-        * <p>
-        * Alogrithm:
-        * compare every surface-associated node to every atom of every
-        * epitope-associated residue:
-        * If this node is within a given range of an atom,  it is
-        * epitope-associated and added to the list.
-        * @param nodes Vector-list of epitope candidate nodes
-        * @param atoms Vector-list atoms which describe the epitope
-        * @param meshSize Array with mesh spacing of this grid.
-        * @param radius Radius of atoms within which nodes are considered epitope-associated
-        * @return Vector-list of epitope-associated nodes
-        *****
+        Method takes a list of nodes and returns these which are
+        epitope-associated.
+        Nodes which reside within the supplied distance from at least
+        one of the supplied residues are considered epitope-associated.
+
+        Algorithm:
+        compare every surface-associated node to every atom of every
+        epitope-associated residue:
+        If this node is within a given range of an atom,  it is
+        epitope-associated and added to the list.
+
+        :param nodes: Vector-list of epitope candidate nodes
+        :param atoms: Vector-list atoms which describe the epitope
+        :param meshSize: Array with mesh spacing of this grid.
+        :param radius: Radius of atoms within which nodes are considered
+           epitope-associated
+        :returns: Vector-list of epitope-associated nodes
+
         Remark: I don't know what Niko is doing here exactly,  but I'll
-        find that out ... eventually ;)
-        *****
+        find that out ... eventually
         '''
         # node list from e.g. self.getNodesWithoutValue(...)
         # -> simple 2d-list
@@ -370,54 +383,53 @@ class DXBox(object):
 
     def count_nodes_with_value(self, value):
         '''
-        Returns number occurrences of a given value within this grid.
+        Count occurrences of a given value in the grid.
+
+        :param value: value to search for
+        :type  value: int
+
+        :returns: Number of occurences.
+        :rtype: int
         '''
         box_coord = np.nonzero(self.box == value)
 
         return len(box_coord[0])
 
     def count_nodes_without_value(self, value):
+        '''
+        Count occurrences of values other than the given one in the grid.
+
+        :param value: value to exclude
+        :type  value: int
+
+        :returns: Number of occurences.
+        :rtype: int
+        '''
         box_coord = np.nonzero(self.box != value)
 
         return len(box_coord[0])
 
-
     def getUniqueValues(self):
         '''
-        Returns unique values within this grid.
-        *****
-        Remark: Nikos code is very complex here (with thresshold and so on),
-        so I don't know if I miss something,  though the name of the function
-        is very clear
+        Find unique values within the grid.
+
+        :returns: Number of occurences.
+        :rtype: :class:`np.array[:]`
         '''
-        unique = []
-        for x in range(self.getDimensionX()):
-            for y in range(self.getDimensionY()):
-                for z in range(self.getDimensionZ()):
-                    if not(self.box[x][y][z] in unique):
-                        unique.append(self.box[x][y][z])
-        return unique
+        return np.unique(self.box)
 
     def getRotateBox(self, theta, phi, psi, fillInValue):
         '''
-         * Return a rotated copy of this grid with nodes rotated around the grid center.
-         * <p>
-         * This can be seen as rotating the protein and thus the specific information (van-der-Waals surface
-         * or electrostatic potential) within this grid.
-
-         I use euler-angles, so it is actually phi, theta, psi (x, y, z).
-         You can look up euler angles at wikipedia to understand what
-         I do here, it is different from Niko's!
+        Get a copy of this grid with nodes rotated around the grid center.
+        This can be seen as rotating the protein and thus the specific
+        information (van der Waals surface or electrostatic potential).
         '''
         # preparation start:
         centerNodeVector = np.array([np.ceil(self.getDimensionX() / 2), np.ceil(self.getDimensionY() / 2), np.ceil(self.getDimensionZ() / 2)])
-        '''
-        http://mathworld.wolfram.com/EulerAngles.html
-
-        phi = 0 - 360 about the z-axis
-        theta = 0 - 180 about the new x'-axis
-        psi = 0 - 360 about the new z'-axis
-        '''
+        # http://mathworld.wolfram.com/EulerAngles.html
+        # phi = 0 - 360 about the z-axis
+        # theta = 0 - 180 about the new x'-axis
+        # psi = 0 - 360 about the new z'-axis
         eulerRotation = np.zeros((3, 3))
         theta = np.deg2rad(theta)
         phi = np.deg2rad(phi)
@@ -475,7 +487,7 @@ class DXBox(object):
 
     def add_box(self, box):
         if not(self.has_same_size_as(box)):
-            print("ERROR: Box dimensions differ!")
+            raise ValueError("Box dimensions differ!")
         else:
             self.box = self.box + box
 
@@ -484,15 +496,21 @@ class DXBox(object):
 
     def transform_real_to_box_space(self, atom_coord):
         '''
-        This method transforms coordinates from the real to the box space.
-        
+        Transform coordinates from real space to box space.
+
         Consider a box centered at (0, 0, 0) with a mesh size of 1 Angstrom.
-        The central grid point located at (0, 0, 0) contains a quantity for the
-        volume of space within the range [-0.5, +0.5] in each direction.
-        An atom located at (0.1, 0.5, 0.50001) is within the range [-0.5, +0.5]
-        for both the x-axis and y-axis, but not for the z-axis, thus the atom
-        will be snapped to the grid position [0, 0, 1].
-        
+        The central grid point located at (0, 0, 0) contains a quantity for
+        the volume of space within the range [-0.5, +0.5] in each direction.
+        An atom located at (0.1, 0.5, 0.50001) is within the range
+        [-0.5, +0.5] for both the x-axis and y-axis, but not for the z-axis,
+        thus the atom will be snapped to the grid position [0, 0, 1].
+
+        :param atom_coord: atomic coordinates
+        :type  atom_coord: :class:`np.array[:,3]`
+
+        :returns: Grid coordinates.
+        :rtype: :class:`np.array[:,3]`
+
         Examples::
         
             >>> from epitopsy.DXFile import DXBox
@@ -503,31 +521,42 @@ class DXBox(object):
             array([0, 0, 1])
             >>> dx.transform_real_to_box_space([-0.2, -0.39999, -0.40001])
             array([0, 0, -1])
-        
+
         '''
         return np.around((np.array(atom_coord) - self.box_offset)
                          / self.box_mesh_size).astype(int)
 
     def transform_box_to_real_space(self, grid_coord):
         '''
-        This method transforms coordinates from the box to the real space.
-        
+        Transforms coordinates from box space to real space.
+
+        :param grid_coord: grid coordinates
+        :type  grid_coord: :class:`np.array[:,3]`
+
+        :returns: Atomic coordinates.
+        :rtype: :class:`np.array[:,3]`
+
         Examples::
-        
+
             >>> from epitopsy.DXFile import DXBox
             >>> dx = DXBox(box=np.zeros(3*[33]), meshsize=3*[.8], offset=3*[0])
             >>> dx.transform_box_to_real_space([0, 0, 0])
             array([ 0.,  0.,  0.])
             >>> dx.transform_box_to_real_space([0, 0, 1])
             array([ 0. ,  0. ,  0.8])
-        
+
         '''
         return self.box_offset + np.array(grid_coord) * self.box_mesh_size
 
     def indices_in_box(self, indices):
         '''
-        This method checks, if the given indices lie inside the box, i.e
-        they lie in: 0 <= index < dimensionXYZ.
+        Check if the given indices lie inside the box.
+
+        :param indices: grid coordinates
+        :type  indices: tuple(int)
+
+        :returns: ``True`` if the coordinates fit inside the box.
+        :rtype: bool
         '''
         x = indices[0]
         y = indices[1]
@@ -539,9 +568,9 @@ class DXBox(object):
             return True
 
     def find_extrema(self, runs=300, minima=True, as_gridpoints=False, conv_temp=0.00001, gamma=0.25):
-        '''Finds the coordinates (as gridpoints or in real space)
-        that have the strongest negative potential, while discarding
-        noise values.
+        '''
+        Find coordinates (as gridpoints or in real space) that have
+        the strongest negative potential, while discarding noise values.
         '''
         binding_sites = dx_cython.simulated_annealing(self.box, runs=runs, search_min=minima,
                                                       conv_temp=conv_temp, gamma=gamma)
@@ -561,8 +590,10 @@ class DXBox(object):
             return np.array([self.transform_box_to_real_space(coord) for coord in binding_sites])
 
     def _count_occurrence(self, vector_list):
-        '''returns the list of unique vectors along with the 
-        number of occurrences. sorted descending by occurrence.'''
+        '''
+        Get list of unique vectors and their occurence, sorted by descending
+        occurrence.
+        '''
         keys = [tuple(item) for item in unique(vector_list)]
         occurrences = {key: 0 for key in keys}
         for vector in vector_list:
@@ -572,7 +603,7 @@ class DXBox(object):
 
     def write_deprecated(self, filename, values_per_line = 3):
         '''
-        Write an array to a dx-file.
+        Write box to a .dx file.
         '''
         if filename.endswith('.gz'):
             with gzip.open(filename, 'wb') as outfile:
@@ -600,7 +631,7 @@ class DXBox(object):
 
     def write(self, filename, values_per_line = 3):
         '''
-        Write an array to a dx-file.
+        Write box to a .dx file.
         '''
         if filename.endswith('.gz'):
             with gzip.open(filename, 'wb') as outfile:
@@ -619,6 +650,9 @@ class DXBox(object):
         outfile.write(footer)
 
     def _generate_header(self):
+        '''
+        Generates the DXBox header.
+        '''
         header = self.comment_header[:]
         header = header + "object 1 class gridpositions counts {0} {1} {2}\n".format(*self.box_dim)
         header = header + "origin {0:e} {1:e} {2:e}\n".format(*self.box_offset)
@@ -631,7 +665,7 @@ class DXBox(object):
 
     def _generate_footer(self):
         '''
-        This method generates the information at the end of a dx file.
+        Generates the DXBox footer.
         '''
         footer = "attribute \"dep\" string \"positions\"\n"
         footer = footer + "object \"regular positions regular connections\" class field\n"
@@ -641,6 +675,24 @@ class DXBox(object):
         return footer
 
 def read_dxfile(filename, box_type):
+    '''
+    Parse an OpenDX box.
+
+    Wrapper function for :func:`epitopsy.cython.dx_cython.read_dxfile`.
+
+    :param filename: path to DXBox
+    :type  filename: str
+    :param box_type: ``'vdw'`` or ``'esp'`` or ``'smol'``
+    :type  box_type: str
+    :returns: Parsed DXBox.
+    :returntype: :class:`DXBox`
+
+    Example::
+
+        >>> from epitopsy.DXFile import read_dxfile
+        >>> dxbox = read_dxfile('esp.dx')
+
+    '''
     # parse DXbox data
     [box_3d, meshsize, offset] = dx_cython.read_dxfile(filename, box_type)
     if box_type == "vdw":
@@ -671,19 +723,19 @@ def read_dxfile(filename, box_type):
 def read_dxfile_header(filename):
     '''
     Read the dimensions of a DXBox without reading the voxels.
-    
+
     :param filename: path to DXBox
     :type  filename: str
-    :returns: Object with box_dim, box_mesh_size, box_offset attributes
-        and a dummy numpy array
-    :returntype: :class:`epitopsy.DXBox.DXBox`
-    
+    :returns: DXBox with attributes **box_dim**, **box_mesh_size**,
+        **box_offset** attributes and an empty numpy array.
+    :returntype: :class:`DXBox`
+
     Example::
-    
+
         >>> from epitopsy.DXFile import read_dxfile_header
         >>> dxbox = read_dxfile_header('esp.dx')
         >>> box_dim = dxbox.box_dim
-    
+
     '''
     # read the DXBox metadata
     if isinstance(filename, basestring):
@@ -718,6 +770,7 @@ def unique(a):
     ui[1:] = (diff != 0).any(axis=1) 
     return a[ui]
 
+
 def random_sphere(shape):
     phi = random.random() * 2 * math.pi
     theta = random.random() * math.pi
@@ -727,14 +780,14 @@ def random_sphere(shape):
     z = r * (1 + math.cos(theta) )
     return int(x), int(y), int(z)
 
-class DXReader:
+
+class DXReader(object):
     '''
-    classdocs
+    DXBox reader.
+
+    Legacy class superseded by :func:`read_dxfile`.
     '''
     def __init__(self):
-        '''
-        Constructor
-        '''
         self.dxFilename = None
         self.VDW = 'vdw'
         self.ESP = 'esp'
@@ -745,10 +798,7 @@ class DXReader:
 
     def parse_old(self, filename, boxType):
         '''
-        Method to parse supplied DX file. This one is rather slow!
-
-        Returns a VDWBox for 'vdw' and 'smol' box types, otherwise it returns
-        a DXBox.
+        Parse supplied DX file.
         '''
         countX = 0
         countY = 0
@@ -840,12 +890,21 @@ class DXReader:
         return dxBox
 
     def parse(self, filename, boxType):
+        '''
+        Parse supplied DX file.
+
+        :param filename: path to DXBox
+        :type  filename: str
+        :param box_type: ``'vdw'`` or ``'esp'`` or ``'smol'``
+        :type  box_type: str
+        :returns: Parsed DXBox.
+        :returntype: :class:`DXBox`
+        '''
         return read_dxfile(filename, boxType)
 
     def _parse_depreciated(self, filename, boxType):
         '''
-        Method to parse supplied DX file. This one is twice as fast as the one
-        above (but this depends on the size of the DXFile of course)!
+        Parse supplied DX file.
         '''
         if not(os.path.isabs(filename)):
             filename = os.path.join(os.getcwd(), filename)
@@ -912,15 +971,15 @@ class DXReader:
 
 
 class VDWBox(DXBox):
-    """
+    '''
     Specialized class for APBS van der Waals boxes.
     
     :param box: 3D box
-    :type  box: np.ndarray
+    :type  box: :class:`np.array[:,:,:]`
     :param box_mesh_size: box mesh size in Angstroms
-    :type  box_mesh_size: tuple
+    :type  box_mesh_size: :class:`np.array[3]`
     :param box_offset: box offset in Angstroms
-    :type  box_offset: tuple
+    :type  box_offset: :class:`np.array[3]`
         
     .. attribute:: solventScore
     
@@ -937,23 +996,20 @@ class VDWBox(DXBox):
         
     .. attribute:: epitopeScore
     
-        (**float**) APBS value of grid points inside the protein which are part
-        of an epitope: 0.
+        (**float**) APBS value of grid points inside the protein which are
+        part of an epitope: 0.
         
     .. attribute:: score_of_surface
     
-        (**float**) Custom value for grid points on the protein surface, chosen
-        as 2 to be distinguished from 0 (interior) and 1 (solvent).
+        (**float**) Custom value for grid points on the protein surface,
+        chosen as 2 to be distinguished from 0 (interior) and 1 (solvent).
     
-    """
+    '''
     SOLVENT_ID_VALUE = 99.0
     INNER_ID_VALUE = 98
     SURFACE_ID_VALUE = 97
 
     def __init__(self, box, box_mesh_size, box_offset):
-        """
-        Constructor
-        """
         self.peptideScore = 0.0
         self.surfaceScore = 0.0
         self.solventScore = 1.0
@@ -969,13 +1025,14 @@ class VDWBox(DXBox):
         self.applySolventScore(self.SOLVENT_ID_VALUE)
 
     def applyPeptideScore(self, score):
-        """
-         * Applies a given score to peptide.
-         * Method will retrieve actual peptide(peptide nodes without solvent access) if surface- and peptide score are identical.
-         * If surface-score is different from peptide score(peptide nodes are thus distinguishable from others) given score
-         * is applied to those.
-         * @param score
-        """
+        '''
+        Applies a given score to peptide.
+
+        Method will retrieve actual peptide (peptide nodes without solvent
+        access) if surface- and peptide score are identical. If surface-score
+        is different from peptide score(peptide nodes are thus distinguishable
+        from others) given score is applied to those.
+        '''
         if self.peptideScore != score:
             peptideNodes = []
             if self.surfaceScore == self.peptideScore:
@@ -994,13 +1051,14 @@ class VDWBox(DXBox):
                             self.setElement(score, x, y, z)
 
     def applySurfaceScore(self, score):
-        """
-         * Applies a given score to surface.
-         * Method will retrieve actual surface(peptide nodes with solvent access) if surface- and peptide score are identical.
-         * If surface-score is different from peptide score(surface nodes are thus distinguishable from others) given score
-         * is applied to those.
-         * @param score
-        """
+        '''
+        Applies a given score to surface.
+
+        Method will retrieve actual surface(peptide nodes with solvent access)
+        if surface- and peptide score are identical. If surface-score is
+        different from peptide score(surface nodes are thus distinguishable
+        from others) given score is applied to those.
+        '''
         if self.surfaceScore != score:
             surfaceNodes = []
             if self.surfaceScore == self.peptideScore:
@@ -1019,11 +1077,11 @@ class VDWBox(DXBox):
         return cp
 
     def createPotentialArea(self, areaWidth):
-        """
-         * Artificially enlarges the protein surface into surrounding solvent. Then sets score within original and
-         * artificial surface to 1. Everything else is set to 0.
-         * @param areaWidth
-        """
+        '''
+        Enlarge the protein surface into surrounding solvent,
+        then sets score within original and artificial surface to 1.
+        Everything else is set to 0.
+        '''
         self.assignNodeIDs()
         self.applySurfaceScore(1.0)
         self.smoothSurface(areaWidth, 1.0)
@@ -1031,48 +1089,46 @@ class VDWBox(DXBox):
         self.applyPeptideScore(0.0)
 
     def enlargeBox(self, dim):
-        # TODO: Does this work? probably not ;)
+        # TODO: Does this work? probably not
         DXBox.enlargeBox(self, dim, self.solventScore)
 
     def determineActualInnerPeptideNodes(self):
-        """
-         * This Method determines and return an array containing all nodes without solvent access.
-         * Algorithm works as follows:
-         * If a node is non solvent-accessible(surface or inner node),
-         * and has no neighbors which are solvent,
-         * the node is an inner node.
-         * @return
-        """
+        '''
+        Get an array containing all nodes without solvent access.
+
+        Algorithm works as follows:
+        If a node is non solvent-accessible(surface or inner node),
+        and has no neighbors which are solvent, the node is an inner node.
+        '''
         return dx_cython.determineActualInnerPeptideNodes(self.box,
             self.solventScore, self.peptideScore, self.all_neighbors)
 
     def determineActualSurfaceNodes(self):
-        """
-         * This Method determines and returns an array containing all nodes with direct solvent access.
-         * @return
-        """
+        '''
+        Get an array containing all nodes with direct solvent access.
+        '''
         return dx_cython.determine_actual_surface_nodes(self.box, self.solventScore, self.all_neighbors)
 
     def determineEpitopeSurfaceNodes(self, atoms, meshSize, rangeCutoff):
-        """
-         * TODO: made use of a more generic method to determine epitope nodes
-         * Method resides in super-class DXBox ->determine Epitope nodes.
-        """
+        '''
+        TODO: make use of a more generic method to determine epitope nodes
+        Method resides in super-class DXBox ->determine Epitope nodes.
+        '''
         self.determineEpitopeNodes(self, self.getSurfaceNodes(), atoms, meshSize, rangeCutoff)
 
     def flood_old_slow(self):
-        temp_value = -1.0
-        #for z in range(self.box.shape[2]):
-        #    self.floodfill(0, 0, 0, temp_value)
-        waterFront = [np.array([0, 0, 0])]
-        newFront = []
-        tempValue = -1.0
-        """
+        '''
+        Flood a solvent box.
+
         The VDW grid is a grid of 0's and 1's, like this:
+
+        .. code-block:: none
+
                 1 1 1 1
                 1 0 0 1
                 1 0 1 1
                 1 1 1 1
+
         The algorithm starts at [0,0,0] and appends the neighbors, which
         have a value equal to a solvent grid node (i.e. 1), to the
         newFront-list. After all neighbor nodes from the first list have
@@ -1084,7 +1140,13 @@ class VDWBox(DXBox):
         Then the remaining solvent values are treated as protein nodes
         (i.e. they are set to a peptide score, which is 0). All nodes
         that have been assigned a temp value are then set back to 1.
-        """
+        '''
+        temp_value = -1.0
+        #for z in range(self.box.shape[2]):
+        #    self.floodfill(0, 0, 0, temp_value)
+        waterFront = [np.array([0, 0, 0])]
+        newFront = []
+        tempValue = -1.0
         for i in range(self.box.shape[2]):
             waterFront = [np.array([0, 0, i])]
             while(len(waterFront) > 0):
@@ -1114,10 +1176,9 @@ class VDWBox(DXBox):
                         self.box[x][y][z] = self.solventScore
 
     def flood(self, method='xy'):
-        """
-        This method is the same as flood_old_slow, but it has been written in
-        cython and is therefore at least twice as fast!
-        """
+        '''
+        Flood a solvent box.
+        '''
         if method == 'xy':
             self.box = dx_cython.floodxy(self.box, self.all_neighbors_xy)
         elif method == 'xyz':
@@ -1128,47 +1189,54 @@ class VDWBox(DXBox):
             raise ValueError('incorrect flooding method')
 
     def calculate_sas(self):
-        '''Calculate the solvent accessible surface.
+        '''
+        Calculate the solvent accessible surface.
         '''
         self.box = dx_cython.flood(self.box, self.next_neighbors)
         self.box = dx_cython.get_sas(self.box, self.peptideScore, self.solventScore, 1.4)
         self.box = dx_cython.flood(self.box, self.next_neighbors)
 
     def find_surface(self):
-        """
+        '''
         Find the layer below the solvent accessible surface and assign
         :attr:`score_of_surface` to its grid points. This layer is
         inaccessible to the solvent and the ligands.
         The grid points in the solvent and protein interior
         are assigned :attr:`solventScore` resp. :attr:`peptideScore`.
         The box should have been flooded before using this function!
-        """
+
+        In contrast, find_solvent surface yields the surface that lies in the
+        surface. Both surfaces should lie directly next to each other.
+        '''
         self.box = dx_cython.find_protein_surface(self.peptideScore,
                                           self.solventScore,
                                           self.score_of_surface,
                                           self.box)
 
     def find_solvent_surface(self):
-        """
+        '''
         Find the solvent accessible surface and assign :attr:`score_of_surface`
-        to its grid points. The grid points in the solvent and protein interior
+        to its grid points. The grid points in the solvent and protein
         are assigned :attr:`solventScore` resp. :attr:`peptideScore`.
         The box should have been flooded before using this function!
-        """
+
+        In contrast, find_surface yields the surface that lies in the protein.
+        Both surfaces should lie directly next to each other.
+        '''
         self.box = dx_cython.find_solvent_surface(self.peptideScore,
                                           self.solventScore,
                                           self.score_of_surface,
                                           self.box)
 
     def prepare_for_geometric_matching(self, interior):
-        """
+        '''
         Prepare the vdw box for geometric matching. Set the solvent grid
         points to 0, the protein or ligand surface to 1 and the protein or
         ligand interior to **interior**, for example -15 for the fixed protein
         and +1 for the rotating ligand according to Katchalski-Katzir.
 
         The values for 'solventScore', 'peptideScore', etc. are not updated!
-        """
+        '''
         # set solvent accessible surface to self.score_of_surface
         self.find_solvent_surface()
         surface_points = np.nonzero(self.box == self.score_of_surface)
@@ -1183,27 +1251,30 @@ class VDWBox(DXBox):
         # done!
 
     def getPeptideNodes(self):
-        """
-         * This method return a vector containing all nodes with peptide score.
-         * @return
-        """
+        '''
+        :getter: Get nodes with peptide score.
+        :type: tuple
+        '''
         self.getNodesByValue(self.peptideScore)
 
     def getSolventNodes(self):
+        '''
+        :getter: Get nodes with solvent score.
+        :type: tuple
+        '''
         self.getNodesByValue(self.solventScore)
 
     def getSurfaceNodes(self):
-        """
-         * This method returns a Vector containing all nodes with surface score.
-         * @return
-        """
+        '''
+        :getter: Get nodes with surface score.
+        :type: tuple
+        '''
         self.getNodesByValue(self.surfaceScore)
 
     def extendSurface(self, iterations):
-        """
-         * Method to artificially enlarge the protein surface into surrounding solvent.
-         * @param iterations
-        """
+        '''
+        Enlarge the protein surface into surrounding solvent.
+        '''
         self.box = dx_cython.extendSurface(int(iterations), self.box,
             self.solventScore, self.surfaceScore, self.next_neighbors)
 
@@ -1216,12 +1287,11 @@ class VDWBox(DXBox):
             self.solventScore, self.surfaceScore, dummy_score,
             self.next_neighbors)
 
-    def getNeighborList(self, seed, radius = 1):
-        """
-         * Generates a List of nodes surrounding a seed-node (0, 0, 0) within a given radius.
-         * @param radius
-         * @return
-        """
+    def getNeighborList(self, seed, radius=1):
+        '''
+        Generates a List of nodes surrounding a seed-node (0, 0, 0) within
+        a given radius.
+        '''
         if not(isinstance(seed, list)):
             # received just the radius,  therefore seed is set to [0, 0, 0]
             radius = seed
@@ -1248,9 +1318,9 @@ class VDWBox(DXBox):
         self.epitopeScore = score
 
     def invertScore(self):
-        """
-         * Method to invert scores of protein/peptide and solvent.
-        """
+        '''
+        Invert scores of protein/peptide and solvent.
+        '''
         for x in range(self.dimensionX):
             for y in range(self.dimensionY):
                 for z in range(self.dimensionZ):
@@ -1261,6 +1331,7 @@ class VDWBox(DXBox):
         dummy = self.peptideScore
         self.peptideScore = self.solventScore
         self.solventScore = dummy
+
     def getRotatedBox(self, theta, phi, psi):
         rb = VDWBox(DXBox().getRotatedBox (self, theta, phi, psi, self.solventScore), self.getDimensions(), self.getMeshSize(), self.getOffset())
         rb.solventScore = self.solventScore
@@ -1269,15 +1340,14 @@ class VDWBox(DXBox):
         rb.epitopeScore = self.epitopeScore
         rb.setDimensions(self.getDimensions())
         return rb
+
     def setRotatedNode(self, rb, x, y, z, value):
         rb[x][y][z] = rb[x][y][z] + value
-    """
-     * Method to alter score for a larger set of nodes.
-     * @param value
-    """
+
     def setElementsRange(self, nodes, value):
         for node in nodes:
             self.setElement(value, node)
+
     def smoothSurface(self, iterations, gradient = 1.0):
         if iterations > 0:
             if self.surfaceScore == self.peptideScore:

@@ -1,8 +1,7 @@
-'''
-Created on Jan 10,  2012
-
-@author: chris
-'''
+__author__     = "Christoph Wilms, Jean-Noel Grad"
+__copyright__  = "Copyright 2012, Epitopsy"
+__date__       = "2012-01-10"
+__credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
 
 import os
 import re
@@ -10,46 +9,66 @@ import stat
 import subprocess
 import numpy as np
 import psutil
-
 import epitopsy
 from epitopsy.Structure import PDBFile, PQRFile
 from epitopsy.DXFile import DXReader
 
-class APBSWrapper:
+
+class APBSWrapper(object):
     '''
-    classdocs
+    Wrapper for the APBS software.
+
+    :param APBSPath: path to the APBS executable
+    :type  APBSPath: str
+    :param PDB2PQRPath: path to the PDB2PQR executable
+    :type  PDB2PQRPath: str
+
+    .. attribute:: APBSPath
+
+        (**str**) Path to the APBS executable.
+
+    .. attribute:: PDB2PQRPath
+
+        (**str**) Path to the PDB2PQR executable.
+
+    .. attribute:: binding_energy
+
+        (**float**) Binding energy.
+
+    .. attribute:: debye_length
+
+        (**list(float)**) Iterable of the Debye length.
+
     '''
 
-
-    def __init__(self, APBSPath = "apbs", PDB2PQRPath = "pdb2pqr"):
+    def __init__(self, APBSPath='apbs', PDB2PQRPath='pdb2pqr'):
         self.APBSPath = APBSPath
         self.PDB2PQRPath = PDB2PQRPath
         self.binding_energy = None
         self.debye_length = []
 
-    def runPDB2PQR(self, pdb_path, pqr_path, force_field = 'amber', pdb2pqr_argv = None):
-        '''Call pdb2pqr to replace the b-factor and the occupancy information
+    def runPDB2PQR(self, pdb_path, pqr_path, force_field='amber',
+                   pdb2pqr_argv=None):
+        '''
+        Call pdb2pqr to replace the b-factor and the occupancy information
         in the pdb file with the charges and the vdw radii.
 
-        Args:
-            pdb_path -> Path to the pdb file.
-            pqr_path -> Path for the new pqr file.
-            ph -> ph at for which the charges should be calculated. Default is
-                None, which is close to a ph of 7.
-            force_field -> Forcefield from which charges and radii should be
-                taken. Default is amber.
-            pdb2pqr_argv -> Can contain additional arguments to pdb2pqr as a
-                list (e.g. ['--assign-only'], oder ['--noopt']). If multiple
-                additional arguments are given, they also have to be given as
-                a list (e.g. ['--assign-only', '--noopt']).
-
-        Returns:
-            None.
+        :param pdb_path: path to the pdb file
+        :type  pdb_path: str
+        :param pqr_path: path for the new pqr file
+        :type  pqr_path: str
+        :param force_field: forcefield from which charges and radii should be
+            taken, default is 'amber'
+        :type  force_field: str
+        :param pdb2pqr_argv: additional arguments for pdb2pqr, must be stored
+            in a list, even if there is only one argument (e.g.
+            ``['--assign-only']`` or ``['--assign-only', '--noopt']``).
+        :type pdb2pqr_argv: list(str)
         '''
         pdb_object = PDBFile(pdb_path)
-        pqr_object = pdb_object.get_pqr_structure(pqr_path, force_field = force_field,
-                pdb2pqr_argv=pdb2pqr_argv)
-
+        pqr_object = pdb_object.get_pqr_structure(pqr_path,
+                                                  force_field=force_field,
+                                                  pdb2pqr_argv=pdb2pqr_argv)
 
     def runAPBS(self, apbsInParameters, inFilename, APBS_RAM_threshold=1.):
         '''
@@ -136,10 +155,9 @@ REMARK   5'''
 
         #os.remove('io.mc')
 
-    def get_dxbox(self, protein_path, mesh_size, no_return = False, **kwds):
+    def get_dxbox(self, protein_path, mesh_size, no_return=False, **kwargs):
         '''
         This method starts pdb2pqr and apbs and returns the specified boxes.
-        Be careful with absolute paths!
 
         :param protein_path: path to the structure
         :type  protein_path: str
@@ -151,7 +169,7 @@ REMARK   5'''
             (optional), default is ``None``
         :type  ph: float
         :param pdb2pqr_argv: additional arguments to PDB2PQR (optional), for
-            example ["--assign-only"] or ["--assign-only", "--noopt"]
+            example ``["--assign-only"]`` or ``["--assign-only", "--noopt"]``
         :type  pdb2pqr_argv: list(str)
         :param box_center: APBS box center (optional), default is [0,0,0]
         :type  box_center: list(float)
@@ -168,21 +186,22 @@ REMARK   5'''
         :param box_type: types of boxes APBS should write to disk (optional),
             by default ['esp','vdw']
         :type  box_type: list(str)
+
         :returns: DXBox objects stored by box types.
-        :returntype: dict(str,:class:`DXFile.DXBox`)
+        :rtype: dict(str, :class:`epitopsy.DXFile.DXBox`)
         '''
         if not os.path.exists(protein_path):
             raise ValueError('Could not find file "{0}"'.format(protein_path))
         
-        box_dim = kwds.get('box_dim')
-        box_center = kwds.get('box_center')
-        extend = kwds.get('extend')
-        box_type = kwds.get('box_type', ['esp', 'vdw'])
-        cubic_box = kwds.get('cubic_box', True)
-        close_boundaries = kwds.get('close_boundaries', True)
-        temperature = kwds.get('temperature', 310)
-        ph = kwds.get('ph')
-        pdb2pqr_argv = kwds.get('pdb2pqr_argv', [])
+        box_dim = kwargs.get('box_dim')
+        box_center = kwargs.get('box_center')
+        extend = kwargs.get('extend')
+        box_type = kwargs.get('box_type', ['esp', 'vdw'])
+        cubic_box = kwargs.get('cubic_box', True)
+        close_boundaries = kwargs.get('close_boundaries', True)
+        temperature = kwargs.get('temperature', 310)
+        ph = kwargs.get('ph')
+        pdb2pqr_argv = kwargs.get('pdb2pqr_argv', [])
         if isinstance(pdb2pqr_argv, basestring):
             pdb2pqr_argv = [pdb2pqr_argv]
         
@@ -217,10 +236,6 @@ REMARK   5'''
             template_in.bcfl = 'sdh'
 
         self.runAPBS(template_in, '{0}.in'.format(pqr_path.replace('.pqr', '')))
-        '''
-        Read the grids as boxes, no need to use the grid class, because i
-        need arrays:
-        '''
         box_dict = {}
 
         for item in template_in.box_type:
@@ -251,29 +266,36 @@ REMARK   5'''
         return box_dict
 
     def get_binding_energy(self, complex_pqr_path, ligand_pqr_path,
-                           fixed_pqr_path, box_mesh_size, extend = None,
-                           ** kwds):
+                           fixed_pqr_path, box_mesh_size, extend=None,
+                           **kwargs):
         '''
-        Binding energy is in kJ/mol.
-        Obtain the change in total polar solvation energy by:
-            dG_bind = comp_solv - fixed_solv - ligand_solv
-        It gives the total polar solvation energy which includes both the
-        reaction field and coulombic contributions.
-        Positive values are favorable.
+        Run APBS on the complex, protein and ligand structures and extract the
+        binding energy (in kJ/mol) from the APBS output, according to the
+        following equation:
 
-        **kwds is used to set the options of the infile for the apbs
-        calculation.
+            :math:`\\Delta_\\text{bind,solv}G = \
+                        \\Delta_\\text{solv}G_\\text{complex} \
+                      - \\Delta_\\text{solv}G_\\text{protein} \
+                      - \\Delta_\\text{solv}G_\\text{ligand}`
 
-        Args:
-            complex_pqr_path -> Path of the complex of ligand and fixed
-                protein.
-            ligand_pqr_path -> Path of the isolated ligand.
-            fixed_pqr_path -> Path of the isolated fixed protein.
-            box_mesh_size -> Specify the mesh size of the grid in Angstroem.
-            extend -> Increase the box dimensions.
+        The total polar solvation energy includes both the reaction field and
+        the coulombic contributions. Positive values are favorable.
 
-        Returns:
-            Binding energy as a float.
+        :param complex_pqr_path: path of the complex
+        :type  complex_pqr_path: str
+        :param ligand_pqr_path: path of the isolated ligand
+        :type  ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type  fixed_pqr_path: str
+        :param box_mesh_size: specify the grid mesh size (Angstroms)
+        :type  box_mesh_size: array
+        :param extend: increase the box dimensions along each axis (Angstroms)
+        :type  extend: float
+        :param \*\*kwargs: optional keywords for :meth:`InFile.set_options`
+        :type  \*\*kwargs: any
+
+        :returns: Binding energy in kJ/mol.
+        :rtype: float
         '''
         inFilename = complex_pqr_path.replace('.pqr', '.in')
         pqr = PQRFile(complex_pqr_path)
@@ -287,40 +309,64 @@ REMARK   5'''
                                   ligand_pqr_path = ligand_pqr_path,
                                   fixed_pqr_path = fixed_pqr_path)
 
-        apbsInParameters.set_options(kwds)
+        apbsInParameters.set_options(kwargs)
 
         self.runAPBS(apbsInParameters, inFilename)
         return self.binding_energy
 
     def get_binding_energy_long(self, complex_pqr_path, ligand_pqr_path,
                            fixed_pqr_path, box_mesh_size, extend = None,
-                           ** kwds):
+                           **kwargs):
         '''
-        Binding energy is in kJ/mol.
+        Run APBS on the complex, protein and ligand structures and extract the
+        total binding energy (in kJ/mol) from the APBS output, according to
+        the following equations:
 
-        solvation_energy = (complex_solv - complex_ref)
-                            - (ligand_solv - ligand_ref)
-                            - (fixed_solv - fixed_ref)
+            :math:`\\Delta_\\text{bind,solv}G = \
+                \\left( \\Delta_\\text{solv}G_\\text{complex} \
+                      - \\Delta G^\\text{ref}_\\text{complex} \\right) \
+              - \\left( \\Delta_\\text{solv}G_\\text{protein} \
+                      - \\Delta G^\\text{ref}_\\text{protein} \\right) \
+              - \\left( \\Delta_\\text{solv}G_\\text{ligand} \
+                      - \\Delta G^\\text{ref}_\\text{ligand} \\right)`
 
-        coulomb_energy = (complex_coulomb - ligand_coulomb - fixed_coulomb) / pdie
+            :math:`\\Delta_\\text{coul}G = \
+               \\dfrac{ \\Delta_\\text{coul}G_\\text{complex} \
+                      - \\Delta_\\text{coul}G_\\text{protein} \
+                      - \\Delta_\\text{coul}G_\\text{ligand} } \
+                      { \\epsilon_{p} }`
 
-        binding_energy = solvation_energy + coulomb_energy
+            :math:`\\Delta_\\text{bind}G = \\Delta_\\text{bind,solv}G \
+                                         + \\Delta_\\text{coul}G`
 
-        Positive values are favorable.
+        Where
+        :math:`\\Delta_\\text{bind,solv}G` is the binding energy in water,
+        :math:`\\Delta_\\text{coul}G` is the electrostatic contribution,
+        :math:`\\Delta_\\text{bind}G` is the total binding energy.
+        :math:`\\Delta_\\text{solv}G_i` is the solvation energy of species *i*
+        in water (:math:`\\epsilon_s = 79`),
+        :math:`\\Delta G^\\text{ref}_i` is the free energy of species *i* in a
+        reference medium (:math:`\epsilon_p = 2`),
+        :math:`\\Delta_\\text{coul}G_i` is the coulombic free energy of
+        species *i* in a reference medium (:math:`\epsilon_p = 2`).
 
-        **kwds is used to set the options of the infile for the apbs
-        calculation.
+        Positive values of :math:`\\Delta_\\text{bind}G` are favorable.
 
-        Args:
-            complex_pqr_path -> Path of the complex of ligand and fixed
-                protein.
-            ligand_pqr_path -> Path of the isolated ligand.
-            fixed_pqr_path -> Path of the isolated fixed protein.
-            box_mesh_size -> Specify the mesh size of the grid in Angstroem.
-            extend -> Increase the box dimensions.
+        :param complex_pqr_path: path of the complex
+        :type  complex_pqr_path: str
+        :param ligand_pqr_path: path of the isolated ligand
+        :type  ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type  fixed_pqr_path: str
+        :param box_mesh_size: specify the grid mesh size (Angstroms)
+        :type  box_mesh_size: array
+        :param extend: increase the box dimensions along each axis (Angstroms)
+        :type  extend: float
+        :param \*\*kwargs: optional keywords for :meth:`InFile.set_options`
+        :type  \*\*kwargs: any
 
-        Returns:
-            Binding energy as a float.
+        :returns: Binding energy in kJ/mol.
+        :rtype: float
         '''
         inFilename = complex_pqr_path.replace('.pqr', '.in')
         pqr = PQRFile(complex_pqr_path)
@@ -334,7 +380,7 @@ REMARK   5'''
                                   ligand_pqr_path = ligand_pqr_path,
                                   fixed_pqr_path = fixed_pqr_path)
 
-        apbsInParameters.set_options(kwds)
+        apbsInParameters.set_options(kwargs)
 
         self.runAPBS(apbsInParameters, inFilename)
 
@@ -352,33 +398,41 @@ REMARK   5'''
         # get the solvation energy
         solvation_energy = self.binding_energy
         total_energy = solvation_energy + coulomb_energy
-#        print("solv: {0}, coul: {1} -> bind: {2}".format(solvation_energy, coulomb_energy, total_energy))
+        # print("solv: {0}, coul: {1} -> bind: {2}".format(solvation_energy, coulomb_energy, total_energy))
 
         return total_energy
 
     def get_dissociation_energy(self, complex_pqr_path, ligand_pqr_path,
                                 fixed_pqr_path, box_mesh_size, extend = None,
-                                **kwds):
+                                **kwargs):
         '''
-        Dissociation energy is in kJ/mol.
-        Obtain the change in total polar solvation energy by:
-            dG_diss = - (comp_solv - fixed_solv - ligand_solv)
-        It gives the total polar solvation energy which includes both the
-        reaction field and coulombic contributions.
+        Run APBS on the complex, protein and ligand structures and extract the
+        dissociation energy (in kJ/mol) from the APBS output, according to the
+        following equation:
 
-        **kwds is used to set the options of the infile for the apbs
-        calculation.
+            :math:`\\Delta_\\text{diss,solv}G = - \\left( \
+               \\Delta_\\text{solv}G_\\text{complex} \
+             - \\Delta_\\text{solv}G_\\text{protein} \
+             - \\Delta_\\text{solv}G_\\text{ligand} \\right)`
 
-        Args:
-            complex_pqr_path -> Path of the complex of ligand and fixed
-                protein.
-            ligand_pqr_path -> Path of the isolated ligand.
-            fixed_pqr_path -> Path of the isolated fixed protein.
-            box_mesh_size -> Specify the mesh size of the grid in Angstroem.
-            extend -> Increase the box dimensions.
+        The total polar solvation energy includes both the reaction field and
+        the coulombic contributions. Positive values are favorable.
 
-        Returns:
-            Dissociation energy as a float.
+        :param complex_pqr_path: path of the complex
+        :type  complex_pqr_path: str
+        :param ligand_pqr_path: path of the isolated ligand
+        :type  ligand_pqr_path: str
+        :param fixed_pqr_path: path of the isolated protein
+        :type  fixed_pqr_path: str
+        :param box_mesh_size: specify the grid mesh size (Angstroms)
+        :type  box_mesh_size: array
+        :param extend: increase the box dimensions along each axis (Angstroms)
+        :type  extend: float
+        :param \*\*kwargs: optional keywords for :meth:`InFile.set_options`
+        :type  \*\*kwargs: any
+
+        :returns: Dissociation energy in kJ/mol.
+        :rtype: float
         '''
         inFilename = complex_pqr_path.replace('.pqr', '.in')
         apbsInParameters = InFile(pqr_path = complex_pqr_path,
@@ -389,18 +443,18 @@ REMARK   5'''
                                   ligand_pqr_path = ligand_pqr_path,
                                   fixed_pqr_path = fixed_pqr_path)
 
-        apbsInParameters.set_options(kwds)
+        apbsInParameters.set_options(kwargs)
 
         self.runAPBS(apbsInParameters, inFilename)
         return -self.binding_energy
 
 def get_coulomb_energy(protein_pqr_path):
     '''
-    Args:
-        protein_pqr_path -> Path to the pqr of the protein.
+    :param protein_pqr_path: path to the pqr of the protein
+    :type protein_pqr_path: str
 
-    Return:
-        Energy in kJ/mol.
+    :returns: Coulomb energy in kJ/mol.
+    :rtype: float
     '''
     coulomb_path = os.path.join(epitopsy.__path__[0], "external_scripts", "coulomb")
     # make sure everyone can execute the file
@@ -421,12 +475,103 @@ def get_coulomb_energy(protein_pqr_path):
     return energy
 
 
-class InFile:
+class InFile(object):
     '''
-    This class holds parameters to run APBS calculations.
-    Only the most basic parameters are covered here,  intended for the
+    APBS input file.
+    Only the most basic parameters are covered here, intended for the
     generation of basic grids holding information of electrostatic
-    potential and/or the van-der-Waals surface
+    potential and/or the van der Waals surface.
+
+    :param pqr_path: pqr path, from which the potential energy should be
+                calculated or the path of the complex for which the binding
+                energy should be calculated
+    :type  pqr_path: str
+    :param calculation_type: potential or binding_energy
+    :type  calculation_type: str
+
+    :param box_dim: override box dimensions with custom values (optional), but
+       values must comply to the APBS dime format
+    :type  box_dim: tuple(float)
+    :param box_center: center of the APBS box
+    :type  box_center: tuple(float)
+    :param mesh_size: grid mesh size in all three dimensions (Angstroms)
+    :type  mesh_size: tuple(float)
+    :param extend: extend box size along each axis (Angstroms),
+       overriding **box_dim**
+    :type  extend: float
+    :param cubic_box: use a cubic box if ``True``
+    :type  cubic_box: bool
+    :param box_type: types of boxes APBS should write to disk:
+       ``'esp'``: electrostatic potential,
+       ``'vdw'``: van der waals based solvent accessibility,
+       ``'smol'``: solvent accessibility,
+       ``'ndens'``: total mobile ion number density in units of M,
+       ``'qdens'``: total mobile charge density in units of e_c M
+    :type  box_type: list(str)
+    :param ligand_pqr_path: path to ligand PQR file if the calculation is
+       a binding energy calculation
+    :type  ligand_pqr_path: str
+    :param fixed_pqr_path: path to the protein PQR file if the calculation is
+       a binding energy calculation
+    :type  fixed_pqr_path: str
+    :raises ValueError: if **ligand_pqr_path** or **fixed_pqr_path** is
+       ``None``
+    :raises ValueError: if unknown value in argument **calculation_type**
+    :raises AttributeError: if both **box_dim** and **extend** parameters are
+       provided
+
+    .. attribute:: pqr_path
+
+        pqr path, from which the potential energy should be calculated or the
+        path of the complex for which the binding energy should be calculated
+
+    .. attribute:: calculation_type
+
+        potential or binding_energy
+
+    .. attribute:: box_mesh_size
+
+        mesh size
+
+    .. attribute:: box_dim
+
+        special dimension can be supplied (although they might be
+        fixed to work properly with apbs), if ``None`` is given it
+        will be calculated from the size of the protein.
+
+    .. attribute:: box_center
+
+        center of the box, if ``None`` is given if will be set to the
+        geometric center of the protein
+
+    .. attribute:: extend
+
+        can only be used when no box_dim is supplied, extends the box
+        size by the given amount (in Angstroem)
+
+    .. attribute:: cubic_box
+
+        determine wheter it is a cubic box or not, in the case of
+        a cubic box the largest dimension is used for all dimensions
+
+    .. attribute:: box_type
+
+        * esp: electrostatic potential
+        * vdw: van der waals based solvent accessibility
+        * smol: solvent accessibility
+        * ndens: total mobile ion number density in units of M
+        * qdens: total mobile charge density in units of e_c M
+
+    .. attribute:: ligand_pqr_path
+
+        path to the ligand PQR file if the calculation is a binding energy
+        calculation
+
+    .. attribute:: fixed_pqr_path
+
+        path to the protein PQR file if the calculation is a binding energy
+        calculation
+
     '''
     OUTPUT_TYPE_VDW = 'vdw'
     OUTPUT_TYPE_ESP = 'esp'
@@ -437,55 +582,23 @@ class InFile:
     binding_energy = 'binding_energy'
     binding_energy_long = 'binding_energy_long'
     potential = 'potential'
+
     def __init__(self, pqr_path, calculation_type, box_mesh_size,
                  box_dim = None, box_center = None,
                  extend = None, cubic_box = True,
                  box_type = None, ligand_pqr_path = None,
                  fixed_pqr_path = None):
-        '''
-        Args:
-            pqr_path -> pqr path, from which the potential energy should be
-                calculated or the path of the complex for which the binding
-                energy should be calculated
-            calculation_type -> potential or binding_energy
-            box_mesh_size -> mesh size
-            box_dim -> special dimension can be supplied (although they might be
-                fixed to work properly with apbs), if None is given it
-                will be calculated from the size of the protein.
-            box_center -> center of the box, if None is given if will be set to the
-                geometric center of the protein
-            extend -> can only be used when no box_dim is supplied, extends the box
-                size by the given amount (in angstroem)
-            cubic_box -> determine wheter it is a cubic box or not, in the case of
-                a cubic box the largest dimension is used for all
-                dimensions
-            box_type ->
-                esp : electrostatic potential
-                vdw : van der waals based solvent accessibility
-                smol : solvent accessibility
-                ndens : total mobile ion number density in units of M
-                qdens : total mobile charge density in units of e_c M
-            ligand_pqr_path -> needs to be supplied if the calculation is a
-                binding energy calculation
-            fixed_pqr_path -> needs to be supplied if the calculation is a
-                binding energy calculation
-
-        Returns:
-            None.
-        '''
         # type of calculation
-        if calculation_type == self.potential:
+        if calculation_type in (self.binding_energy, self.binding_energy_long):
+            self.calculation_type = calculation_type
+            if ligand_pqr_path is None or fixed_pqr_path is None:
+                raise ValueError('For a binding energy calculation a ligand '
+                                 'and a fixed protein are necessary!')
+        elif calculation_type == self.potential:
             self.calculation_type = self.potential
-        elif calculation_type == self.binding_energy:
-            self.calculation_type = self.binding_energy
-            if ligand_pqr_path is None or fixed_pqr_path is None:
-                raise ValueError('For a binding energy calculation a ligand and a fixed protein are necessary!')
-        elif calculation_type == self.binding_energy_long:
-            self.calculation_type = self.binding_energy_long
-            if ligand_pqr_path is None or fixed_pqr_path is None:
-                raise ValueError('For a binding energy calculation a ligand and a fixed protein are necessary!')
         else:
-            raise ValueError("Unknown Argument for 'calculation_type': '{0}'!".format(calculation_type))
+            raise ValueError("Unknown Argument for 'calculation_type': '{0}'!"
+                             .format(calculation_type))
 
         # grid parameters
         self.gridSizeX = 0
@@ -593,7 +706,8 @@ class InFile:
         self.setMeshSize(box_mesh_size)
 
         if box_dim is not None and extend is not None:
-            raise AttributeError('Input error! It does not make sense to provide the box dimension AND an extend parameter!')
+            raise AttributeError('Input error! It does not make sense to '
+                         'provide the box dimension AND an extend parameter!')
 
         if box_dim is None:
             if cubic_box is True:
@@ -616,35 +730,44 @@ class InFile:
         self.setGridSize(box_dim)
         self.fixGridSize()
 
-    def  setGridCenter(self, center):
+    def setGridCenter(self, center):
+        '''
+        :setter: Sets grid geometrical center (Angstroms)
+        :type: tuple(float)
+        '''
         self.centerX = center[0]
         self.centerY = center[1]
         self.centerZ = center[2]
 
 
-    def  setGridSize(self, size):
-
+    def setGridSize(self, size):
+        '''
+        :setter: Sets grid size (Angstroms)
+        :type: tuple(float)
+        '''
         self.gridSizeX = size[0]
         self.gridSizeY = size[1]
         self.gridSizeZ = size[2]
 
 
-    def  setMeshSize(self, meshSize):
+    def setMeshSize(self, meshSize):
+        '''
+        :setter: Sets mesh size (Angstroms)
+        :type: tuple(float)
+        '''
         self.meshSizeX = meshSize[0]
         self.meshSizeY = meshSize[1]
         self.meshSizeZ = meshSize[2]
 
-    def  generateFromPDB(self, pdb, padding, cubicBox):
+    def generateFromPDB(self, pdb, padding, cubicBox):
         self.generateFromPDB2(pdb, padding, 0.0, cubicBox)
 
-    def  generateFromPDB2(self, pdb, padding, minDiameter, cubicBox):
+    def generateFromPDB2(self, pdb, padding, minDiameter, cubicBox):
         if(self.meshSizeX == 0.0 or self.meshSizeY == 0.0 or self.meshSizeX == 0.0):
             raise NameError("ERROR: Cannot calculate grid size mesh sizes < =  0.0!")
-        ''''
-         * TODO: use method to determine geometric center of protein-associated atoms only!
-         * Same goes for determination of coordinate extremes. Only use protein-associated atoms!
-         ???
-         '''
+        # * TODO: use method to determine geometric center of protein-associated atoms only!
+        # * Same goes for determination of coordinate extremes. Only use protein-associated atoms!
+        # ???
         self.setGridCenter(pdb.determine_geometric_center())
 
         diameterX = 0.0
@@ -671,7 +794,10 @@ class InFile:
         self.gridSizeZ = (np.ceil(diameterZ / self.getMeshSizeZ()) + padding * 2)
         self.fixGridSize()
 
-    def  fixGridSize(self):
+    def fixGridSize(self):
+        '''
+        See :func:`fix_grid_size`.
+        '''
         fixed_size = fix_grid_size([self.gridSizeX,
                 self.gridSizeY, self.gridSizeZ])
         self.gridSizeX = fixed_size[0]
@@ -679,24 +805,26 @@ class InFile:
         self.gridSizeZ = fixed_size[2]
 
     def write(self, file_path):
-        if self.calculation_type == self.potential:
-            self.write_potential(file_path)
-        elif self.calculation_type == self.binding_energy:
-            self.write_binding_energy(file_path)
-        elif self.calculation_type == self.binding_energy_long:
-            self.write_binding_energy_long(file_path)
-
-
-    def write_potential(self, file_path):
         '''
-        This is the function that writes an infile for the calculation of
-        potential grids.
+        Write an APBS input file.
 
-        Args:
-            file_path -> Path to the new infile.
+        :param file_path: path to the input file
+        :type  file_path: str
+        '''
+        if self.calculation_type == self.potential:
+            self._write_potential(file_path)
+        elif self.calculation_type == self.binding_energy:
+            self._write_binding_energy(file_path)
+        elif self.calculation_type == self.binding_energy_long:
+            self._write_binding_energy_long(file_path)
 
-        Returns:
-            None.
+
+    def _write_potential(self, file_path):
+        '''
+        Write an APBS input file for a potential calculation.
+
+        :param file_path: path to the input file
+        :type  file_path: str
         '''
         # check if everything is okay:
         self.fixGridSize()
@@ -788,16 +916,12 @@ class InFile:
         with open(file_path, 'w') as f:
             f.write(instructions)
 
-    def write_binding_energy(self, file_path):
+    def _write_binding_energy(self, file_path):
         '''
-        This is the function that writes an infile for binding energy
-        calculations.
+        Write an APBS input file for an energy calculation.
 
-        Args:
-            file_path -> Path to the new infile.
-
-        Returns:
-            None.
+        :param file_path: path to the input file
+        :type  file_path: str
         '''
         # check if everything is okay:
         self.fixGridSize()
@@ -896,16 +1020,12 @@ class InFile:
         with open(file_path, 'w') as f:
             f.write(instructions)
 
-    def write_binding_energy_long(self, file_path):
+    def _write_binding_energy_long(self, file_path):
         '''
-        This is the function that writes an infile for binding energy
-        calculations.
+        Write an APBS input file for an energy calculation.
 
-        Args:
-            file_path -> Path to the new infile.
-
-        Returns:
-            None.
+        :param file_path: path to the input file
+        :type  file_path: str
         '''
         # check if everything is okay:
         self.fixGridSize()
@@ -1101,6 +1221,11 @@ class InFile:
         will raise an error.
         The given values of the dictionary are not checked for validation.
         If some options are not given the default values will be used.
+
+        :param apbs_input_dict: APBS instructions as key/value pairs
+        :type  apbs_input_dict: dict(str,str)
+
+        :raises AttributeError: if unknown key
         '''
         data_dict = apbs_input_dict.copy()
         if 'elec_type' in data_dict:
@@ -1247,16 +1372,16 @@ def fix_grid_size(proposed_box_dim, nlev=4):
     More specifically, given a non-zero integer *c* and a multilevel hierarchy
     depth *l*, the APBS grid dimension is calculated as :math:`n = c2^{l+1}+1`.
     The proposed box dimensions will be inflated as necessary.
-    
+
     :param proposed_box_dim: proposed APBS grid dimensions
-    :type  proposed_box_dim: tuple(int,int,int)
+    :type  proposed_box_dim: tuple(int)
     :param nlev: depth of the multilevel hierarchy
     :type  nlev: int
     :returns: Valid APBS grid dimensions
-    :returntype: :class:`numpy.ndarray[3]`
-    
+    :rtype: :class:`np.array[3]`
+
     Examples::
-    
+
         >>> from epitopsy.APBS import fix_grid_size
         >>> # valid APBS dimensions are not affected
         >>> fix_grid_size([33, 65, 129])
@@ -1264,15 +1389,16 @@ def fix_grid_size(proposed_box_dim, nlev=4):
         >>> # invalid APBS dimensions are inflated
         >>> fix_grid_size([32, 66, 120])
         array([ 33,  97, 129])
+
     '''
     calc_dime = lambda c, l=4: c * 2 ** (l + 1) + 1
-    
+
     dime = []
     for i in range(len(proposed_box_dim)):
         c = 1
         while proposed_box_dim[i] > calc_dime(c, nlev):
             c += 1
         dime.append(calc_dime(c, nlev))
-    
+
     return np.array(dime)
 

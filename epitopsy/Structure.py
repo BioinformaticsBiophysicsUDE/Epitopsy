@@ -1,9 +1,8 @@
-'''
-Created on Jan 11, 2012
-
-@author: chris
-
-
+__author__     = "Christoph Wilms, Jean-Noel Grad"
+__copyright__  = "Copyright 2012, Epitopsy and Biopython"
+__date__       = "2012-01-11"
+__credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
+__license__    = '''
                  Biopython License Agreement
 
 Permission to use, copy, modify, and distribute this software and its
@@ -24,6 +23,7 @@ OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE
 OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE
 OR PERFORMANCE OF THIS SOFTWARE.
 '''
+
 import os
 import gzip
 import time
@@ -34,9 +34,7 @@ from Bio.PDB.Residue import Residue
 from Bio.PDB.Chain import Chain
 from Bio.PDB.Structure import Structure
 from Bio.PDB.Model import Model
-
 #from Bio.PDB import PDBParser, PDBIO, Select
-
 from epitopsy.DXFile import DXBox, VDWBox
 from epitopsy.cython import pdb_cython
 from epitopsy.tools import MathTools
@@ -55,15 +53,11 @@ three2oneletter = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'ASN': 'N',
 
 class Structure_Template(object):
     '''
-    This is a template class from which PDBFile and PQRFile will be derived,
-    because they share a lot of functions.
+    This is a template class from which :class:`PDBFile` and :class:`PQRFile`
+    will be derived.
 
     This class is not supposed to work with multiple models (for example NMR
     structures)!
-
-    List of class one has to implement for each derivative:
-        * read structure
-        * write structure
     '''
     # dictionary to convert three letter codes to one letter codes and vice
     # versa
@@ -83,14 +77,8 @@ class Structure_Template(object):
                       'M': 1.9, 'N': -3.5, 'P': -1.6, 'Q': -3.5, 'R': -4.5,
                       'S': -0.8, 'T': -0.7, 'V': 4.2, 'W': -0.9, 'Y': -1.3}
 
-    def __init__(self, structure_path = None):
-        '''
-        Constructor
-        '''
-        if structure_path is not None:
-            self.structure_path = structure_path
-        else:
-            self.structure_path = structure_path
+    def __init__(self, structure_path=None):
+        self.structure_path = structure_path
 
         self.structure = None
         # 'pdb', 'pqr', ?
@@ -99,8 +87,31 @@ class Structure_Template(object):
 
     def get_all_atom_coords(self):
         '''
-        Returns:
-            A List of atom coordinates.
+        Navigate through all ATOM and HETATM records in the structure and
+        return their coordinates. See :meth:`get_amino_atoms_coords` and
+        :meth:`get_hetero_atoms_coords` to return all ATOM resp. HETATM
+        coordinates.
+
+        :returns: An iterable of the requested atom coordinates.
+        :rtype: list(:class:`np.array[3]`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for ATOM in a.get_all_atom_coords():
+            ...     print ATOM
+            [-42.316  38.638  20.425]
+            [-41.82   39.723  19.581]
+            [-41.93   41.072  20.291]
+            [-40.962  41.836  20.357]
+            [-42.577  39.762  18.255]
+            [-42.085  40.845  17.3  ]
+            [-40.299  40.776  17.008]
+            [-40.081  42.082  15.79 ]
+            [-43.122  41.359  20.805]
+            [-43.34   42.492  21.695]
+            [...]
+
         '''
         atoms_coord = []
         for atom in self.structure.get_atoms():
@@ -109,11 +120,26 @@ class Structure_Template(object):
 
     def get_coords_from_atom_list(self, atom_list):
         '''
-        Args:
-            atom_list -> List of atom objects.
+        Navigate through all atoms in **atom_list** and return their
+        coordinates.
 
-        Returns:
-            A list of atom coordinates for the specified atom objects.
+        :param atom_list: atoms to read
+        :type  atom_list: list(:class:`Atom`)
+
+        :returns: An iterable of the requested atom coordinates.
+        :rtype: list(:class:`np.array[3]`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> b = a.get_hetero_atoms()[1:3] # retrieving two atom objects
+            >>> print b
+            [<Atom FE>, <Atom CAC>]
+            >>> print a.get_coords_from_atom_list(b) # getting coordinates
+            [array([-28.139,  20.588,  11.849]), array([-30.158,  21.541,   5.145])]
+            >>> print a.get_hetero_atoms_coords()[1:3] # just checking
+            [array([-28.139,  20.588,  11.849]), array([-30.158,  21.541,   5.145])]
+
         '''
         atom_coord = []
         for atom in atom_list:
@@ -122,8 +148,28 @@ class Structure_Template(object):
 
     def get_hetero_atoms(self):
         '''
-        Returns:
-            A list of all hetero atoms.
+        Navigate through all HETATM records in the structure.
+
+        :returns: All HETATM in the structure.
+        :rtype: list(:class:`Atom`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for HETATM in a.get_hetero_atoms():
+            ...     print HETATM
+            <Atom FE>
+            <Atom FE>
+            <Atom CAC>
+            <Atom CA>
+            <Atom CB>
+            <Atom CBC>
+            <Atom CG>
+            <Atom CGC>
+            <Atom OA1>
+            <Atom OA2>
+            [...]
+
         '''
         het_atoms = []
         for chain in self.structure:
@@ -136,8 +182,29 @@ class Structure_Template(object):
 
     def get_hetero_atoms_coords(self):
         '''
-        Returns:
-            A list of all hetero atom coordinates
+        Navigate through all HETATM records in the structure and return
+        their coordinates.
+
+        :returns: An iterable of the requested atom coordinates.
+        :rtype: list(:class:`np.array[3]`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for HETATM in a.get_hetero_atoms_coords():
+            ...     print HETATM
+            [-28.886  22.883   9.035]
+            [-28.139  20.588  11.849]
+            [-30.158  21.541   5.145]
+            [-30.083  20.273   5.97 ]
+            [-29.335  20.464   7.282]
+            [-27.967  21.06    7.026]
+            [-29.217  19.094   7.918]
+            [-28.359  19.09    9.162]
+            [-29.115  22.097   4.693]
+            [-31.292  22.037   4.902]
+            [...]
+
         '''
         het_coord = []
         for chain in self.structure:
@@ -150,8 +217,28 @@ class Structure_Template(object):
 
     def get_amino_atoms(self):
         '''
-        Returns:
-            A list of all amino acid atoms.
+        Navigate through all ATOM records in the structure.
+
+        :returns: All ATOM in the structure.
+        :rtype: list(:class:`Atom`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for ATOM in a.get_amino_atoms():
+            ...     print ATOM
+            <Atom N>
+            <Atom CA>
+            <Atom C>
+            <Atom O>
+            <Atom CB>
+            <Atom CG>
+            <Atom SD>
+            <Atom CE>
+            <Atom N>
+            <Atom CA>
+            [...]
+
         '''
         aa_atoms = []
         for chain in self.structure:
@@ -164,8 +251,29 @@ class Structure_Template(object):
 
     def get_amino_atoms_coords(self):
         '''
-        Returns:
-            A list of all amino acid atom coordinates.
+        Navigate through all ATOM records in the structure and return
+        their coordinates.
+
+        :returns: An iterable of the requested atom coordinates.
+        :rtype: list(:class:`np.array[3]`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for ATOM in a.get_amino_atoms_coords():
+            ...     print ATOM
+            [-42.316  38.638  20.425]
+            [-41.82   39.723  19.581]
+            [-41.93   41.072  20.291]
+            [-40.962  41.836  20.357]
+            [-42.577  39.762  18.255]
+            [-42.085  40.845  17.3  ]
+            [-40.299  40.776  17.008]
+            [-40.081  42.082  15.79 ]
+            [-43.122  41.359  20.805]
+            [-43.34   42.492  21.695]
+            [...]
+
         '''
         aa_coord = []
         for chain in self.structure:
@@ -178,8 +286,30 @@ class Structure_Template(object):
 
     def get_all_atoms(self):
         '''
-        Returns:
-            A list of all atom coordinates
+        Navigate through all ATOM and HETATM records in the structure. See
+        :meth:`get_amino_atoms` and :meth:`get_hetero_atoms` to return
+        all ATOM resp. HETATM entries.
+
+        :returns: All atoms in the structure.
+        :rtype: list(:class:`Atom`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for ATOM in a.get_amino_atoms_coords():
+            ...     print ATOM
+            <Atom N>
+            <Atom CA>
+            <Atom C>
+            <Atom O>
+            <Atom CB>
+            <Atom CG>
+            <Atom SD>
+            <Atom CE>
+            <Atom N>
+            <Atom CA>
+            [...]
+
         '''
         all_atoms = []
         for atom in self.structure.get_atoms():
@@ -188,9 +318,17 @@ class Structure_Template(object):
 
     def get_info_1(self, atoms=None):
         '''
-        Returns:
-            A list of all atom information 1 values. For a pdb this is
-            the occupancy and for a pqr it is the charge.
+        Get information slot 1:
+
+        * pdb: occupancy
+        * pqr: charge
+
+        :param atoms: atom selection, or ``None`` for all atoms in the
+           structure
+        :type  atoms: list(:class:`Atom`)
+
+        :returns: Slot 1.
+        :rtype: list(float)
         '''
         if atoms is None:
             atoms = self.get_all_atoms()
@@ -202,9 +340,17 @@ class Structure_Template(object):
 
     def get_info_2(self, atoms=None):
         '''
-        Returns:
-            A list of all atom information 2 values. For a pdb this is
-            the temperature factor and for a pqr it is the radius.
+        Get information slot 2:
+
+        * pdb: B-factor
+        * pqr: atomic radius
+
+        :param atoms: atom selection, or ``None`` for all atoms in the
+           structure
+        :type  atoms: list(:class:`Atom`)
+
+        :returns: Slot 2.
+        :rtype: list(float)
         '''
         if atoms is None:
             atoms = self.get_all_atoms()
@@ -216,8 +362,17 @@ class Structure_Template(object):
 
     def get_chain_ids(self):
         '''
-        Returns:
-            A list of all chain ids in this structure.
+        Find all chains in the file and return their id ('A', 'B', ...).
+
+        :returns: All chain ids in the structure.
+        :rtype: list(str)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_chain_ids()
+            ['A']
+
         '''
         chain_list = []
         for chain in self.structure:
@@ -227,18 +382,38 @@ class Structure_Template(object):
 
     def get_first_res_id(self):
         '''
-        Returns:
-            The integer number of the first amino acid.
+        Find the number of the first residue in this structure. Useful when
+        the residue numbering doesn't start at 1.
+
+        :returns: Residue index of the first amino acid.
+        :rtype: int
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_first_res_id()
+            1
+
         '''
         chain_id = self.structure.child_dict.keys()[0]
         return self.structure[chain_id].child_list[0].id[1]
 
     def get_atoms_of_type(self, atom_type):
         '''
-        Args:
-            atom_type -> Type of atom to return (e.g. 'CA')
-        Returns:
-            All atom objects of a certain type.
+        Find all atoms of type **atom_type** in the structure.
+
+        :param atom_type: type of atom to find (e.g. 'CA')
+        :type  atom_type: str
+
+        :returns: An iterable of all atoms of a certain type in the structure.
+        :rtype: list(:class:`Atom`).
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_atoms_of_type('FE')
+            [<Atom FE>, <Atom FE>]
+
         '''
         all_atoms_of_type = []
         for atom in self.structure.get_atoms():
@@ -249,14 +424,10 @@ class Structure_Template(object):
 
     def transform(self, T):
         '''
-        Transform the pdb structure with the given matrix.
+        Transform the structure coordinates with the given matrix.
 
-        Args:
-            T -> [3,3] numpy matrix  to transform the coordinates by
-                matrix multiplication.
-
-        Returns:
-            None.
+        :param T: transformation matrix
+        :type  T: :class:`np.array[3,3]`
         '''
         for atom in self.structure.get_atoms():
             atomcoord = atom.get_coord()
@@ -265,14 +436,10 @@ class Structure_Template(object):
 
     def translate(self, transVector):
         '''
-        Method to translate protein structure by the given vector.
+        Translate structure coordinates by the given vector.
 
-        Args:
-            transvector -> Numpy Array holding translation distances for each
-                dimension.
-
-        Returns:
-            None.
+        :param transvector: translation vector
+        :type  transvector: :class:`np.array[3]`
         '''
         for atom in self.structure.get_atoms():
             atomcoord = atom.get_coord()
@@ -281,37 +448,28 @@ class Structure_Template(object):
 
     def translate_x(self, dist):
         '''
-        Method to translate protein structure in x direction.
+        Translate protein structure along the X axis.
 
-        Args:
-            dist -> Amount of displacement in x direction.
-
-        Returns:
-            None.
+        :param dist: translation distance
+        :type  dist: float
         '''
         self.translate([dist, 0, 0])
 
     def translate_y(self, dist):
         '''
-        Method to translate protein structure in y direction.
+        Translate protein structure along the Y axis.
 
-        Args:
-            dist -> Amount of displacement in y direction.
-
-        Returns:
-            None.
+        :param dist: translation distance
+        :type  dist: float
         '''
         self.translate([0, dist, 0])
 
     def translate_z(self, dist):
         '''
-        Method to translate protein structure in z direction.
+        Translate protein structure along the Z axis.
 
-        Args:
-            dist -> Amount of displacement in z direction.
-
-        Returns:
-            None.
+        :param dist: translation distance
+        :type  dist: float
         '''
         self.translate([0, 0, dist])
 
@@ -321,13 +479,12 @@ class Structure_Template(object):
         angle_x around the x axis (angle_y around y axis, etc.) and moves
         it back to where it was.
 
-        Args:
-            phi -> Euler angle for rotation.
-            theta -> Euler angle for rotation.
-            psi -> Euler angle for rotation.
-
-        Returns:
-            None.
+        :param phi: Euler angle for rotation
+        :type  phi: float
+        :param theta: Euler angle for rotation
+        :type  theta: float
+        :param psi: Euler angle for rotation
+        :type  psi: float
         '''
         transvector = self.determine_geometric_center()
         self.translate(-transvector)
@@ -336,31 +493,27 @@ class Structure_Template(object):
 
     def move_to_new_position(self, new_coord):
         '''
-        This method moves the geometric center of the structure to the
-        supplied coordinates.
+        Move the structure geometric center to the supplied coordinates.
 
-        Args:
-            new_coord -> list/numpy array of the new coordinates
-
-        Returns:
-            None.
+        :param new_coord: new coordinates
+        :type  new_coord: :class:`np.array[3]`
         '''
         old_coord = self.determine_geometric_center()
         self.translate(np.array(new_coord) - np.array(old_coord))
 
     def rotate_and_move_to_new_position(self, phi, theta, psi, new_coord):
         '''
-        This method centers the structure at (0,0,0), rotates it and the
-        moves it to a new position.
+        Center the structure at the origin, rotate it and
+        move it to the new position **new_coord**.
 
-        Args:
-            phi -> Euler angle for rotation.
-            theta -> Euler angle for rotation.
-            psi -> Euler angle for rotation.
-            new_coord -> New coordination for the center of geometry.
-
-        Returns:
-            None.
+        :param phi: Euler angle for rotation
+        :type  phi: float
+        :param theta: Euler angle for rotation
+        :type  theta: float
+        :param psi: Euler angle for rotation
+        :type  psi: float
+        :param new_coord: new coordinates
+        :type  new_coord: :class:`np.array[3]`
         '''
         self.translate(-self.determineGeometricCenter())
         self.pRotate(phi, theta, psi)
@@ -368,15 +521,23 @@ class Structure_Template(object):
 
     def rotate(self, angle, axis):
         '''
-        Method to rotate protein structure.
-        For the rotation I use the Rodrigues' rotation formula.
+        Rotate protein structure using the Rodrigues' rotation formula.
 
-        Args:
-            degree -> Angle by which to rotate
-            axis -> Axis around which to rotate
+        :param degree: angle by which to rotate (in degrees)
+        :type  degree: float
+        :param axis: axis around which to rotate (x = [1,0,0],
+           y = [0,1,0], z = [0,0,1])
+        :type  axis: :class:`np.array[3]`
 
-        Returns:
-            None.
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> print a.get_all_atom_coords()[0] # before rotation
+            [-42.316,  38.638,  20.425]
+            >>> a.rotate(+30.0, [1,0,0]) # x axis
+            >>> print a.get_all_atom_coords()[0] # after rotation
+            [-42.316  23.24898955  37.00756887]
+
         '''
         # TODO: check the algorithm
         axis = np.array(axis)
@@ -404,85 +565,86 @@ class Structure_Template(object):
 
     def rotateX(self, degree):
         '''
-        Args:
-            degree -> Angle for rotation around the x axis.
+        Rotate protein structure around the X axis.
 
-        Returns:
-            None.
+        :param degree: angle by which to rotate (in degrees)
+        :type  degree: float
         '''
         self.rotate(degree, [1, 0, 0])
 
     def rotateY(self, degree):
         '''
-        Args:
-            degree -> Angle for rotation around the y axis.
+        Rotate protein structure around the Y axis.
 
-        Returns:
-            None.
+        :param degree: angle by which to rotate (in degrees)
+        :type  degree: float
         '''
         self.rotate(degree, [0, 1, 0])
 
     def rotateZ(self, degree):
         '''
-        Args:
-            degree -> Angle for rotation around the z axis.
+        Rotate protein structure around the Z axis.
 
-        Returns:
-            None.
+        :param degree: angle by which to rotate (in degrees)
+        :type  degree: float
         '''
         self.rotate(degree, [0, 0, 1])
 
     def pRotate(self, phi, theta, psi):
         '''
-        Apply euler angle rotation to the structure.
+        Apply Euler angle rotation to the structure.
 
-        Args:
-            phi -> Euler angle for rotation.
-            theta -> Euler angle for rotation.
-            psi -> Euler angle for rotation.
-
-        Returns:
-            None.
+        :param phi: Euler angle for rotation
+        :type  phi: float
+        :param theta: Euler angle for rotation
+        :type  theta: float
+        :param psi: Euler angle for rotation
+        :type  psi: float
         '''
         euler_rotation = MathTools.calculate_rotation_matrix(phi, theta, psi)
         self.transform(euler_rotation)
 
     def rotate_by_matrix(self, rot_matrix):
         '''
-        Args:
-            rot_matrix -> [3,3] numpy matrix to transform the coordinates by
-                matrix multiplication.
+        Transform the structure coordinates with the given rotation matrix.
 
-        Returns:
-            None.
+        :param rot_matrix: transformation matrix
+        :type  rot_matrix: :class:`np.array[3,3]`
         '''
         self.transform(rot_matrix)
 
     def determineCenterOfMass(self):
         '''
-        Method to determine the center of mass for the protein structure.
-
-        returns:
-            None.
+        Determine the center of mass for the protein structure.
         '''
-        print('not implemented ... missing atom weights!')
+        raise RuntimeError('not implemented ... missing atom weights!')
 
     def determine_geometric_center(self):
         '''
-        Returns:
-            A vector pointing to the geometric center of the structure.
+        Determine the structure geometric center.
+
+        :returns: Center coordinates.
+        :rtype: :class:`np.array[3]`
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> print a.determine_geometric_center()
+            [-27.25387547  25.13667925  13.83051887]
+
         '''
         all_coords = np.array(self.get_all_atom_coords())
         return np.mean(all_coords, 0)
 
     def determine_center_of_extremes_of_atoms(self, atoms):
         '''
-        Args:
-            atoms -> List of atom objects.
+        Determine the center of the extremes of an atom selection.
 
-        Returns:
-            A vector pointing to the geometric center of the coordination
-            extremes of the given atom coordinates.
+        :param atoms: atom selection
+        :type  atoms: list(:class:`Atom`)
+
+        :returns: Center coordinates.
+        :rtype: :class:`np.array[3]`
         '''
         centerVector = np.zeros(3)
         extremes = self.determine_coordinate_extremes(atoms)
@@ -493,9 +655,17 @@ class Structure_Template(object):
 
     def determine_center_of_extremes(self):
         '''
-        Returns:
-            A vector pointing to the geometric center of the coordination
-            extremes of this structure.
+        Determine the center of the extremes.
+
+        :returns: Center coordinates.
+        :rtype: :class:`np.array[3]`
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> print a.determine_center_of_extremes()
+            [-26.8235  24.865  13.304]
+
         '''
         centerVector = np.zeros(3)
         extremes = self.determine_coordinate_extremes()
@@ -504,14 +674,21 @@ class Structure_Template(object):
         centerVector[2] = (extremes[2][1] + extremes[2][0]) / 2.0
         return centerVector
 
-    def determine_max_diameter(self, atoms = None):
+    def determine_max_diameter(self, atoms=None):
         '''
-        Args:
-            atoms -> Optional a list of atom objects, otherwise it uses all
-                atoms of this structure and calculates the maximum diameter.
+        :param atoms: atom selection, or all atoms in the structure if
+           ``None``
+        :type  atoms: list(:class:`Atom`)
 
-        Returns:
-            A float number of the maximum diameter.
+        :returns: Maximum diameter (Angstroms).
+        :rtype: float
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> print a.determine_max_diameter()
+            52.4878883362
+
         '''
         atom_coord = []
         if atoms is None:
@@ -529,15 +706,12 @@ class Structure_Template(object):
 
     def determine_radius(self, atoms = None):
         '''
-        Determine the geometric center and calculate the minimal radius that
-        encapsulates all atoms.
+        :param atoms: atom selection, or all atoms in the structure if
+           ``None``
+        :type  atoms: list(:class:`Atom`)
 
-        Args:
-            atoms -> Optional a list of atom objects, otherwise it uses all
-                atoms of this structure and calculates the radius.
-
-        Returns:
-            A float number of the radius.
+        :returns: Protein radius (Angstrom).
+        :rtype: float
         '''
         if atoms is None:
             atoms = self.get_all_atoms()
@@ -554,22 +728,19 @@ class Structure_Template(object):
 
     def center(self):
         '''
-        Translate geometric center to (0.0/0.0/0.0).
-
-        Returns:
-            None.
+        Translate the geometric center to the origin.
         '''
         center_vector = self.determine_geometric_center()
         self.translate(-center_vector)
 
     def determine_coordinate_extremes(self, atoms = None):
         '''
-        Args:
-            atoms -> Optional a list of atom objects, otherwise it uses all
-                atoms of this structure and calculates the extreme coordinates
-                in each  direction.
-        Returns:
-            Extreme values in each direction as a 3*2 array.
+        :param atoms: atom selection, or all atoms in the structure if
+           ``None``
+        :type  atoms: list(:class:`Atom`)
+
+        :returns: Center coordinates.
+        :rtype: :class:`np.array[3,2]`
         '''
         if atoms is None:
             atoms = self.get_all_atoms()
@@ -588,13 +759,14 @@ class Structure_Template(object):
         '''
         Compute the unit vectors of a basis that maximizes the spread of atomic
         coordinates on the x-axis, then the y-axis, and then the z-axis.
-        
+
         :param selection: subset of atoms to use for the PCA, default is
            all C-alpha atoms ('CA'), for non-proteins please choose between
            non-hydrogens ('noH') and all ('all')
         :type  selection: str
+
         :returns: Set of basis vectors
-        :returntype: :class:`numpy.ndarray`[3,3]
+        :rtype: :class:`np.array[3,3]`
         '''
         if selection == 'CA':
             coord = np.array([a.coord for c in self.structure for r in c
@@ -614,10 +786,14 @@ class Structure_Template(object):
         Compute atomic positions in a new basis set. Useful to center and
         rotate a protein before an APBS calculation using a rectangular box,
         so as to reduce the box dimension.
-        
+
         :param base: Set of basis vectors (optional), if ``None``,
            perform a PCA on the molecule first
-        :type  base: :class:`numpy.ndarray`[3,3]
+        :type  base: :class:`np.array[3,3]`
+        :param selection: subset of atoms to use for the PCA, default is
+           all C-alpha atoms ('CA'), for non-proteins please choose between
+           non-hydrogens ('noH') and all ('all')
+        :type  selection: str
         '''
         if base is None:
             base = self.get_PCA_base(selection=selection)
@@ -633,11 +809,17 @@ class Structure_Template(object):
 
     def get_radius_of_gyration(self):
         '''
-        This method calculates the radius of gyration. It is the maximum
-        distance of an atom to the geometrical center.
+        Calculate the radius of gyration.
 
-        Returns:
-            A float number as the radius of gyration.
+        :returns: Radius of gyration.
+        :rtype: float
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_radius_of_gyration()
+            28.848387249760471
+
         '''
         all_coords = np.array(self.get_all_atom_coords())
         geo_center = np.mean(all_coords,0)
@@ -650,22 +832,35 @@ class Structure_Template(object):
 
         return r_g
 
-    def clone(self, chain_id_list = None,
-              res_id_list = None, res_type_list = None, atom_types_list = None):
+    def clone(self, chain_id_list=None, res_id_list=None, res_type_list=None,
+              atom_types_list=None):
         '''
-        This method returns a clone of this structure. Through the list
-        parameters specific items can be selected. If one supplies one letter
-        codes for the residues they will be translated to three letter codes!
+        Return a clone of self. Through the list parameters specific items can
+        be selected, namely the list of residues or certain types of residues
+        (mutually exclusive). One-letter codes for the residues will be
+        translated to three-letter codes. Use ``None`` to select all.
 
-        Args:
-            chain_id_list -> List of chains to copy to the clone.
-            res_id_list -> List of residues in each chain to copy to the
-                clone.
-            res_type_list -> Types of residues to copy to the new clone.
-            atom_types_list -> Types of atoms to copy to the new clone.
+        :param chain_id_list: chains to copy to the clone
+        :type  chain_id_list: list(str)
+        :param res_id_list: residues in each chain to copy to the clone
+        :type  res_id_list: list(str)
+        :param res_type_list: residue types to copy to the new clone
+        :type  res_type_list: list(str)
+        :param atom_types_list: atom types to copy to the new clone
+        :type  atom_types_list: list(str)
 
-        Returns:
-            A new PDBFile / PQRFile / LatFile object.
+        :returns: A clone of the structure object.
+        :rtype: :class:`PDBFile` or :class:`PQRFile` or :class:`LatFile`
+        :raises AttributeError: if both **res_id_list** and **res_type_list**
+           were used, or if **self.what_am_i** is empty.
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> b = a.clone()
+            >>> print b
+            <epitopsy.Structure.PDBFile object at 0x2088a90>
+
         '''
         if res_id_list is not None and res_type_list is not None:
             raise AttributeError("Please use eiter specific residue id's or residue types! This method has returned None!")
@@ -746,12 +941,22 @@ class Structure_Template(object):
 
         return new_clone
 
-    def get_residue_id_list(self, chain_id = None):
+    def get_residue_id_list(self, chain_id=None):
         '''
-        Args:
-            chain_id -> Optionally, if None, it uses the all available chains.
-        Returns:
-            A list with all residue ID's of the structure.
+        Display all residue numbers found in the structure.
+
+        :param chain_id: which chain in the structure should be used
+           (optional), if ``None`` use all available chains
+        :type  chain_id: str
+
+        :returns: a list with all residue ID's of the structure
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> print a.get_residue_id_list()
+            [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, [...], 444]
+
         '''
         res_id_list = []
         if chain_id is None:
@@ -767,9 +972,24 @@ class Structure_Template(object):
 
     def get_res_id_aa_dict(self, chain_id):
         '''
-        Returns:
-            A dictionary of the first chain, which contains the residue id as
-            key and the corresponding amino acid as value.
+        Display all residues from chain **chain_id** in a dictionary with
+        residue number as key and amino acid one-letter code as value. The
+        advantage of a dictionary over a list is that gaps in the sequence
+        numbering are preserved. All non-amino acids are ignored.
+
+        :param chain_id: which chain in the PDB file should be used
+        :type  chain_id: str
+
+        :returns: Residues number / one-letter code pairs.
+        :rtype: dict(int,str)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_res_id_aa_dict('A')
+            Encountered the following non amino acids: ['FE', 'FLC', 'HOH']
+            {1: 'M', 2: 'S', 3: 'L', 4: 'S', 5: 'N', 6: 'S', 7: 'S', 8: 'K', 9: 'V', 10: 'S', [...],  187: 'E'}
+
         '''
         res_map = {}
         non_amino_acid = False
@@ -787,17 +1007,24 @@ class Structure_Template(object):
                 non_amino_acid_list.append(res_name)
 
         if non_amino_acid is True:
-            print('Encountered the following non amino acids: {0}'.format(non_amino_acid_list))
+            print('Encountered the following non amino acids: {0}'
+                  .format(sorted(set(non_amino_acid_list))))
 
         return res_map
 
-    def contains_chain_break(self, chain_id = None):
+    def contains_chain_break(self, chain_id=None):
         '''
-        Args:
-            chain_id -> Optionally, if None, it uses the all available chains.
+        Tell if a chain break exist in **chain_id**, or in the whole structure
+        if omitted. HETATM are skipped.
 
-        Returns:
-            Either True (chain break) or False (no chain break).
+        :param chain_id: the chain id where to look for a break (optional),
+           uses all available chains if ``None``
+        :type  chain_id: str
+
+        :returns: ``False`` if no chain break was detected, or a formatted
+           string if a break was detected.
+        :rtype: bool or str
+
         '''
         if chain_id is None:
             # if no chain id has been supplied take all chains
@@ -808,7 +1035,8 @@ class Structure_Template(object):
                         res_id = res.get_id()[1]
                         if i > 0 and res_id_list:
                             if (res_id_list[-1] + 1) != res_id:
-                                    return True
+                                    return 'Break between {0} and {1}'.format(
+                                                      res_id_list[-1], res_id)
                         res_id_list.append(res_id)
         else:
             res_id_list = []
@@ -817,7 +1045,8 @@ class Structure_Template(object):
                     res_id = res.get_id()[1]
                     if i > 0:
                         if res_id_list[-1] + 1 != res_id:
-                                return True
+                                return 'Break between {0} and {1}'.format(
+                                                  res_id_list[-1], res_id)
                     res_id_list.append(res_id)
 
         ## no chain break
@@ -826,9 +1055,20 @@ class Structure_Template(object):
 
     def get_res_id_array_mapping(self):
         '''
-        Returns:
-            A dictionary with residue ids as keys and values, which can be
-            used as an index in an array.
+        Remove gaps in the residue sequence and return the new mapping
+        in a dictionary, with the old residue id's as key and the new
+        id's as value. The new mapping starts at zero and is suitable
+        for use as an index for an array.
+
+        :returns: Mapping vector.
+        :rtype: dict(int,int)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_res_id_array_mapping()
+            {1: 0, 2: 1, 3: 2, 4: 3, 5: 4, 6: 5, 7: 6, 8: 7, 9: 8, 10: 9, ..., 444: 326}
+
         '''
         id_dict = {}
         chain = self.structure.child_list[0].id
@@ -837,15 +1077,25 @@ class Structure_Template(object):
 
         return id_dict
 
-    def get_residue_names_from_res_id_list(self, res_id_list, chain_id = None):
+    def get_residue_names_from_res_id_list(self, res_id_list, chain_id=None):
         '''
-        Args:
-            res_id_list -> List of residue ids.
-            chain_id -> Optionally, if None, it uses the all available chains.
+        Display the three-letter code of the residues given in *res_id_list*
+        from chain *chain_id* (if ``None``, take the first chain).
 
-        Returns:
-            A list with the names of the residue ids in the
-            given list.
+        :param res_id_list: residue id's from which one wants the names
+        :type  res_id_list: list(int)
+        :param chain_id: if ``None`` uses the all available chains (optional)
+        :type  chain_id: str
+
+        :returns: Three-letter code of residues matching the given criteria.
+        :rtype: list(str)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_residue_names_from_res_id_list([1,2])
+            ['MET', 'SER']
+
         '''
         if chain_id is None:
             # if no chain id has been supplied take the first one
@@ -858,18 +1108,28 @@ class Structure_Template(object):
 
         return res_name
 
-    def get_residues(self, chain_id = None, res_id_list = None):
+    def get_residues(self, chain_id=None, res_id_list=None):
         '''
-        This method returns a list with residue objects of the residue ids in
-        the given list, if None is given, it returns all residues.
+        Display all residues from **res_id_list** contained in chain
+        **chain_id** as :class:`Bio.PDB.Residue`. If **res_id_list** is
+        ``None``, display all residues from chain **chain_id**.
+        If **chain_id** is ``None``, return an error excepted when there is
+        only one chain in the PDB file.
 
-        Args:
-            chain_id -> Optionally, if None, it uses the all available chains.
-            res_id_list -> List of residue ids from which one wants the
-                objects.
+        :param chain_id: if ``None``, it uses the all available chains (optional)
+        :type  chain_id: str
+        :param res_id_list: residue id's from which one wants the objects
+        :type  res_id_list: list
 
-        Returns:
-            A list of residues objects matching the given criteria.
+        :returns: a list of residues matching the given criteria
+        :rtype: list(:class:`Bio.PDB.Residue`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_residues('A')[0:2] # residue id starts at 0 in a list
+            [<Residue MET het=  resseq=1 icode= >, <Residue SER het=  resseq=2 icode= >]
+
         '''
         if chain_id is None:
             if len(self.structure.child_list) > 1:
@@ -884,20 +1144,26 @@ class Structure_Template(object):
         res_list = []
         for res in self.structure[chain_id].child_list:
             if res.get_id()[1] in res_id_list:
-                res_list.append(res.resname)
+                res_list.append(res)
 
         return res_list
 
     def get_atoms_by_id(self, atom_id_list):
         '''
-        This function returns the Atoms,  by their corresponding number from
-        the pdb-file.
+        Get atoms by their corresponding number from the pdb-file.
 
-        Args:
-            atom_id_list -> List of atom id numbers.
+        :param atom_id_list: atom id numbers
+        :type  atom_id_list: list(int)
 
-        Returns:
-            A list of atom objects to the matching atom ids.
+        :returns: Qtoms matching the given criteria.
+        :rtype: list(:class:`Atom`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_atoms_by_id([1,2,3])
+            [<Atom N>, <Atom CA>, <Atom C>]
+
         '''
         atom_list = []
         for atom in self.get_all_atoms():
@@ -906,20 +1172,55 @@ class Structure_Template(object):
         return atom_list
 
     def get_atoms_close_to_reference(self, reference_point, max_radius,
-            min_radius = 0, atoms = None):
+                                     min_radius=0, atoms=None):
         '''
-        This function returns all atoms of this structure, which lie in the
-        range [min_radius, max_radius] to the reference point.
+        Find all atoms lying in the range [**min_radius**, **max_radius**] to
+        **reference_point**.
 
-        Args:
-            reference_point -> Numpy array of the reference.
-            max_radius -> Maximal distance to include the atoms.
-            min_radius -> Minimal distance of the atoms to the the reference.
-            atoms -> Optional list of atoms, if None is given it uses all
-                atoms from the protein.
+        :param reference_point: coordinates of the reference point
+        :type  reference_point: :class:`np.array[3]`
+        :param max_radius: maximal distance from the reference (Angstroms)
+        :type  max_radius: float
+        :param min_radius: minimal distance from the reference (Angstroms)
+        :type  min_radius: float
+        :param atoms: list of the atoms to which the results should be
+           restricted (optional), if ``None`` it uses all
+           atoms from the protein
+        :type  atoms: list(:class:`Atom`)
 
-        Returns:
-            A list of atom objects close to the given reference point.
+        :returns: Atoms close to the given reference point.
+        :rtype: list(:class:`Atom`)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> # retrieve the iron catalytic center
+            >>> fe_list = a.get_atoms_of_type('FE')
+            >>> coord = a.get_coords_from_atom_list([fe_list[1]])
+            >>> # get all 6 atoms chelating Fe, excepted Fe
+            >>> a.get_atoms_close_to_reference(coord, 2.5, 0.1)
+            [<Atom NE2>, <Atom NE2>, <Atom OD2>, <Atom OD1>, <Atom OG1>, ...]
+
+        Biopython equivalent::
+
+            >>> from Bio.PDB import PDBParser
+            >>> from Bio.PDB import NeighborSearch
+            >>> p = PDBParser()
+            >>> a = p.get_structure('4N6W.pdb', '4N6W.pdb')
+            >>> fe_list = []
+            >>> atom_list = []
+            >>> for residue in struct[0]['A']:
+            ...     for atom in residue:
+            ...         if atom.name == 'FE':
+            ...             fe_list.append(atom)
+            ...         elif atom.name[0] <> 'H':
+            ...             atom_list.append(atom)
+            >>> ns = NeighborSearch(atom_list)
+            >>> rd = 2.5
+            >>> coord = fe_list[1].get_coord()
+            >>> print sorted(ns.search(coord, rd, 'A'))
+            [<Atom NE2>, <Atom NE2>, <Atom OD2>, <Atom OD1>, <Atom OG1>, ...]
+
         '''
         if atoms is None:
             atoms = self.get_all_atoms()
@@ -939,17 +1240,20 @@ class Structure_Template(object):
 
     def find_chain_contacts(self, chain1, chain2, max_distance):
         '''
-        Finds Atoms of chain1 which are within max_distance of chain2
+        Find atoms of **chain1** which are within **max_distance** of
+        **chain2**.
 
-        Args:
-            chain1 -> First chain id.
-            chain2 -> Second chain id.
-            max_distance -> Maximal distance to include atoms in the
-                calculation.
+        :param chain1: first chain id
+        :type  chain1: str
+        :param chain2: second chain id
+        :type  chain2: str
+        :param max_distance: maximal distance to include atoms in the search
+        :type  max_distance: float
 
-        Returns:
-            A list of atom objects from chain1 which distance to chain2 is
-            smaller than max_distance.
+        :returns: Atoms from **chain1** for which distance to
+           **chain2** is smaller than **max_distance**.
+        :rtype: list(:class:`Atom`)
+
         '''
         contact_atoms = []
         # get chains:
@@ -976,11 +1280,18 @@ class Structure_Template(object):
 
     def get_sequence(self):
         '''
-        Returns:
-            A dictionary which contains the chain and the sequence:
-            'A' : 'RG...CC'
-            'B' : 'PW...FV'
-            Non standard amino acids will not be returned!!!
+        Display the one-letter code sequence of each chain of the PDB file in
+        a dictionary. Non standard amino acids will not be returned.
+
+        :returns: Amino acid sequences by chains.
+        :rtype: dict(str,str)
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> a.get_sequence()
+            {'A': 'MSL[...]LSE'}
+
         '''
         seq_dict = {}
         for chain in self.structure:
@@ -998,8 +1309,7 @@ class Structure_Template(object):
         return seq_dict
 
     def snap_vdw_to_box(self, box_mesh_size, box_dim, box_offset,
-                        warning = True, vdw_radii = 2,
-                        increase_vdw_by = 0):
+                        warning=True, vdw_radii=2, increase_vdw_by=0):
         '''
         This method snaps a structure to a given dxbox. If the structure is
         a pqr it uses the supplied vdw radii otherwise it uses the variable
@@ -1007,13 +1317,13 @@ class Structure_Template(object):
         
         If any coordinate lies outside the box an error will be printed to the
         standard output.
-        
+
         :param box_mesh_size: mesh size
-        :type  box_mesh_size: tuple(float,float,float)
+        :type  box_mesh_size: :class:`np.array[3]`
         :param box_dim: box dimesions
-        :type  box_dim: tuple(int,int,int)
+        :type  box_dim: :class:`np.array[3]`
         :param box_offset: box origin
-        :type  box_offset: tuple(float,float,float)
+        :type  box_offset: :class:`np.array[3]`
         :param warning: print an error if the structure does not fit
            completely into the given box dimensions
         :type  warning: bool
@@ -1021,8 +1331,9 @@ class Structure_Template(object):
         :type  vdw_radii: float
         :param increase_vdw_by: increase all vdw radii by a constant (Angstroms)
         :type  increase_vdw_by: float
+
         :returns: OpenDX box with 0's outside the molecule and 1's inside
-        :returntype: :class:`np.ndarray[:,:,:]`
+        :returntype: :class:`np.array[:,:,:]`
         '''
         vdw_box = np.zeros(box_dim)
         mesh_size = float(box_mesh_size[0])
@@ -1102,29 +1413,28 @@ class Structure_Template(object):
         return vdw_box
 
     def get_rmsd_rotation_translation_from_superposition(self, pdb_to_rotate,
-                                                         atom_types = None):
+                                                         atom_types=None):
         '''
-        This method tries to fit the given pdb onto this one. The method
-        returns a dictionary, which contains the 'rmsd', 'rotation' matrix
-        and the 'translation'.
-        The parameter 'atom_types' can be used to supply a list of atoms, which
-        should be fit onto each other, if 'None' is supplied, it will try to
-        fit all atoms onto each other.
-        In case the number of atoms does not match, it raises an Error!
+        Fit the structure **pdb_to_rotate** onto self.
+        Return a dictionary containing a *rmsd* value, a *rotation* matrix
+        and a *translation* value.
+        The parameter **atom_types** restricts the fitting on a particular set
+        of atoms, if ``None`` is supplied, all atoms will be used.
 
         I guess the units are Angstroem.
 
-        Args:
-            pdb_to_rotate -> Structure derivative object to superimpose onto
-                this object.
-            atom_types -> If None, it tries to fit all atoms, but it can also
-                be used to fit specific types (e.g. ['CA'], ['CA','N'])
+        :param pdb_to_rotate: object to superimpose onto this object
+        :type  pdb_to_rotate: :class:`Structure`
+        :param atom_types: restrict the fitting to specific types (e.g.
+           ``['CA']``, ``['CA', 'N']``), or fit all atoms if ``None``
+        :type  atom_types: list(str)
 
-        Returns:
-            A dictionary which contains the following keys:
-            * 'rmsd' : root mean square deviation
-            * 'rotation' : rotation matrix
-            * 'translation' : translation vector
+        :returns: A dictionary with following keys: ``'rmsd'``: root mean
+           square deviation, ``'rotation'``: rotation matrix,
+           ``'translation'``: translation vector
+        :rtype: dict
+        :raises ValueError: if there is an atom mismatch between the two pdb's
+           or if at least one of the atom lists is empty
         '''
         # check if atom_types is a list
         if not isinstance(atom_types, list) and atom_types is not None:
@@ -1163,19 +1473,19 @@ class Structure_Template(object):
         return result_dict
 
     def superimpose_given_pdb_onto_self(self, pdb_to_superimpose,
-                                        atom_types = None):
+                                        atom_types=None):
         '''
-        This method superimposes this structure onto the given structure!
-        If the number of atoms differ it raises an error!
+        Fit the structure **pdb_to_superimpose** onto self.
+        The atomic coordinates are updated in the process.
 
-        Args:
-            pdb_to_superimpose ->  Structure derivative object to superimpose onto
-                this object.
-            atom_types -> If None, it tries to fit all atoms, but it can also
-                be used to fit specific types (e.g. ['CA'], ['CA','N'])
+        :param pdb_to_superimpose: object to superimpose onto this object
+        :type  pdb_to_superimpose: :class:`Structure`
+        :param atom_types: restrict the fitting to specific types (e.g.
+           ``['CA']``, ``['CA', 'N']``), or fit all atoms if ``None``
+        :type  atom_types: list(str)
 
-        Returns:
-            None.
+        :raises ValueError: if there is an atom mismatch between the two pdb's
+           or if at least one of the atom lists is empty
         '''
         super_instructions = self.get_rmsd_rotation_translation_from_superposition(pdb_to_superimpose, atom_types)
         trans_vector = super_instructions['translation']
@@ -1185,19 +1495,17 @@ class Structure_Template(object):
             atom.transform(rot_matrix, trans_vector)
 
     def superimpose_self_onto_given_pdb(self, pdb_to_superimpose,
-                                        atom_types = None):
+                                        atom_types=None):
         '''
-        This method superimposes this structure onto the given structure!
-        If the number of atoms differ it raises an error!
+        Fit self onto the structure **pdb_to_superimpose** and update self's
+        atomic coordinates.
 
-        Args:
-            pdb_to_superimpose ->  Structure derivative object to superimpose
-                this object onto.
-            atom_types -> If None, it tries to fit all atoms, but it can also
-                be used to fit specific types (e.g. ['CA'], ['CA','N'])
+        :param pdb_to_superimpose: object on which to superimpose self
+        :type  pdb_to_superimpose: :class:`Structure`
+        :param atom_types: restrict the fitting to specific types (e.g.
+           ``['CA']``, ``['CA', 'N']``), or fit all atoms if ``None``
+        :type  atom_types: list(str)
 
-        Returns:
-            None.
         '''
         super_instructions = pdb_to_superimpose.get_rmsd_rotation_translation_from_superposition(self, atom_types)
         trans_vector = super_instructions['translation']
@@ -1209,8 +1517,28 @@ class Structure_Template(object):
     def get_dxbox_dim(self, box_mesh_size, extend=None, cubic_box=False,
                       nlev=4):
         '''
-        Calculate the dimensions of an APBS box large enough to contain the
-        protein. The box center is taken as the protein geometric center.
+        Return the dimensions of a DXbox. The edges are calculated using the
+        protein maximal diameter in each direction, **extend** if given,
+        and the grid resolution **box_mesh_size**, using the formula:
+
+        :math:`a[i] = \\frac{\\displaystyle protein\\_diameter[i] +
+        2 \\cdot extend[i]}{\\displaystyle box\\_mesh\\_size[i]}`
+
+        with *i* = {x,y,z} the coordinates. If **cubic_box** is ``True``,
+        all edges have the same length.
+
+        :param box_mesh_size: grid resolution (Angstroms)
+        :type  box_mesh_size: :class:`np.array[3]`
+        :param extend: extension of the box dimensions (Angstroms)
+        :type  extend: float
+        :param cubix_box: use a cubic box if ``True``
+        :type  cubic_box: bool
+        :param nlev: depth of the multilevel hierarchy used by the multigrid
+           solver (optional)
+        :type  nlev: int
+
+        :returns: Dimensions of the DXbox.
+        :rtype: :class:`np.array[3]`
         '''
         box_mesh_size = np.array(box_mesh_size)
         if cubic_box is True:
@@ -1237,34 +1565,46 @@ class Structure_Template(object):
         '''
         Returns the offset for the given dimensions.
 
-        Args:
-            box_mesh_size -> [m,m,m]
-            box_dim -> [x,y,z]
-            box_center -> [x_c,y_c,z_c]
+        :param box_mesh_size: dimensions of the mesh (Angstroms)
+        :type  box_mesh_size: :class:`np.array[3]`
+        :param box_dim: dimensions of the box (Angstroms)
+        :type  box_dim: :class:`np.array[3]`
+        :param box_center: center of the box (Angstroms)
+        :type  box_center: :class:`np.array[3]`
 
-        Returns:
-            A list box_offset: [x_o,y_o,z_o].
+        :returns: The box offset.
+        :rtype: :class:`np.array[3]`
         '''
         box_offset = np.array(box_center) - (np.array(box_mesh_size) *
                                              np.array(box_dim) // 2)
         return box_offset
 
     def get_hydrophobic_potential(self, box_mesh_size, box_dim, box_offset):
-        '''Calculate the hydrophobic potential.
+        '''
+        Calculate the hydrophobic potential of a protein.
         This method uses a simplified model for the hydrophobic potential.
-        The 'charges' are taken from the Kyte and Doolittle hydrophobicity
+        The charges are taken from the Kyte and Doolittle hydrophobicity
         scale. For each residue the center is calculated and the potential
         is modelled as:
-            phi = sum ( hydrophobic_charge * exp( - distance ) )
 
-        Args:
-            box_mesh_size: meshsize of the grid
-            box_dim: dimension of the grid
-            box_offset: offset of the grid
+            :math:`\\phi = \\sum \\left ( \\text{hydrophobic\\_score} \
+                                          \\times e^{-\\text{distance}} \
+                                 \\right )`
 
-        Returns:
-            Numpy array with the hydrophoic potential for each grid
-            point.
+        .. seealso::
+
+            Kyte, Doolittle, *A simple method for displaying the hydropathic
+            character of a protein*, *J. Mol. Biol.* **1982**, *157*, 105-132.
+
+        :param box_mesh_size: grid resolution (Angstroms)
+        :type  box_mesh_size: :class:`np.array[3]`
+        :param box_dim: dimensions of the box (Angstroms)
+        :type  box_dim: :class:`np.array[3]`
+        :param box_offset: offset of the box (Angstroms)
+        :type  box_offset: :class:`np.array[3]`
+
+        :returns: Hydrophobic potential grid.
+        :rtype: :class:`np.array[:,:,:]`
         '''
         start_time = time.time()
         def get_residue_center(res):
@@ -1298,19 +1638,23 @@ class Structure_Template(object):
         return potential
 
     def get_vdw_hull(self, box_mesh_size, box_dim, box_offset, vdw_radii = 2,
-            increase_vdw_by = 0):
-        '''Get the van der Waals hull of the protein.
+                     increase_vdw_by=0):
+        '''
+        Get the protein van der Waals hull.
 
-        Args:
-            box_mesh_size: meshsize of the grid
-            box_dim: dimension of the grid
-            box_offset: offset of the grid
-            vdw_radii: atom radii, if this is not a pqr
-            increase_vdw_by: extend each radius by this value
+        :param box_mesh_size: grid resolution (Angstroms)
+        :type  box_mesh_size: :class:`np.array[3]`
+        :param box_dim: dimensions of the box (Angstroms)
+        :type  box_dim: :class:`np.array[3]`
+        :param box_offset: offset of the box (Angstroms)
+        :type  box_offset: :class:`np.array[3]`
+        :param vdw_radii: default atom radii, if this is not a pqr
+        :type  vdw_radii: float
+        :param increase_vdw_by: extend each radius by this value
+        :type  increase_vdw_by: float
 
-        Returns:
-            Numpy array with 1's at the hull grid points and 0's everywhere
-            else.
+        :returns: Grid with 1's at the hull and 0's everywhere else.
+        :rtype: :class:`np.array[:,:,:]`
         '''
         # vdw_array has 1's inside and 0's outside
         vdw_array = self.snap_vdw_to_box(box_mesh_size, box_dim, box_offset,
@@ -1330,22 +1674,26 @@ class Structure_Template(object):
         return vdwbox.box
 
     def get_num_of_overlap_atoms_with_given_structure(self,
-            other_structure_object,
-            energy_cutoff = 1., vdw_radii = 2.):
-        '''Calculate the number of atoms in this structure object that are
+                                                      other_structure_object,
+                                                      energy_cutoff=1.,
+                                                      vdw_radii=2.):
+        '''
+        Calculate the number of atoms in this structure object that are
         overlapping with the given structure object.
 
-        Args:
-            other_structure_object: Structure which might have an overlapp with
-                this one
-            energy_cutoff: cutoff for the lennard jones potential to decide
-                if there is an overlapp or not
-            vdw_radii: If this is pdb object there are no radii information
-                available
+        :param other_structure_object: structure which might overlap with
+           this one
+        :type  other_structure_object: :class:`Structure`
+        :param energy_cutoff: cutoff for the Lennard-Jones potential to decide
+           if there is an overlap or not
+        :type  energy_cutoff: float
+        :param vdw_radii: default atomic radius for PDB structures
+        :type  vdw_radii: float
 
-        Returns:
-            Integer: counts of atoms in this structure that overlapp with
-            the given structure object.
+        :returns: Number of atoms in this structure that overlap with
+           the given structure object
+        :rtype: int
+
         '''
         self_coords = self.get_all_atom_coords()
         other_coords = other_structure_object.get_all_atom_coords()
@@ -1369,15 +1717,35 @@ class Structure_Template(object):
         return pdb_cython.find_clashing_atoms(self_coords, self_radii,
                 other_coords, other_radii, float(energy_cutoff))
 
-    def get_contact_list(self, cutoff = 5.):
+    def get_contact_list(self, cutoff=5.):
         '''
-        Args:
-            cutoff -> if any distance between atoms from two residues is less
-                than the cutoff, it is a contact
+        Find steric contacts between residues of a protein. A contact is found
+        when the interatomic distance of at least two atoms taken from two
+        different residues *i* and *j* is inferior to **cutoff** (Angstroem).
 
-        Returns:
-            A list:
-            [[...], [i,j,0], [...]] in this case 0 means no contact.
+        :param cutoff: interatomic distance
+        :type  cutoff: float
+
+        :returns: Residues id's as found in the PDB, with 1 for a contact
+           and 0 for no contact: ``[[i-1,j-1,0], [i,j,1], [i+1,j+1,0]]``.
+        :rtype: list
+
+        Example::
+
+            >>> a = Structure.PDBFile('4N6W.pdb')
+            >>> for contact in a.get_contact_list(cutoff=5.0):
+            ...     print contact
+            [1, 2, 1]
+            [1, 3, 1]
+            [1, 4, 0]
+            [1, 5, 0]
+            [1, 6, 0]
+            [1, 7, 0]
+            [1, 8, 1]
+            [1, 9, 0]
+            [1, 10, 0]
+            [...]
+
         '''
         def residue_contact(res_i, res_j, cutoff):
             for atom_i in res_i:
@@ -1407,8 +1775,11 @@ class Structure_Template(object):
 
 
 class PDBFile(Structure_Template):
+    '''
+    Container for PDB files.
+    '''
 
-    def __init__(self, pdb_path = None):
+    def __init__(self, pdb_path=None):
         Structure_Template.__init__(self, pdb_path)
         # read structure
         if self.structure_path is None:
@@ -1418,33 +1789,40 @@ class PDBFile(Structure_Template):
         # i am a 'pdb'
         self.what_am_i = 'pdb'
 
-    def get_pqr_structure(self, new_pqr_path = None, force_field = "amber",
-            pdb2pqr_argv = None, pdb2pqr_path = "pdb2pqr",
-            add_ions = True, add_chain = True):
-        '''Call pdb2pqr to replace the b-factor and the occupancy information
-        in the pdb file with the charges and the vdw radii. If this pdb Object
-        has no structure_path property (i.e. it is None), then an error is
+    def get_pqr_structure(self, new_pqr_path=None, force_field='amber',
+                          pdb2pqr_argv=None, pdb2pqr_path='pdb2pqr',
+                          add_ions=True, add_chain=True):
+        '''
+        Call pdb2pqr to replace the B-factor and the occupancy information in
+        the pdb file with the charges and the vdw radii. If this object has no
+        ``structure_path`` property (i.e. it is ``None``), then an error is
         raised.
 
-        If the pdb contains CA,ZN or SO4 ions, they will be added, if not
-        stated otherwise.
+        If the pdb contains SO\ :sub:`4`:sup:`2--`, Ca\ :sup:`2+` or
+        Zn\ :sup:`2+` ions, they will be added unless stated otherwise.
 
-        Args:
-            new_pqr_path -> Path for the new pqr file. If None is given, it
-            replaces the ".pdb" with ".pqr" at the end.
-            force_field -> Forcefield from which charges and radii should be
-                taken. Default is amber.
-            pdb2pqr_argv -> Can contain additional arguments to pdb2pqr as a
-                list (e.g. ['--assign-only'], oder ['--noopt']). If multiple
-                additional arguments are given, they also have to be given as
-                a list (e.g. ['--assign-only', '--noopt']).
-            pdb2pqr_path -> Path to the executable of PDB2PQR.
-            add_ions -> Add CA, ZN, SO4 ions if they are in the pdb. The CA,ZN
-                and SO4 atoms should have a residue name that fits their type
-                (CA, ZN, SO4).
+        :param new_pqr_path: path for the new pqr file. If ``None`` is given,
+           **structure_path** will be used by changing its extension to .pqr
+        :type  new_pqr_path: str
+        :param force_field: forcefield from which charges and radii should be
+           taken. Default is 'amber'
+        :type  force_field: str
+        :param pdb2pqr_argv: can contain additional arguments to pdb2pqr
+           (e.g. ``['--assign-only']`` or ``['--noopt']``) (optional)
+        :type  pdb2pqr_argv: list
+        :param pdb2pqr_path: path to the executable of PDB2PQR
+        :type  pdb2pqr_path: str
+        :param add_ions: add Ca, Zn, SO\ :sub:`4` ions if they are in the pdb.
+           The Ca, Zn and SO\ :sub:`4` atoms should have a residue name that
+           fits their type (CA, ZN, SO4).
+        :type  add_ions: bool
 
-        Returns:
-            An PQRFile object.
+        :returns: A PQR structure.
+        :rtype: :class:`PQRFile`
+        :raises AttributeError: if **structure_path** is empty, or if
+           **new_pqr_path** cannot be read or generated from the PDB path
+        :raises NameError: if **new_pqr_path** refers to an existing file
+
         '''
         if self.structure_path is None:
             raise AttributeError("This pdb object has no structure path!")
@@ -1551,7 +1929,6 @@ class PDBFile(Structure_Template):
                 content = f.readlines()
         else:
             raise AttributeError("Path does not end with either '.pdb' or '.pdb.gz'\n{0}".format(self.structure_path))
-
 
         check_chain_id = None
         check_res_id = None
@@ -1678,14 +2055,21 @@ class PDBFile(Structure_Template):
 
     def save_to_file(self, path):
         '''
-        This method writes the structure to a given path.
-        If the structure is a lattice, it will try to calculate the
-        correct connections. The Assumption of a lattice is made on the
-        number of residues and the number of overall atom coordinates.
-        If both numbers are equal, it is very probable that this is a lattice
-        protein. This only works, if there is just one chain!
+        Write the structure to a file.
 
-        Notice: We do not work with multiple models!
+        Note: We do not work with multiple models!
+
+        :param path: path for the new pdb file.
+        :type  path: str
+
+        :raises AttributeError: if **path** does not end with '.pdb' or
+           '.pdb.gz'
+
+        .. note:
+
+            If **path** points to a file, it will be overwritten without
+            confirmation message.
+
         '''
         if path.endswith(".pdb"):
             with open(path, 'w') as f:
@@ -1729,7 +2113,17 @@ class PDBFile(Structure_Template):
 
     def _get_atom_line(self, chain, res, atom):
         '''
-        Formats the line for writing.
+        Format a PDB line.
+
+        :param chain: chain
+        :type  chain: str
+        :param res: residue
+        :type  res: str
+        :param atom: atom
+        :type  atom: str
+
+        :returns: Formatted PDB record.
+        :rtype: str
         '''
         if res.get_id()[0] == ' ':
             record_type = "ATOM  "
@@ -1760,9 +2154,11 @@ class PDBFile(Structure_Template):
                               chain_id, resseq, icode, x, y, z, info_1, info_2,
                               segid, element, charge)
 
+
 class PQRFile(Structure_Template):
-
-
+    '''
+    Container for PQR files.
+    '''
 
     def __init__(self, pqr_path = None):
         Structure_Template.__init__(self, pqr_path)
@@ -1871,9 +2267,21 @@ class PQRFile(Structure_Template):
 
     def save_to_file(self, path):
         '''
-        This method writes the structure to a given path.
+        Write the structure to a file.
 
-        Notice: We do not work with multiple models!
+        Note: We do not work with multiple models!
+
+        :param path: path for the new pqr file.
+        :type  path: str
+
+        :raises AttributeError: if **path** does not end with '.pqr' or
+           '.pqr.gz'
+
+        .. note:
+
+            If **path** points to a file, it will be overwritten without
+            confirmation message.
+
         '''
         if path.endswith(".pqr"):
             with open(path, 'w') as f:
@@ -1931,24 +2339,25 @@ class PQRFile(Structure_Template):
         '''
         This method snaps the charge for each atom of this pqr structure to a
         given dxbox. The new array contains the charge in the unit of Coulomb.
-        
+
         If any coordinate lies outside the box an error will be printed to the
         standard output.
-        
-        Be carefull!!! If you use a neutral probe and you mesh size is to
-        large the dipole effect is not visible!
-        
+
+        Note: with uncharged ligands the dipole effect can be masked
+        if the mesh size is too large.
+
         :param box_mesh_size: mesh size
-        :type  box_mesh_size: tuple(float,float,float)
+        :type  box_mesh_size: :class:`np.array[3]`
         :param box_dim: box dimesions
-        :type  box_dim: tuple(int,int,int)
+        :type  box_dim: :class:`np.array[3]`
         :param box_offset: box origin
-        :type  box_offset: tuple(float,float,float)
+        :type  box_offset: :class:`np.array[3]`
         :param warning: print an error if the structure does not fit
            completely into the given box dimensions
         :type  warning: bool
-        :returns: OpenDX box with Coulomb charges at the center of every atom
-        :returntype: :class:`np.ndarray[:,:,:]`
+
+        :returns: OpenDX box with Coulomb charges at the center of every atom.
+        :rtype: :class:`np.array[:,:,:]`
         '''
         esp_box = np.zeros(box_dim)
         mesh_size = float(box_mesh_size[0])
@@ -2002,6 +2411,9 @@ class PQRFile(Structure_Template):
 
 
 class LatFile(Structure_Template):
+    '''
+    Container for Lattice files.
+    '''
 
     def __init__(self, seq = None, fold = None, lattice = 'fcc',
             mesh_size = 3.8):
@@ -2109,14 +2521,22 @@ class LatFile(Structure_Template):
 
     def save_to_file(self, path):
         '''
-        This method writes the structure to a given path.
-        If the structure is a lattice, it will try to calculate the
+        Write the structure to a file. Try to calculate the
         correct connections. The Assumption of a lattice is made on the
         number of residues and the number of overall atom coordinates.
         If both numbers are equal, it is very probable that this is a lattice
         protein. This only works, if there is just one chain!
 
-        Notice: We do not work with multiple models!
+        Note: We do not work with multiple models!
+
+        :param path: path for the new lattice file
+        :type  path: str
+
+        .. note:
+
+            If **path** points to a file, it will be overwritten without
+            confirmation message.
+
         '''
         with open(path, 'w') as f:
             for line in self.remarks:
@@ -2250,39 +2670,33 @@ class LatFile(Structure_Template):
 
 
 class Atom(BioAtom):
+    '''
+    Atom object.
+
+    The Atom object stores atom name (both with and without spaces),
+    coordinates, B factor, occupancy, alternative location specifier
+    and (optionally) anisotropic B factor and standard deviations of
+    B factor and positions.
+
+    :param name: atom name (ex: 'CA'). Note that spaces are normally stripped
+    :type  name: str
+    :param coord: atomic coordinates (Angstroms)
+    :type  coord: :class:`np.array[3]`
+    :param bfactor: isotropic B factor
+    :type  bfactor: float
+    :param occupancy: occupancy (0.0-1.0)
+    :type  occupancy: float
+    :param altloc: alternative location specifier for disordered atoms
+    :type  altloc: str
+    :param fullname: full atom name, including spaces, e.g. ``' CA '``.
+       Normally these spaces are stripped from the atom name.
+    :type  fullname: str
+    :param element: atom element, ex: ``'C'`` for carbon, ``'HG'`` for mercury
+    :type  fullname: str
+    '''
+
     def __init__(self, name, coord, occupancy, bfactor, altloc, fullname,
                  serial_number, element = None, charge = None):
-        """
-        Atom object.
-
-        The Atom object stores atom name (both with and without spaces),
-        coordinates, B factor, occupancy, alternative location specifier
-        and (optionally) anisotropic B factor and standard deviations of
-        B factor and positions.
-
-        @param name: atom name (eg. "CA"). Note that spaces are normally stripped.
-        @type name: string
-
-        @param coord: atomic coordinates (x,y,z)
-        @type coord: Numeric array (Float0, size 3)
-
-        @param bfactor: isotropic B factor
-        @type bfactor: number
-
-        @param occupancy: occupancy (0.0-1.0)
-        @type occupancy: number
-
-        @param altloc: alternative location specifier for disordered atoms
-        @type altloc: string
-
-        @param fullname: full atom name, including spaces, e.g. " CA ". Normally
-        these spaces are stripped from the atom name.
-        @type fullname: string
-
-        @param element: atom element, e.g. "C" for Carbon, "HG" for mercury,
-        @type fullname: uppercase string (or None if unknown)
-
-        """
         BioAtom.__init__(self, name, coord, bfactor, occupancy, altloc,
                          fullname,
                          serial_number,
@@ -2321,54 +2735,56 @@ class Atom(BioAtom):
 
     def set_info_1(self, info_1):
         '''
-        This is just a more abstract method which I will use instead of
-        'get_bfactor' and 'get_occupancy'.
-        pdb: occupancy
-        pqr: charge
+        :setter: Set slot information 1 (pdb: occupancy, pqr: charge)
+        :type: float
         '''
         self.set_occupancy(info_1)
 
     def set_info_2(self, info_2):
         '''
-        This is just a more abstract method which I will use instead of
-        'get_bfactor' and 'get_occupancy'.
-        pdb: b_factor
-        pqr: vdw radius
+        :setter: Set slot information 2 (pdb: B-factor, pqr: atomic radius)
+        :type: float
         '''
         self.set_bfactor(info_2)
 
     def get_info_1(self):
         '''
-        This is just a more abstract method which I will use instead of
-        'get_bfactor' and 'get_occupancy'.
-        pdb: occupancy
-        pqr: charge
+        :getter: Get slot information 1 (pdb: occupancy, pqr: charge)
+        :type: float
         '''
         return self.get_occupancy()
 
     def get_info_2(self):
         '''
-        This is just a more abstract method which I will use instead of
-        'get_bfactor' and 'get_occupancy'.
-        pdb: bfactor
-        pqr: radius
+        :getter: Get slot information 2 (pdb: B-factor, pqr: atomic radius)
+        :type: float
         '''
         return self.get_bfactor()
 
     def set_element(self, element):
         '''
-        Set element.
+        :setter: Set atom element
+        :type: str
         '''
         self.element = element
         
     def get_element(self):
         '''
-        Return element.
+        :getter: Get atom element
+        :type: str
         '''
         return self.element
         
     def set_charge(self, charge):
+        '''
+        :setter: Set atom charge
+        :type: str
+        '''
         self.charge = charge
 
     def get_charge(self):
+        '''
+        :getter: Get atom charge
+        :type: str
+        '''
         return self.charge
