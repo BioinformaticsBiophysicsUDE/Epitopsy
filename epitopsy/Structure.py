@@ -1741,7 +1741,7 @@ class PDBFile(Structure_Template):
         resname = res.get_resname()
         chain_id = chain.get_id()
         resseq = res.get_id()[1]
-        icode = ' '
+        icode = res.get_id()[2]
         x, y, z = atom.get_coord()
         # occupancy
         info_1 = atom.get_info_1()
@@ -1810,6 +1810,7 @@ class PQRFile(Structure_Template):
                 atom_name = line[12:16].strip()
                 full_atom_name = line[12:16]
                 res_id = int(line[22:26])
+                iCode = line[26]
                 residue_name = line[17:20].strip()
                 chain_id = line[21:22]
                 x_coord = float(line[30:38])
@@ -1828,7 +1829,7 @@ class PQRFile(Structure_Template):
                     het_flag = 'H'
 
                 # biopython artifact
-                res_id = (het_flag, res_id, ' ')
+                res_id = (het_flag, res_id, iCode)
 
                 if(check_atom_id is None and check_chain_id is None
                    and check_res_id is None):
@@ -1845,7 +1846,7 @@ class PQRFile(Structure_Template):
                     new_chain.add(new_res)
 
                     new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                    ' ', full_atom_name, atom_id)
+                                    iCode, full_atom_name, atom_id)
                     # register in res
                     new_res.add(new_atom)
 
@@ -1862,7 +1863,7 @@ class PQRFile(Structure_Template):
                 if (atom_name.strip() != new_atom.id
                     or atom_id != new_atom.serial_number):
                     new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                    ' ', full_atom_name, atom_id)
+                                    iCode, full_atom_name, atom_id)
                     # register in res
                     new_res.add(new_atom)
 
@@ -1914,7 +1915,7 @@ class PQRFile(Structure_Template):
         resname = res.get_resname()
         chain_id = chain.get_id()
         resseq = res.get_id()[1]
-        icode = ' '
+        icode = res.get_id()[2]
         x, y, z = atom.get_coord()
         # charge
         info_1 = atom.get_info_1()
@@ -2163,7 +2164,7 @@ class LatFile(Structure_Template):
         resname = res.get_resname()
         chain_id = chain.get_id()
         resseq = res.get_id()[1]
-        icode = ' '
+        icode = res.get_id()[2]
         x, y, z = atom.get_coord()
         # occupancy
         info_1 = atom.get_info_1()
