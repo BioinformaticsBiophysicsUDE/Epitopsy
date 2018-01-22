@@ -555,98 +555,6 @@ def scan(pdb_path,
         return affinity
 
 
-def scan_conformers(protein_paths, ligand_paths,
-                    elec_kwargs=None, scan_kwargs=None,
-                    superpose_proteins=True,
-                    merge=False, protein_weights=None,
-                    ligand_weights=None, merge_output_fmt='merge_{}.dx'):
-    '''
-    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
-    ligands. For N proteins and M ligands, N electrostatic grids and N.M
-    energy grids will be computed, using the same parameters. Optionally,
-    can merge the resulting energy grids.
-    
-    Merged energies are only meaningful for aligned protein structures.
-    The first protein is centered according to **elec_kwargs['centering']**
-    while subsequent structures are superposed onto the first. Make sure the
-    atom order is identical in all proteins. If you have already carried out
-    the superposition outside Epitopsy, please set **superpose_proteins** to
-    ``False`` and **elec_kwargs['centering']** to ``None``.
-    
-    :param protein_paths: paths to the protein PDB/PQR files
-    :type  protein_paths: list(str) or str
-    :param ligand_paths: paths to the ligand PQR files
-    :type  ligand_paths: list(str) or str
-    :param elec_kwargs: optional arguments for :func:`electrostatics`
-    :type  elec_kwargs: dict
-    :param scan_kwargs: optional arguments for :func:`scan`
-    :type  scan_kwargs: dict
-    :param superpose_proteins: superpose proteins onto the first one if
-       ``True``; the first protein will be centered according to the
-       ``centering`` key in **elec_kwargs** (see argument **centering**
-       in :func:`scan`)
-    :type  superpose_proteins: bool
-    :param merge: carry out a conformational merge (optional), default is no
-    :type  merge: bool
-    
-    Example::
-    
-        >>> from epitopsy import EnergyGrid
-        >>> protein_paths = ['protein_confA.pdb', 'protein_confB.pdb']
-        >>> ligand_paths = ['ligand_confA.pqr', 'ligand_confB.pqr']
-        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': False}
-        >>> scan_kwargs = {'verbose': False}
-        >>> EnergyGrid.scan_conformers(protein_paths, ligand_paths,
-        ...                            elec_kwargs=elec_kwargs,
-        ...                            scan_kwargs=scan_kwargs,
-        ...                            merge=True)
-    
-    Output files:
-    
-    .. code-block:: none
-    
-        ./protein_confA/
-          protein_confA.pdb
-          protein_confA.pqr
-          protein_confA_esp.dx
-          protein_confA_vdw.dx
-          ligand_confA/
-            ligand_confA.pqr
-            protein_confA_epi.dx
-            protein_confA_mic.dx.gz
-          ligand_confB/
-            ligand_confB.pqr
-            protein_confA_epi.dx
-            protein_confA_mic.dx.gz
-        ./protein_confB/
-          protein_confB.pdb
-          protein_confB.pqr
-          protein_confB_esp.dx
-          protein_confB_vdw.dx
-          ligand_confA/
-            ligand_confA.pqr
-            protein_confB_epi.dx
-            protein_confB_mic.dx.gz
-          ligand_confB/
-            ligand_confB.pqr
-            protein_confB_epi.dx
-            protein_confB_mic.dx.gz
-        ./merge_epi.dx
-        ./merge_mic.dx.gz
-    
-    '''
-    # compute grids
-    _scan_multi_worker(protein_paths, ligand_paths,
-                       elec_kwargs=elec_kwargs, scan_kwargs=scan_kwargs,
-                       superpose_proteins=superpose_proteins)
-    # merge
-    if merge:
-        merge_conformers(protein_paths, ligand_paths,
-                         protein_weights=protein_weights,
-                         ligand_weights=ligand_weights,
-                         output_fmt=merge_output_fmt)
-
-
 def _scan_multi_worker(protein_paths, ligand_paths,
                        elec_kwargs=None, scan_kwargs=None,
                        superpose_proteins=False):
@@ -775,6 +683,164 @@ def _scan_multi_worker(protein_paths, ligand_paths,
         os.chdir('..')
 
 
+def scan_multi(protein_paths, ligand_paths,
+               elec_kwargs=None, scan_kwargs=None):
+    '''
+    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
+    ligands. For N proteins and M ligands, N electrostatic grids and N.M
+    energy grids will be computed, using the same parameters.
+    
+    .. seealso:: :func:`scan_conformers` for the special case where proteins
+                 and ligands are drawn from conformer ensembles
+    
+    :param protein_paths: paths to the protein PDB/PQR files
+    :type  protein_paths: list(str) or str
+    :param ligand_paths: paths to the ligand PQR files
+    :type  ligand_paths: list(str) or str
+    :param elec_kwargs: optional arguments for :func:`electrostatics`
+    :type  elec_kwargs: dict
+    :param scan_kwargs: optional arguments for :func:`scan`
+    :type  scan_kwargs: dict
+    
+    Example::
+    
+        >>> from epitopsy import EnergyGrid
+        >>> protein_paths = ['protein1.pdb', 'protein2.pdb']
+        >>> ligand_paths = ['ligand1.pqr', 'ligand2.pqr']
+        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': True}
+        >>> scan_kwargs = {'verbose': True}
+        >>> EnergyGrid.scan_multi(protein_paths, ligand_paths,
+        ...                       elec_kwargs=elec_kwargs,
+        ...                       scan_kwargs=scan_kwargs)
+    
+    Output files:
+    
+    .. code-block:: none
+    
+        ./protein1/
+          protein1.pdb
+          protein1.pqr
+          protein1_esp.dx
+          protein1_vdw.dx
+          ligand1/
+            ligand1.pqr
+            protein1_epi.dx
+            protein1_mic.dx.gz
+          ligand2/
+            ligand2.pqr
+            protein1_epi.dx
+            protein1_mic.dx.gz
+        ./protein2/
+          protein2.pdb
+          protein2.pqr
+          protein2_esp.dx
+          protein2_vdw.dx
+          ligand1/
+            ligand1.pqr
+            protein2_epi.dx
+            protein2_mic.dx.gz
+          ligand2/
+            ligand2.pqr
+            protein2_epi.dx
+            protein2_mic.dx.gz
+    
+    '''
+    _scan_multi_worker(protein_paths, ligand_paths, elec_kwargs=elec_kwargs,
+                       scan_kwargs=scan_kwargs, superpose_proteins=False)
+
+
+def scan_conformers(protein_paths, ligand_paths,
+                    elec_kwargs=None, scan_kwargs=None,
+                    superpose_proteins=True,
+                    merge=False, protein_weights=None,
+                    ligand_weights=None, merge_output_fmt='merge_{}.dx'):
+    '''
+    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
+    ligands. For N proteins and M ligands, N electrostatic grids and N.M
+    energy grids will be computed, using the same parameters. Optionally,
+    can merge the resulting energy grids.
+    
+    Merged energies are only meaningful for aligned protein structures.
+    The first protein is centered according to **elec_kwargs['centering']**
+    while subsequent structures are superposed onto the first. Make sure the
+    atom order is identical in all proteins. If you have already carried out
+    the superposition outside Epitopsy, please set **superpose_proteins** to
+    ``False`` and **elec_kwargs['centering']** to ``None``.
+    
+    :param protein_paths: paths to the protein PDB/PQR files
+    :type  protein_paths: list(str) or str
+    :param ligand_paths: paths to the ligand PQR files
+    :type  ligand_paths: list(str) or str
+    :param elec_kwargs: optional arguments for :func:`electrostatics`
+    :type  elec_kwargs: dict
+    :param scan_kwargs: optional arguments for :func:`scan`
+    :type  scan_kwargs: dict
+    :param superpose_proteins: superpose proteins onto the first one if
+       ``True``; the first protein will be centered according to the
+       ``centering`` key in **elec_kwargs** (see argument **centering**
+       in :func:`scan`)
+    :type  superpose_proteins: bool
+    :param merge: carry out a conformational merge (optional), default is no
+    :type  merge: bool
+    
+    Example::
+    
+        >>> from epitopsy import EnergyGrid
+        >>> protein_paths = ['protein_confA.pdb', 'protein_confB.pdb']
+        >>> ligand_paths = ['ligand_confA.pqr', 'ligand_confB.pqr']
+        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': False}
+        >>> scan_kwargs = {'verbose': False}
+        >>> EnergyGrid.scan_conformers(protein_paths, ligand_paths,
+        ...                            elec_kwargs=elec_kwargs,
+        ...                            scan_kwargs=scan_kwargs,
+        ...                            merge=True)
+    
+    Output files:
+    
+    .. code-block:: none
+    
+        ./protein_confA/
+          protein_confA.pdb
+          protein_confA.pqr
+          protein_confA_esp.dx
+          protein_confA_vdw.dx
+          ligand_confA/
+            ligand_confA.pqr
+            protein_confA_epi.dx
+            protein_confA_mic.dx.gz
+          ligand_confB/
+            ligand_confB.pqr
+            protein_confA_epi.dx
+            protein_confA_mic.dx.gz
+        ./protein_confB/
+          protein_confB.pdb
+          protein_confB.pqr
+          protein_confB_esp.dx
+          protein_confB_vdw.dx
+          ligand_confA/
+            ligand_confA.pqr
+            protein_confB_epi.dx
+            protein_confB_mic.dx.gz
+          ligand_confB/
+            ligand_confB.pqr
+            protein_confB_epi.dx
+            protein_confB_mic.dx.gz
+        ./merge_epi.dx
+        ./merge_mic.dx.gz
+    
+    '''
+    # compute grids
+    _scan_multi_worker(protein_paths, ligand_paths,
+                       elec_kwargs=elec_kwargs, scan_kwargs=scan_kwargs,
+                       superpose_proteins=superpose_proteins)
+    # merge
+    if merge:
+        merge_conformers(protein_paths, ligand_paths,
+                         protein_weights=protein_weights,
+                         ligand_weights=ligand_weights,
+                         output_fmt=merge_output_fmt)
+
+
 def merge_conformers(protein_paths, ligand_paths, protein_weights=None,
                      ligand_weights=None, **kwargs):
     '''
@@ -860,72 +926,6 @@ def merge_conformers(protein_paths, ligand_paths, protein_weights=None,
     
     # merge grids
     merge(dxbox_paths, dxbox_weights, **kwargs)
-
-
-def scan_multi(protein_paths, ligand_paths,
-               elec_kwargs=None, scan_kwargs=None):
-    '''
-    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
-    ligands. For N proteins and M ligands, N electrostatic grids and N.M
-    energy grids will be computed, using the same parameters.
-    
-    .. seealso:: :func:`scan_conformers` for the special case where proteins
-                 and ligands are drawn from conformer ensembles
-    
-    :param protein_paths: paths to the protein PDB/PQR files
-    :type  protein_paths: list(str) or str
-    :param ligand_paths: paths to the ligand PQR files
-    :type  ligand_paths: list(str) or str
-    :param elec_kwargs: optional arguments for :func:`electrostatics`
-    :type  elec_kwargs: dict
-    :param scan_kwargs: optional arguments for :func:`scan`
-    :type  scan_kwargs: dict
-    
-    Example::
-    
-        >>> from epitopsy import EnergyGrid
-        >>> protein_paths = ['protein1.pdb', 'protein2.pdb']
-        >>> ligand_paths = ['ligand1.pqr', 'ligand2.pqr']
-        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': True}
-        >>> scan_kwargs = {'verbose': True}
-        >>> EnergyGrid.scan_multi(protein_paths, ligand_paths,
-        ...                       elec_kwargs=elec_kwargs,
-        ...                       scan_kwargs=scan_kwargs)
-    
-    Output files:
-    
-    .. code-block:: none
-    
-        ./protein1/
-          protein1.pdb
-          protein1.pqr
-          protein1_esp.dx
-          protein1_vdw.dx
-          ligand1/
-            ligand1.pqr
-            protein1_epi.dx
-            protein1_mic.dx.gz
-          ligand2/
-            ligand2.pqr
-            protein1_epi.dx
-            protein1_mic.dx.gz
-        ./protein2/
-          protein2.pdb
-          protein2.pqr
-          protein2_esp.dx
-          protein2_vdw.dx
-          ligand1/
-            ligand1.pqr
-            protein2_epi.dx
-            protein2_mic.dx.gz
-          ligand2/
-            ligand2.pqr
-            protein2_epi.dx
-            protein2_mic.dx.gz
-    
-    '''
-    _scan_multi_worker(protein_paths, ligand_paths, elec_kwargs=elec_kwargs,
-                       scan_kwargs=scan_kwargs, superpose_proteins=False)
 
 
 def merge(energy_paths, weights=None, output_fmt='merge_{}.dx', zipped='mic'):
