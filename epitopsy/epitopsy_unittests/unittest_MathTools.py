@@ -59,6 +59,7 @@ class TestCases(unittest.TestCase):
                         'Cannot reproduce a spherical lattice with 1024 dots')
 
 
+
 if __name__ == '__main__':
     unittest.main()
 
