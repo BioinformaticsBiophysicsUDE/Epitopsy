@@ -2,7 +2,6 @@ __author__     = "Christoph Wilms, Jean-Noel Grad"
 __copyright__  = "Copyright 2013, Epitopsy"
 __date__       = "2013-03-07"
 __credits__    = ["Christoph Wilms", "Jean-Noel Grad"]
-__doc__        = '''Surface and charge complementarity screening'''
 
 import os
 import time
@@ -18,7 +17,7 @@ from epitopsy.tools import MathTools
 from epitopsy.tools.UtilityClasses import Progress_bar_countdown
 from epitopsy.EnergyGrid.FFT import FFT_correlation_scoring
 from epitopsy.EnergyGrid.analysis import calc_vol_and_surface, FFT_Result
-
+from epitopsy.tools.os_tools import file_ext, file_replace_ext
 
 def electrostatics(protein,
              ligands,
@@ -28,7 +27,7 @@ def electrostatics(protein,
              cubic_box    = False,
              extend       = None,
              box_dim      = None,
-             transform    = 'center+rotate',
+             centering    = 'center+rotate',
              align        = None,
              box_center   = (0, 0, 0),
              box_type     = ('esp', 'vdw'),
@@ -43,52 +42,53 @@ def electrostatics(protein,
     :meth:`Structure.PDBFile.get_pqr_structure`). For uncommon ions
     and non-standard residues, please supply a custom PQR file in **protein**.
     APBS will carry out the electrostatic calculation 
-    (see :class:`APBS.APBSWrapper`).
+    (see :class:`epitopsy.APBS.APBSWrapper`).
     
     By default, the box dimensions (*dime*) are calculated from the structure
     in **protein** and from the diameter of the largest ligand in **ligands**,
-    plus 2 Angstroms in the 6 directions. Custom box dimensions can be supplied
-    to **box_dim**, but the custom box must be large enough to contain the
-    protein + ligand. Compliance to the `APBS dime format
+    plus 2 Angstroms in the 6 directions. Custom box dimensions can be
+    supplied to **box_dim**, but the custom box must be large enough to
+    contain the protein + ligand. Compliance to the `APBS dime format
     <http://www.poissonboltzmann.org/docs/apbs-overview/#elec-keyword-dime>`_
-    is assessed by :func:`APBS.fix_grid_size` and the number of grid
+    is assessed by :func:`epitopsy.APBS.fix_grid_size` and the number of grid
     points will be adjusted upwards if necessary.
     
-    :param protein: path to the protein PDB or PQR file
+    :param protein: path to the protein PQR or PDB file; PDB files will be
+       converted to PQR using PDB2PQR
     :type  protein: str
     :param mesh_size: grid mesh size in all three dimensions (optional),
-        default is 1.0 Angstrom
-    :type  mesh_size: list
+       default is 1.0 Angstrom
+    :type  mesh_size: tuple(float)
     :param temp: temperature for APBS (optional), default is 310 K
     :type  temp: float
     :param ph: pH for protonation state determination in PDB2PQR (optional),
-        default is ``None``
+       default is ``None``
     :type  ph: float
     :param pdb2pqr_argv: additional arguments to PDB2PQR (optional), namely
-        ["--assign-only"], or ["--assign-only", "--noopt"]
+       ``['--assign-only']``, or ``['--assign-only', '--noopt']``
     :type  pdb2pqr_argv: list
-    :param transform: structure transformation: `'center+rotate'` to center and
-        rotate, `'center'` to center, ``None`` to leave the structure intact,
-        `'superimpose'` to superimpose onto another protein provided in
-        **align**
-    :type  transform: str
-    :param align: structure onto which to superimpose **protein** (optional),
+    :param centering: protein coordinates transformation: ``'center+rotate'``
+       to center and rotate optimally for rectangular boxes, ``'center'``
+       to center, ``None`` to leave the structure as is, ``'superpose'``
+       to superpose onto another protein provided in **align**
+    :type  centering: str
+    :param align: structure onto which to superpose **protein** (optional),
        can be a tuple giving the structure filename and the atom names to use
        for alignment, only the structure filename or another protein object
     :type  align: str or :class:`Structure.PDBFile` or
        tuple(str, tuple(str))
     :param box_center: center of the APBS box (optional), default is [0,0,0]
-    :type  box_center: array
+    :type  box_center: :class:`np.array[3]`
     :param box_dim: override box dimensions with custom values (optional), but
-        values must comply to the APBS dime format
-    :type  box_dim: list
+       values must comply to the APBS dime format
+    :type  box_dim: :class:`np.array[3]`
     :param extend: override box size extension with custom values (optional),
-        by default the 6 sides are extended by ligand max diameter + 2 Angstroms
+       by default the 6 sides are extended by ligand max diameter + 2 Angstroms
     :type  extend: float
     :param cubic_box: use a cubic box if ``True`` (optional)
     :type  cubic_box: bool
     :param box_type: types of boxes APBS should write to disk (optional), by
-        default ['esp', 'vdw'] as they are mandatory for :func:`scan`
+       default ``['esp', 'vdw']`` as they are mandatory for :func:`scan`
     :type  box_type: list(str)
     :param verbose: print calculation details to screen if ``True`` (optional)
     :type  verbose: bool
@@ -102,7 +102,7 @@ def electrostatics(protein,
         >>> EnergyGrid.electrostatics(protein_path, [ligand_path],
         ...                           mesh_size=3*[m,], verbose=True)
         protein:	5b1l-protein.pdb
-        centered:	False
+        centering:	center+rotate
         mesh size:	(0.8,0.8,0.8) Angstroms
         extension:	32 Angstroms
         box dim:	(225,225,225)
@@ -124,25 +124,26 @@ def electrostatics(protein,
         if not os.path.isfile(filename):
             raise IOError("File {0} cannot be read.".format(filename))
     
-    # if PDB file is located outside current working directory, copy it here
-    protein_local = os.path.basename(protein)
-    if protein_local != os.path.relpath(protein):
-        shutil.copy(protein, protein_local)
+    ## if PDB file is located outside current working directory, copy it here
+    #protein_local = os.path.basename(protein)
+    #if protein_local != os.path.relpath(protein):
+    #    shutil.copy(protein, protein_local)
     
     ligands = [os.path.abspath(x) for x in ligands]
-    protein = os.path.abspath(protein_local)
+    #protein = os.path.abspath(protein_local)
+    protein = os.path.abspath(protein)
     
     # load PDB/PQR structure
-    ext = protein.split('.')[-1].lower().rstrip('~')
-    if ext == 'pdb':
+    ext = file_ext(protein)
+    if ext == '.pdb':
         pro_struct = PDBFile(protein)
-    elif ext == 'pqr':
+    elif ext == '.pqr':
         pro_struct = PQRFile(protein)
     else:
         raise ValueError('Unknown file extension "{}"'.format(ext))
     
     # center, rotate or align protein structure
-    if transform in ('super', 'superimpose', 'align'):
+    if centering in ('super', 'superpose', 'superimpose', 'align'):
         if not (isinstance(align, list) or isinstance(align, tuple)):
             align_template = align
             align_atoms = None
@@ -153,10 +154,10 @@ def electrostatics(protein,
             align_template = align[0]
             align_atoms = align[1]
         if isinstance(align_template, basestring):
-            ext = align_template.split('.')[-1].lower().rstrip('~')
-            if ext == 'pdb':
+            ext = file_ext(align_template)
+            if ext == '.pdb':
                 ref = PDBFile(align_template)
-            elif ext == 'pqr':
+            elif ext == '.pqr':
                 ref = PQRFile(align_template)
             else:
                 raise ValueError('Unknown file extension "{}"'.format(ext))
@@ -166,8 +167,8 @@ def electrostatics(protein,
             raise TypeError('Argument align should be str or PDBFile')
         pro_struct.superimpose_self_onto_given_pdb(ref, align_atoms)
         pro_struct.save_to_file(pro_struct.structure_path)
-    elif transform in ('center', 'center+rotate'):
-        if transform == 'center+rotate':
+    elif centering in ('center', 'center+rotate'):
+        if centering == 'center+rotate':
             pro_struct.apply_PCA_projection()
         pro_coord = pro_struct.determine_geometric_center()
         new_coord = np.array(box_center)
@@ -191,7 +192,7 @@ def electrostatics(protein,
     # print details
     if verbose:
         print("protein:\t{0}".format(os.path.split(protein)[-1]))
-        print("transform:\t{0}".format(transform))
+        print("centering:\t{0}".format(centering))
         print("mesh size:\t({0},{1},{2}) Angstroms".format(*mesh_size))
         print("extension:\t{0} Angstroms".format(extend))
         print("box dim:\t({0:.0f},{1:.0f},{2:.0f})".format(*box_dim))
@@ -218,7 +219,7 @@ def scan(pdb_path,
              rotation_protocol   = None,
              write_top_hits      = False,
              explicit_sampling   = False,
-             zipped              = ("mic",),
+             zipped              = ('mic',),
              verbose             = True,
              interior            = -15.,
              protein_conc        = 0.001,
@@ -242,10 +243,10 @@ def scan(pdb_path,
     Maxwell-Boltzmann probability of presence, i.e. :math:`\\Delta G =
     e^{-\\Phi \\cdot q}`.
     
-    :param pdb_path: path to the protein PDB file
+    :param pdb_path: path to the protein PDB/PQR file
     :type  pdb_path: str
     :param ligand_path: path to the ligand PQR file, if PDB is supplied,
-        **ligand_path** extension is changed to ".pqr"
+        **ligand_path** extension is changed to ``'.pqr'``
     :type  ligand_path: str
     :param APBS_dx_path: path to the directory where the .dx files are stored
         (optional), by default search in the current directory
@@ -258,8 +259,8 @@ def scan(pdb_path,
         detect overlapping orientations (optional), default is ``False``; this
         option does not work with **write_top_hits**
     :type  explicit_sampling: bool
-    :param zipped: gzip all DXBoxes if ``True``, none if ``False``, use "epi"
-        or "mic" to select individual DXBoxes to gzip
+    :param zipped: gzip all DXBoxes if ``True``, none if ``False``, use
+        ``'epi'`` or ``'mic'`` to select individual DXBoxes to gzip
     :type  zipped: bool or tuple
     :param verbose: print calculation details and progress bar to screen if
         ``True``
@@ -269,8 +270,8 @@ def scan(pdb_path,
     :type  protein_conc: float
     :param interior: VdW penalty score delta (optional), must be negative
     :type  interior: float
-    :param flood: default is 'xy' to flood by plane, use 'xyz' to start
-       from a corner
+    :param flood: default is ``'xy'`` to flood by plane, use ``'xyz'`` to
+       start from a corner
     :type  flood: str
 
     :raises AttributeError: if **ligand_path** has no vdw information
@@ -285,10 +286,10 @@ def scan(pdb_path,
         >>> protein_path = '5b1l-protein.pdb'
         >>> ligand_path  = '5b1l-DNA-fragment.pqr'
         >>> EnergyGrid.electrostatics(protein_path, [ligand_path],
-        ...                           mesh_size=3*[m,],
-        ...                           transform=None, verbose=True)
+        ...                           mesh_size=3*[m],
+        ...                           centering=None, verbose=True)
         protein:	5b1l-protein.pdb
-        centered:	False
+        centering:	None
         mesh size:	(0.8,0.8,0.8) Angstroms
         extension:	32 Angstroms
         box dim:	(225,225,225)
@@ -313,7 +314,7 @@ def scan(pdb_path,
     vdw_correlation_eps = 0.0001
     num_of_best_scores = 3
     pymol_threshold = 0.9e37
-    basename = os.path.basename(pdb_path).replace(".pdb", "_{0}.dx")
+    basename = os.path.splitext(os.path.basename(pdb_path))[0] + "_{0}.dx"
     path_epi = basename.format("epi")
     path_mic = basename.format("mic")
     path_esp = basename.format("esp")
@@ -325,12 +326,14 @@ def scan(pdb_path,
                                                  os.path.basename(path_vdw)))
     
     # rangecheck
+    if file_ext(ligand_path) == '.pdb':
+        ligand_path = file_replace_ext(ligand_path, '.pqr')
     if not APBS_dx_path or not os.path.isdir(APBS_dx_path):
-        raise IOError("APBS_dx_path cannot be read.")
+        raise IOError('APBS path "{}" cannot be read.'.format(APBS_dx_path))
     if not os.path.isfile(pdb_path):
-        raise IOError("pdb_path cannot be read.")
+        raise IOError('Protein file "{}" cannot be read.'.format(pdb_path))
     if not os.path.isfile(ligand_path):
-        raise IOError("ligand_path cannot be read.")
+        raise IOError('Ligand file "{}" cannot be read.'.format(ligand_path))
     
     # select files to compress
     if isinstance(zipped, basestring):
@@ -552,20 +555,25 @@ def scan(pdb_path,
         return affinity
 
 
-def scan_multiconformational(protein_paths, ligand_paths,
-                             elec_kwargs=None, scan_kwargs=None,
-                             transform_on_first='center+rotate'):
+def scan_conformers(protein_paths, ligand_paths,
+                    elec_kwargs=None, scan_kwargs=None,
+                    superpose_proteins=True,
+                    merge=False, protein_weights=None,
+                    ligand_weights=None, merge_output_fmt='merge_{}.dx'):
     '''
-    Compute energy grids for multiple protein and ligand conformations.
+    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
+    ligands. For N proteins and M ligands, N electrostatic grids and N.M
+    energy grids will be computed, using the same parameters. Optionally,
+    can merge the resulting energy grids.
     
-    Merged energies are only meaningful when the protein structures have been
-    superimposed. By default the first structure is centered and rotated, while
-    subsequent structures are superimposed on the first. Make sure the atom
-    order is identical in all proteins, otherwise superimposition will fail.
-    If you have already carried out the superimposition outside Epitopsy,
-    please set **transform_on_first** to ``None``.
+    Merged energies are only meaningful for aligned protein structures.
+    The first protein is centered according to **elec_kwargs['centering']**
+    while subsequent structures are superposed onto the first. Make sure the
+    atom order is identical in all proteins. If you have already carried out
+    the superposition outside Epitopsy, please set **superpose_proteins** to
+    ``False`` and **elec_kwargs['centering']** to ``None``.
     
-    :param protein_paths: paths to the protein PDB files
+    :param protein_paths: paths to the protein PDB/PQR files
     :type  protein_paths: list(str) or str
     :param ligand_paths: paths to the ligand PQR files
     :type  ligand_paths: list(str) or str
@@ -573,21 +581,109 @@ def scan_multiconformational(protein_paths, ligand_paths,
     :type  elec_kwargs: dict
     :param scan_kwargs: optional arguments for :func:`scan`
     :type  scan_kwargs: dict
-    :param transform_on_first: structure transformation: `'center+rotate'` to
-        center and rotate, `'center'` to center, ``None`` to leave the
-        structure intact
-    :type  transform_on_first: str
+    :param superpose_proteins: superpose proteins onto the first one if
+       ``True``; the first protein will be centered according to the
+       ``centering`` key in **elec_kwargs** (see argument **centering**
+       in :func:`scan`)
+    :type  superpose_proteins: bool
+    :param merge: carry out a conformational merge (optional), default is no
+    :type  merge: bool
+    
+    Example::
+    
+        >>> from epitopsy import EnergyGrid
+        >>> protein_paths = ['protein_confA.pdb', 'protein_confB.pdb']
+        >>> ligand_paths = ['ligand_confA.pqr', 'ligand_confB.pqr']
+        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': False}
+        >>> scan_kwargs = {'verbose': False}
+        >>> EnergyGrid.scan_conformers(protein_paths, ligand_paths,
+        ...                            elec_kwargs=elec_kwargs,
+        ...                            scan_kwargs=scan_kwargs,
+        ...                            merge=True)
+    
+    Output files:
+    
+    .. code-block:: none
+    
+        ./protein_confA/
+          protein_confA.pdb
+          protein_confA.pqr
+          protein_confA_esp.dx
+          protein_confA_vdw.dx
+          ligand_confA/
+            ligand_confA.pqr
+            protein_confA_epi.dx
+            protein_confA_mic.dx.gz
+          ligand_confB/
+            ligand_confB.pqr
+            protein_confA_epi.dx
+            protein_confA_mic.dx.gz
+        ./protein_confB/
+          protein_confB.pdb
+          protein_confB.pqr
+          protein_confB_esp.dx
+          protein_confB_vdw.dx
+          ligand_confA/
+            ligand_confA.pqr
+            protein_confB_epi.dx
+            protein_confB_mic.dx.gz
+          ligand_confB/
+            ligand_confB.pqr
+            protein_confB_epi.dx
+            protein_confB_mic.dx.gz
+        ./merge_epi.dx
+        ./merge_mic.dx.gz
+    
+    '''
+    # compute grids
+    _scan_multi_worker(protein_paths, ligand_paths,
+                       elec_kwargs=elec_kwargs, scan_kwargs=scan_kwargs,
+                       superpose_proteins=superpose_proteins)
+    # merge
+    if merge:
+        merge_conformers(protein_paths, ligand_paths,
+                         protein_weights=protein_weights,
+                         ligand_weights=ligand_weights,
+                         output_fmt=merge_output_fmt)
+
+
+def _scan_multi_worker(protein_paths, ligand_paths,
+                       elec_kwargs=None, scan_kwargs=None,
+                       superpose_proteins=False):
+    '''
+    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
+    ligands. For N proteins and M ligands, N electrostatic grids and N.M
+    energy grids will be computed, using the same parameters. Optionally,
+    proteins can be superimposed on top of the first one, as long as atom
+    identifiers are identical.
+    
+    Normally you would not use this function directly, but rather the wrapper
+    functions :func:`scan_multi` and :func:`scan_conformers`.
+    
+    :param protein_paths: paths to the protein PDB/PQR files
+    :type  protein_paths: list(str) or str
+    :param ligand_paths: paths to the ligand PQR files
+    :type  ligand_paths: list(str) or str
+    :param elec_kwargs: optional arguments for :func:`electrostatics`
+    :type  elec_kwargs: dict
+    :param scan_kwargs: optional arguments for :func:`scan`
+    :type  scan_kwargs: dict
+    :param superpose_proteins: superpose proteins onto the first one if
+       ``True``; the first protein will be centered according to the
+       ``centering`` key in **elec_kwargs** (see argument **centering**
+       in :func:`scan`)
+    :type  superpose_proteins: bool
     
     Example::
     
         >>> from epitopsy import EnergyGrid
         >>> protein_paths = ['protein1.pdb', 'protein2.pdb']
         >>> ligand_paths = ['ligand1.pqr', 'ligand2.pqr']
-        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': False}
-        >>> scan_kwargs = {'verbose': False}
-        >>> EnergyGrid.scan_multiconformational(protein_paths, ligand_paths,
-        ...                                     elec_kwargs=elec_kwargs,
-        ...                                     scan_kwargs=scan_kwargs)
+        >>> elec_kwargs = {'mesh_size': 3 * [0.8], 'verbose': True}
+        >>> scan_kwargs = {'verbose': True}
+        >>> EnergyGrid._scan_multi_worker(protein_paths, ligand_paths,
+        ...                               elec_kwargs=elec_kwargs,
+        ...                               scan_kwargs=scan_kwargs)
     
     The output files will be stored on disk following this structure:
     
@@ -621,26 +717,19 @@ def scan_multiconformational(protein_paths, ligand_paths,
             protein2_mic.dx.gz
     
     '''
-    if transform_on_first not in ('center+rotate', 'center', None):
-        raise ValueError('Unknown transform "{}"'.format(transform_on_first))
     # keyword arguments
     if elec_kwargs is None:
         elec_kwargs = {}
     if scan_kwargs is None:
         scan_kwargs = {}
-    if len(protein_paths) >= 2:
-        # with 2 proteins or more, the 'transform' keyword is important
-        if transform_on_first:
-            for key in ('transform', 'align'):
-                if key in elec_kwargs:
-                    raise KeyError('Cannot forward argument "{}" to function '
-                                   'electrostatics(): use argument "transform_'
-                                   'on_first" of function scan_multiconformati'
-                                   'onal()'.format(key))
-        else:
-            if 'transform' not in elec_kwargs:
-                elec_kwargs['transform'] = None
-                print('WARNING: "transform" in elec_kwargs set to None')
+    
+    # handle conflicts
+    if len(protein_paths) >= 2 and superpose_proteins:
+        for key in ('transform', 'align'):
+            if key in elec_kwargs:
+                raise KeyError('Cannot forward argument "{}" to function '
+                               'electrostatics() together with argument '
+                               '"superpose_proteins"'.format(key))
     # file paths
     if isinstance(protein_paths, str):
         protein_paths = [protein_paths]
@@ -653,7 +742,7 @@ def scan_multiconformational(protein_paths, ligand_paths,
     # compute APBS and energy grids
     for i, protein_path in enumerate(protein_paths):
         # create a subfolder for the protein
-        dirname = os.path.basename(protein_path).rstrip('~')[:-4]
+        dirname = os.path.splitext(os.path.basename(protein_path))[0]
         if os.path.isdir(dirname): # erase folder if it already exists
             shutil.rmtree(dirname)
         os.makedirs(dirname)
@@ -661,25 +750,24 @@ def scan_multiconformational(protein_paths, ligand_paths,
         # copy the PDB/PQR file
         shutil.copyfile(protein_path, os.path.basename(protein_path))
         protein_path = os.path.realpath(os.path.basename(protein_path))
-        # handle structure transformation
+        # handle structure centering
         kwargs = elec_kwargs.copy()
-        if transform_on_first:
-            # first structure is transformed, others are superimposed
+        if superpose_proteins:
+            # first structure is centered, others are superposed
             if i == 0:
-                kwargs['transform'] = transform_on_first
+                kwargs['centering'] = elec_kwargs['centering']
+                kwargs['align'] = None
+                reference_protein = protein_path
             else:
-                kwargs['transform'] = 'superimpose'
+                kwargs['centering'] = 'superpose'
                 kwargs['align'] = reference_protein
         # compute the electrostatic grid
         electrostatics(protein_path, ligand_paths, **kwargs)
-        if transform_on_first and i == 0:
-            reference_protein = protein_path
-        # carry out energy calculations
+        # compute the energy grids
         for ligand_path in ligand_paths:
             # create a subfolder for the ligand
             dirname = os.path.basename(ligand_path).split('.')[0]
-            if not os.path.isdir(dirname):
-                os.makedirs(dirname)
+            os.makedirs(dirname)
             os.chdir(dirname)
             # scan protein
             scan(protein_path, ligand_path, APBS_dx_path='..', **scan_kwargs)
@@ -687,12 +775,19 @@ def scan_multiconformational(protein_paths, ligand_paths,
         os.chdir('..')
 
 
-def merge_multiconformational(protein_paths, ligand_paths,
-                              protein_weights=None, ligand_weights=None):
+def merge_conformers(protein_paths, ligand_paths, protein_weights=None,
+                     ligand_weights=None, **kwargs):
     '''
-    Compute energy grids for multiple protein and ligand conformations.
+    Merge energetic maps of conformers using the Maxwell-Boltzmann formula:
+    :math:`E^{\\text{avg}} = -\\log\\left(\\sum_i w_i e^{E_i}\\right)` with 
+    :math:`w_i = e^{-U_i}` the weights. For example, in a MD simulation where
+    the ligand has conformation A in 200 frames and conformation B in 300
+    frames, the weights :math:`w_i` are 200 and 300.
     
-    :param protein_paths: paths to the protein PDB files
+    Two new files will be created in the current directory, `merge_epi.dx` and
+    `merge_mic.dx.gz`.
+    
+    :param protein_paths: paths to the protein PDB/PQR files
     :type  protein_paths: list(str) or str
     :param ligand_paths: paths to the ligand PQR files
     :type  ligand_paths: list(str) or str
@@ -702,53 +797,27 @@ def merge_multiconformational(protein_paths, ligand_paths,
     :param ligand_weights: custom weights for the ligands, in the same order
        as in **ligand_paths**, by default each ligand has the same weight
     :type  ligand_weights: list(float)
+    :param \*\*kwargs: optional arguments to function :func:`merge`
+    :type  \*\*kwargs: any
 
     Example::
     
-        >>> from epitopsy import EnergyGrid
+        >>> from epitopsy import EnergyGrid as EG
         >>> protein_paths = ['protein1.pdb', 'protein2.pdb']
         >>> ligand_paths = ['ligand1.pqr', 'ligand2.pqr']
         >>> electrostatics_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': False}
         >>> scan_kwargs = {'verbose': False}
-        >>> EnergyGrid.scan_multiconformational(protein_paths, ligand_paths,
-        ...                                     electrostatics_kwargs,\
- scan_kwargs)
-        >>> EnergyGrid.merge_multiconformational(protein_paths, ligand_paths)
-    
-    Two new files will be created in the current directory, `merge_epi.dx` and
-    `merge_mic.dx.gz`.
-    The multiconformation scan assumes by default the same weight for every
-    protein/ligand combination. You may change this behavior by defining custom
-    weights in the function arguments. If you need to recompute the merged grid
-    with different weights in the future, it is not necessary to call this
-    function again, as all grids would be recalculated. Simply call
-    :func:`merge` with the new weights. The exact syntax is provided in the
-    merged file ``merge_epi.dx``:
-    
-    .. code-block:: none
-    
-        $> head merge_epi.dx
-        # OpenDX file created by grad on Tue May 16 20:21:45 2017
-        # using the following function call:
-        #   EnergyGrid.merge(["1krn/Ahx-open/1krn_epi.dx",
-        #                     "1krn/Ahx-folded/1krn_epi.dx",
-        #                     "2pk4/Ahx-open/2pk4_epi.dx",
-        #                     "2pk4/Ahx-folded/2pk4_epi.dx",
-        #                     "4duu/Ahx-open/4duu_epi.dx",
-        #                     "4duu/Ahx-folded/4duu_epi.dx"],
-        #                     weights=[1, 1, 1, 1, 1, 1])
-
-    Simply copy-paste the code a Python terminal, without the ``#`` symbols and
-    with the new weights to overwrite ``merge_epi.dx``::
-    
-        >>> from epitopsy import EnergyGrid
-        >>> EnergyGrid.merge(["1krn/Ahx-open/1krn_epi.dx",
-        ...                   "1krn/Ahx-folded/1krn_epi.dx",
-        ...                   "2pk4/Ahx-open/2pk4_epi.dx",
-        ...                   "2pk4/Ahx-folded/2pk4_epi.dx",
-        ...                   "4duu/Ahx-open/4duu_epi.dx",
-        ...                   "4duu/Ahx-folded/4duu_epi.dx"],
-        ...                   weights=[2, 2, 5, 5, 1, 1])
+        >>> EG.scan_conformers(protein_paths, ligand_paths,
+        ...                    electrostatics_kwargs, scan_kwargs,
+        ...                    merge=True,
+        ...                    protein_weights=[0.65, 0.35],
+        ...                    ligand_weights=[0.23, 0.77],
+        ...                    output_fmt='merge1_{}.dx')
+        >>> # perform an additional merge with different weights
+        >>> EG.merge_conformers(protein_paths, ligand_paths,
+        ...                     protein_weights=[0.65, 0.35],
+        ...                     ligand_weights=[0.23, 0.77],
+        ...                     output_fmt='merge2_{}.dx')
     
     '''
     dxbox_paths = []
@@ -782,19 +851,84 @@ def merge_multiconformational(protein_paths, ligand_paths,
     
     # compute grid weights
     for protein_path, protein_weight in zip(protein_paths, protein_weights):
-        protein_dirname = os.path.basename(protein_path).split('.')[0]
+        protein_dirname = os.path.splitext(os.path.basename(protein_path))[0]
         for ligand_path, ligand_weight in zip(ligand_paths, ligand_weights):
-            ligand_dirname = os.path.basename(ligand_path).split('.')[0]
+            ligand_dirname = os.path.splitext(os.path.basename(ligand_path))[0]
             dxbox_weights.append(protein_weight * ligand_weight)
             dxbox_paths.append(os.path.join(protein_dirname, ligand_dirname,
-                                            os.path.basename(protein_path)
-                                            .replace('.pdb', '_epi.dx')))
+                                            protein_dirname + '_epi.dx'))
     
     # merge grids
-    merge(dxbox_paths, dxbox_weights)
-    
+    merge(dxbox_paths, dxbox_weights, **kwargs)
 
-def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
+
+def scan_multi(protein_paths, ligand_paths,
+               elec_kwargs=None, scan_kwargs=None):
+    '''
+    Repeat :func:`electrostatics` and :func:`scan` on multiple proteins and
+    ligands. For N proteins and M ligands, N electrostatic grids and N.M
+    energy grids will be computed, using the same parameters.
+    
+    .. seealso:: :func:`scan_conformers` for the special case where proteins
+                 and ligands are drawn from conformer ensembles
+    
+    :param protein_paths: paths to the protein PDB/PQR files
+    :type  protein_paths: list(str) or str
+    :param ligand_paths: paths to the ligand PQR files
+    :type  ligand_paths: list(str) or str
+    :param elec_kwargs: optional arguments for :func:`electrostatics`
+    :type  elec_kwargs: dict
+    :param scan_kwargs: optional arguments for :func:`scan`
+    :type  scan_kwargs: dict
+    
+    Example::
+    
+        >>> from epitopsy import EnergyGrid
+        >>> protein_paths = ['protein1.pdb', 'protein2.pdb']
+        >>> ligand_paths = ['ligand1.pqr', 'ligand2.pqr']
+        >>> elec_kwargs = {'mesh_size': 3 * [0.8, ], 'verbose': True}
+        >>> scan_kwargs = {'verbose': True}
+        >>> EnergyGrid.scan_multi(protein_paths, ligand_paths,
+        ...                       elec_kwargs=elec_kwargs,
+        ...                       scan_kwargs=scan_kwargs)
+    
+    Output files:
+    
+    .. code-block:: none
+    
+        ./protein1/
+          protein1.pdb
+          protein1.pqr
+          protein1_esp.dx
+          protein1_vdw.dx
+          ligand1/
+            ligand1.pqr
+            protein1_epi.dx
+            protein1_mic.dx.gz
+          ligand2/
+            ligand2.pqr
+            protein1_epi.dx
+            protein1_mic.dx.gz
+        ./protein2/
+          protein2.pdb
+          protein2.pqr
+          protein2_esp.dx
+          protein2_vdw.dx
+          ligand1/
+            ligand1.pqr
+            protein2_epi.dx
+            protein2_mic.dx.gz
+          ligand2/
+            ligand2.pqr
+            protein2_epi.dx
+            protein2_mic.dx.gz
+    
+    '''
+    _scan_multi_worker(protein_paths, ligand_paths, elec_kwargs=elec_kwargs,
+                       scan_kwargs=scan_kwargs, superpose_proteins=False)
+
+
+def merge(energy_paths, weights=None, output_fmt='merge_{}.dx', zipped='mic'):
     '''
     Merge multiple energetic maps using the Maxwell-Boltzmann formula:
     :math:`E^{\\text{avg}} = -\\log\\left(\\sum_i w_i e^{E_i}\\right)` with 
@@ -808,18 +942,50 @@ def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
     :type  weights: list(float)
     :param output_fmt: path to the output DXBoxes, with format
     :type  output_fmt: str
+    :param zipped: gzip all DXBoxes if ``True``, none if ``False``, use "epi"
+        or "mic" to select individual DXBoxes to gzip
+    :type  zipped: bool or tuple
     
     Example::
     
         >>> from epitopsy import EnergyGrid
-        >>> EnergyGrid.merge(["1krn/Ahx-open/1krn_epi.dx",
-        ...                   "1krn/Ahx-folded/1krn_epi.dx",
-        ...                   "2pk4/Ahx-open/2pk4_epi.dx",
-        ...                   "2pk4/Ahx-folded/2pk4_epi.dx",
-        ...                   "4duu/Ahx-open/4duu_epi.dx",
-        ...                   "4duu/Ahx-folded/4duu_epi.dx"],
+        >>> EnergyGrid.merge(['1krn/Ahx-open/1krn_epi.dx',
+        ...                   '1krn/Ahx-folded/1krn_epi.dx',
+        ...                   '2pk4/Ahx-open/2pk4_epi.dx',
+        ...                   '2pk4/Ahx-folded/2pk4_epi.dx',
+        ...                   '4duu/Ahx-open/4duu_epi.dx',
+        ...                   '4duu/Ahx-folded/4duu_epi.dx'],
         ...                  weights=[1, 1, 1, 1, 1, 1])
-
+    
+    If you need to recompute the merged grid with different weights in the,
+    simply call :func:`merge` with the new weights. The exact syntax is
+    provided in the merged file ``merge_epi.dx``:
+    
+    .. code-block:: none
+    
+        $> head merge_epi.dx
+        # OpenDX file created by grad on Tue May 16 20:21:45 2017
+        # using the following function call:
+        #   EnergyGrid.merge(['1krn/Ahx-open/1krn_epi.dx',
+        #                     '1krn/Ahx-folded/1krn_epi.dx',
+        #                     '2pk4/Ahx-open/2pk4_epi.dx',
+        #                     '2pk4/Ahx-folded/2pk4_epi.dx',
+        #                     '4duu/Ahx-open/4duu_epi.dx',
+        #                     '4duu/Ahx-folded/4duu_epi.dx'],
+        #                     weights=[1, 1, 1, 1, 1, 1])
+    
+    Copy-paste the code a Python terminal, without the ``#`` symbols and
+    with the new weights to overwrite ``merge_epi.dx``::
+    
+        >>> from epitopsy import EnergyGrid
+        >>> EnergyGrid.merge(['1krn/Ahx-open/1krn_epi.dx',
+        ...                   '1krn/Ahx-folded/1krn_epi.dx',
+        ...                   '2pk4/Ahx-open/2pk4_epi.dx',
+        ...                   '2pk4/Ahx-folded/2pk4_epi.dx',
+        ...                   '4duu/Ahx-open/4duu_epi.dx',
+        ...                   '4duu/Ahx-folded/4duu_epi.dx'],
+        ...                   weights=[2, 2, 5, 5, 1, 1])
+    
     '''
     if not weights:
         weights = len(energy_paths) * [1,]
@@ -827,6 +993,17 @@ def merge(energy_paths, weights=None, output_fmt='merge_{}.dx'):
     merge_mic = output_fmt.format('mic')
     if merge_epi == merge_mic:
         raise ValueError('arg. output_fmt is incorrect, please read the doc')
+    
+    # select files to compress
+    if isinstance(zipped, basestring):
+        zipped = (zipped,)
+    if zipped is True:
+        zipped = ('epi', 'mic')
+    if isinstance(zipped, list) or isinstance(zipped, tuple):
+        if 'epi' in zipped:
+            merge_epi += '.gz'
+        if 'mic' in zipped:
+            merge_mic += '.gz'
     
     # prepare DXBox comment
     comments = ['Output of function epitopsy.EnergyGrid.calculation.merge(',

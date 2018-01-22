@@ -76,8 +76,8 @@ def isosurface_ramp(dxbox, output=None, name=None, percents=None):
     
     Example::
     
-        >>> from epitopsy import EnergyGrid
-        >>> EnergyGrid.isosurface_ramp('protein_occ.dx')
+        >>> from epitopsy import EnergyGrid as EG
+        >>> EG.isosurface_ramp('protein_occ.dx', percents=[0.01, 0.05, 0.10])
     
     '''
     if percents is None:
@@ -98,7 +98,7 @@ def isosurface_ramp(dxbox, output=None, name=None, percents=None):
     with open(output, 'w') as f:
         for level, percent in zip(levels, percents):
             f.write('# {:.0f}% probability of presence\n'.format(100 * percent))
-            f.write('isosurface {0}_iso_{1:.0f}p, {0}, {2:.3g}\n'.format(
+            f.write('isosurface {0}_iso_{1:.0f}p, {0}, {2:.4g}\n'.format(
                     name, 100 * percent, level))
 
 
@@ -301,31 +301,26 @@ def remove_trailing_digits(input_path, output_path, decimals):
     open(output_path, 'w').write(header + lines)
 
 
-def cluster_frequencies(minima, discard_size=2):
+def table_minima(minima):
     '''
-    Cluster local minima of an energy grid detected by frequency.
+    Count occurences of minima.
     
     :param minima: 3D position of local minima (as integers)
     :type  minima: np.array
-    :param discard_size: discard local minima sampled less than this number
-    :type  discard_size: int
-    :returns: Most frequent positions
-    :rettype: list(tuple(tuple(int),int))
+    :returns: Minima counts
+    :returntype: list(tuple(tuple(int),int))
     '''
-    
-    # compute frequencies
-    frequencies = {}
+    table = {}
     for v in minima:
         vector = tuple(v)
-        frequencies[vector] = frequencies.get(vector, 0) + 1
+        table[vector] = table.get(vector, 0) + 1
     
-    # discard outliers
-    frequencies = sorted([(v, freq) for v, freq in frequencies.items()
-           if freq >= discard_size], key=lambda x: x[1], reverse=True)
-    return frequencies
+    table = [(v, freq) for v, freq in table.items()]
+    table = sorted(table, key=lambda x: x[1], reverse=True)
+    return table
 
 
-def cluster_kmeans(minima, k_max=12, discard_size=2, fun=np.median, seed=None):
+def cluster_kmeans(minima, k_max=12, discard_size=1, fun=np.median, seed=None):
     '''
     Cluster local minima of an energy grid detected by simulated annealing.
     Use silhouette coefficients to select the best *k*.
@@ -336,7 +331,8 @@ def cluster_kmeans(minima, k_max=12, discard_size=2, fun=np.median, seed=None):
     :type  minima: np.array
     :param cluster_max: maximum value for *k*
     :type  cluster_max: int
-    :param discard_size: discard local minima sampled less than this number
+    :param discard_size: keep only local minima sampled more frequently than
+       **discard_size**
     :type  discard_size: int
     :param fun: function to recompute clusters center, defautl is the median
     :type  fun: function
@@ -348,18 +344,19 @@ def cluster_kmeans(minima, k_max=12, discard_size=2, fun=np.median, seed=None):
     if seed is None:
         seed = np.random.randint(500)
     
-    # compute frequencies
-    frequencies = cluster_frequencies(minima, discard_size=discard_size)
-    minima = np.array([v for v, freq in frequencies for _ in range(freq)])
+    # discard minima with low occurence
+    table = table_minima(minima)
+    table = [(v, freq) for v, freq in table if freq > discard_size]
+    minima = np.array([v for v, freq in table for _ in range(freq)])
+    k_max = min(k_max, len(table) - 1)
+    if k_max <= 2:
+        raise ValueError('There are only {} unique data points, '
+                         'clustering is meaningless'.format(k_max))
     
     # find optimal number of clusters
     best_n = None
     best_labels = None
     best_sil = -1
-    k_max = min(k_max, len(frequencies) - 1)
-    if k_max <= 2:
-        raise ValueError('There are only {} unique data points, '
-                         'clustering is meaningless'.format(k_max))
     for n in range(2, k_max):
         kmeans = KMeans(n_clusters=n, random_state=seed)
         kmeans.fit(minima)
@@ -408,6 +405,8 @@ def pseudo_atoms(group_name, name_fmt='P{}', **kwargs):
     if len(kwargs['name'][-1]) > 4:
         raise ValueError('Cannot use name "{}": more than 4 characters for an '
                          'atom will crash PyMOL'.format(kwargs['name'][-1]))
+    if isinstance(kwargs['pos'], basestring):
+        kwargs['pos'] = [kwargs['pos']]
     lines = []
     for i in range(len(kwargs['pos'])):
         listing = ['pseudoatom {}'.format(group_name)]

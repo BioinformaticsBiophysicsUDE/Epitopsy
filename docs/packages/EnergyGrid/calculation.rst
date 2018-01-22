@@ -45,8 +45,8 @@ ligand and return an energy grid.
 .. include:: <isolat1.txt>
 .. include:: <mmlalias.txt>
 .. include:: <isogrk1.txt>
-.. |kbT| replace:: k\ :sub:`B`\ T 
-.. |_| unicode:: 0xA0 
+.. |kbT| replace:: k\ :sub:`B`\ T
+.. |_| unicode:: 0xA0
    :trim:
 
 .. _calculation-syntax:
