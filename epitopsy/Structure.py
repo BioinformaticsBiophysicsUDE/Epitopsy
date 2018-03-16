@@ -1957,8 +1957,9 @@ class PDBFile(Structure_Template):
                 atom_id = int(line[6:11])
                 atom_name = line[12:16].strip()
                 full_atom_name = line[12:16]
-                alt_location = line[16:17]
+                alt_location = line[16]
                 res_id = int(line[22:26])
+                iCode = line[26]
                 residue_name = line[17:20]
                 chain_id = line[21:22]
                 x_coord = float(line[30:38])
@@ -1988,7 +1989,7 @@ class PDBFile(Structure_Template):
                     het_flag = 'H'
 
                 # biopython artifact
-                res_id = (het_flag, res_id, ' ')
+                res_id = (het_flag, res_id, iCode)
 
                 # if this pdb contains alternative locations, it will
                 # print out a warning, but it only takes the A-position
@@ -2013,7 +2014,7 @@ class PDBFile(Structure_Template):
                     # name, coord, bfactor, occupancy, altloc, fullname,
                     # serial, number, element (None), charge(None)
                     new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                    ' ', full_atom_name, atom_id)
+                                    alt_location, full_atom_name, atom_id)
                     # set element
                     new_atom.set_element(element)
                     new_atom.set_charge(charge)
@@ -2242,7 +2243,7 @@ class PQRFile(Structure_Template):
                     new_chain.add(new_res)
 
                     new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                    iCode, full_atom_name, atom_id)
+                                    ' ', full_atom_name, atom_id)
                     # register in res
                     new_res.add(new_atom)
 
@@ -2259,7 +2260,7 @@ class PQRFile(Structure_Template):
                 if (atom_name.strip() != new_atom.id
                     or atom_id != new_atom.serial_number):
                     new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                    iCode, full_atom_name, atom_id)
+                                    ' ', full_atom_name, atom_id)
                     # register in res
                     new_res.add(new_atom)
 
@@ -2482,7 +2483,7 @@ class LatFile(Structure_Template):
                 # name, coord, bfactor, occupancy, altloc, fullname,
                 # serial, number, element (None), charge(None)
                 new_atom = Atom(atom_name, atom_coord, info_1, info_2,
-                                ' ', full_atom_name, atom_id)
+                                alt_location, full_atom_name, atom_id)
                 # set element
                 new_atom.set_element(element)
                 new_atom.set_charge(charge)

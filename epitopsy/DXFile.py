@@ -567,13 +567,13 @@ class DXBox(object):
         else:
             return True
 
-    def find_extrema(self, runs=300, minima=True, as_gridpoints=False, conv_temp=0.00001, gamma=0.25):
+    def find_extrema(self, runs=300, as_gridpoints=False, conv_temp=0.00001, gamma=0.25):
         '''
         Find coordinates (as gridpoints or in real space) that have
         the strongest negative potential, while discarding noise values.
         '''
-        binding_sites = dx_cython.simulated_annealing(self.box, runs=runs, search_min=minima,
-                                                      conv_temp=conv_temp, gamma=gamma)
+        binding_sites = dx_cython.simulated_annealing(self.box, runs=runs,
+                                                      convergence_T=conv_temp, gamma=gamma)
         occurrences = self._count_occurrence(binding_sites)
         # using K-means clustering to find the group of most frequently found points.
         k_means = KMeans(n_clusters=2)
