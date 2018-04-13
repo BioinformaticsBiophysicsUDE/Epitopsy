@@ -36,7 +36,6 @@ EnergyGrid package
 .. include:: <mmlalias.txt>
 .. include:: <isogrk1.txt>
 .. |kbT| replace:: k\ :sub:`B`\ T
-.. |pm| unicode:: 0xB1
 .. |_| unicode:: 0xA0
    :trim:
 
@@ -112,7 +111,7 @@ Use :func:`epitopsy.EnergyGrid.calculation.scan_conformers`:
 Semi-flexible protein and semi-flexible ligand
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Use :func:`epitopsy.EnergyGrid.calculation.scan_conformers` (note the `centering` argument from **elec_kwargs** transforms ``protein_confA.pdb``, while ``protein_confB.pdb`` get superposed):
+Use :func:`epitopsy.EnergyGrid.calculation.scan_conformers` (note the `centering` argument from **elec_kwargs** transforms ``protein_confA.pdb``, while ``protein_confB.pdb`` is implicitly superposed):
 
     >>> from epitopsy import EnergyGrid as EG
     >>> protein_paths = ['protein_confA.pdb', 'protein_confB.pdb']
@@ -154,10 +153,14 @@ Use :func:`epitopsy.EnergyGrid.calculation.scan_multi`:
 Visualization
 -------------
 
-The following PyMOL script will load the Epitopsy output files, generate isosurfaces and ray-trace the protein::
+Energy grids
+^^^^^^^^^^^^
+
+The following PyMOL script loads the Epitopsy output files and generate isosurfaces::
 
     >>> reinitialize
     >>> bg_color white
+    >>> set antialias, 2
     >>> set ray_shadow, off
     >>> # load files
     >>> load protein.pqr
@@ -172,13 +175,15 @@ The following PyMOL script will load the Epitopsy output files, generate isosurf
     >>> color skyblue, epi_pos_*kT
     >>> color firebrick, epi_neg_*kT
     >>> set transparency, 0.5, epi_*_1kT
-    >>> # ray-trace
-    >>> ray 1200
 
 
-Red isosurfaces represent negative energies (favorable) while blue isosurfaces represent positive energies (defavorable). The translucent isosurface are drawn at 1 |_| |kbT| while the solid isosurfaces are drawn at 2 |_| |kbT|. These thresholds are arbitrary and usually depend on the charge of the ligand. For highly charged ligands such as DNA and RNA fragments, the |pm| |_| 1 |_| |kbT| level may be too small and would encapsulate the entire protein.
+Red isosurfaces represent negative energies (favorable) while blue isosurfaces represent positive energies (defavorable). The translucent isosurfaces are drawn at |pm| |_| 1 |_| |kbT| while the solid isosurfaces are drawn at |pm| |_| 2 |_| |kbT|. These thresholds are arbitrary and usually depend on the charge of the ligand. For highly charged ligands such as DNA and RNA fragments, the |pm| |_| 1 |_| |kbT| level may be too small and would encapsulate the entire protein.
 
-It can be helpful to plot the ESP potential on a separate image. The code is very similar, however the red and blue colors have a slightly different hue to distinguish electrostatic potential isosurfaces from energy isosurfaces::
+
+Protein potential
+^^^^^^^^^^^^^^^^^
+
+Plotting the ESP is very similar to plotting an EG, however the red and blue colors have a different hue to distinguish potential isosurfaces from energy isosurfaces::
 
     >>> load protein_esp.dx
     >>> isosurface esp_pos_1kT, protein_epi, +1
@@ -186,11 +191,33 @@ It can be helpful to plot the ESP potential on a separate image. The code is ver
     >>> color lightblue, epi_pos_*kT
     >>> color salmon, epi_neg_*kT
 
+Ligand internal representation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+The following Python script loads the ligand and snaps its electric charges and van der Waals volume in two grids::
 
+    >>> from epitopsy import EnergyGrid as EG
+    >>> EG.ligand_grids('ligand1.pqr', 3 * [0.6])
 
+The following PyMOL script loads the Epitopsy output files and generate isosurfaces::
 
-
-
+    >>> reinitialize
+    >>> bg_color white
+    >>> set antialias, 2
+    >>> set ray_shadow, off
+    >>> # load files
+    >>> load ligand1_crg.dx, ligand_crg
+    >>> load ligand1_vdw.dx, ligand_vdw
+    >>> load ligand1.pqr
+    >>> # generate sticks representation and draw grids
+    >>> as sticks, ligand
+    >>> set stick_radius, 0.05
+    >>> isosurface crg_pos, ligand_crg, +0.1
+    >>> isosurface crg_neg, ligand_crg, -0.1
+    >>> isosurface vdw, ligand_vdw, 0.5
+    >>> color blue, crg_pos
+    >>> color red, crg_neg
+    >>> color lightblue, vdw
+    >>> set transparency, 0.6, vdw
 
 

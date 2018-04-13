@@ -92,3 +92,6 @@ div.legend {
     width:         75%!important;
 }
 
+/* module-specific */
+div.mathtoolssphericallatticegrid > img {width: 20%; max-width: 450px}
+

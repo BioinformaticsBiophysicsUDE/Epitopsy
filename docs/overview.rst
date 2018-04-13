@@ -48,8 +48,10 @@ References on Epitopsy:
 
     * Jean-Noël Grad, Alba Gigante, Christoph Wilms, Jan Nikolaj Dybowski,
       Ludwig Ohl, Christian Ottmann, Carsten Schmuck and Daniel Hoffmann,
-      *Locating large flexible ligands on proteins*, **2017**,
-      `arXiv:1707.02614 <https://arxiv.org/abs/1707.02614>`_
+      Locating Large, Flexible Ligands on Proteins,
+      *J. Chem. Inf. Model.* **2018**, 58(2), 315--327.
+      DOI: `10.1021/acs.jcim.7b00413 <https://doi.org/10.1021/acs.jcim.7b00413>`_,
+      `ArXiv:1707.02614 <https://arxiv.org/abs/1707.02614>`_
     * Christoph Wilms, *Methods for the Prediction of Complex Biomolecular
       Structures* `[online]
       <https://duepublico.uni-duisburg-essen.de/servlets/DocumentServlet?id=33166>`_,
@@ -60,11 +62,14 @@ References on Epitopsy:
 
 Further references:
 
-    * Cock, P. J. *et al.* *Biopython: freely available Python tools for
-      computational molecular biology and bioinformatics*, *Bioinformatics*
-      **2009**, *25*, 1422-1423.
-    * Behnel, S. *et al.* *Cython: The Best of Both Worlds*, *Comput Sci Eng.*
-      **2011**, *13*, 31--39.
-    * Oliphant, T. E. *Python for Scientific Computing*, *Comput Sci Eng.*
-      **2007**, *9*, 10--20.
+    * Cock, P. J. *et al.* Biopython: freely available Python tools for
+      computational molecular biology and bioinformatics, *Bioinformatics*
+      **2009**, 25(11), 1422-1423. DOI: `10.1093/bioinformatics/btp163
+      <https://doi.org/10.1093/bioinformatics/btp163>`_
+    * Behnel, S. *et al.* Cython: The Best of Both Worlds, *Comput Sci Eng.*
+      **2011**, 13(2), 31--39.
+      DOI: `10.1109/MCSE.2010.118 <https://doi.org/10.1109/MCSE.2010.118>`_
+    * Oliphant, T. E. Python for Scientific Computing, *Comput Sci Eng.*
+      **2007**, 9(3), 10--20.
+      DOI: `10.1109/MCSE.2007.58 <https://doi.org/10.1109/MCSE.2007.58>`_
 
