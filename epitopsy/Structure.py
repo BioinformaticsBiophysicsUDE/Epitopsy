@@ -1515,7 +1515,7 @@ class Structure_Template(object):
             atom.transform(rot_matrix, trans_vector)
 
     def get_dxbox_dim(self, box_mesh_size, extend=None, cubic_box=False,
-                      nlev=4):
+                      nlev=4, APBS_grid_size=True):
         '''
         Return the dimensions of a DXbox. The edges are calculated using the
         protein maximal diameter in each direction, **extend** if given,
@@ -1536,6 +1536,8 @@ class Structure_Template(object):
         :param nlev: depth of the multilevel hierarchy used by the multigrid
            solver (optional)
         :type  nlev: int
+        :param APBS_grid_size: enforce APBS-compatible dimensions (recommended)
+        :type  APBS_grid_size: bool
 
         :returns: Dimensions of the DXbox.
         :rtype: :class:`np.array[3]`
@@ -1556,10 +1558,11 @@ class Structure_Template(object):
             box_dim = box_dim + 2 * float(extend)
 
         box_dim = np.ceil(box_dim / box_mesh_size)
-        from epitopsy.APBS import fix_grid_size
-        box_dim = fix_grid_size(box_dim, nlev)
+        if APBS_grid_size:
+            from epitopsy.APBS import fix_grid_size
+            box_dim = fix_grid_size(box_dim, nlev)
 
-        return box_dim
+        return np.array(box_dim, dtype=int)
 
     def get_dxbox_offset(self, box_mesh_size, box_dim, box_center):
         '''

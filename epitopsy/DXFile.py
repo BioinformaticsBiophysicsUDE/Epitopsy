@@ -585,7 +585,8 @@ class DXBox(object):
         binding_mask = k_means.labels_ == label
         binding_sites = np.array(occurrences)[binding_mask][:,0]
         if as_gridpoints:
-            return binding_sites
+            # convert array of objects to array of int
+            return np.array([coord for coord in binding_sites])
         else:
             return np.array([self.transform_box_to_real_space(coord) for coord in binding_sites])
 

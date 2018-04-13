@@ -232,9 +232,11 @@ def ligand_grids(ligand_path, box_mesh_size, box_dim=None, box_offset=None,
     # read ligand
     ligand = PQRFile(ligand_path)
     if box_dim is None:
-        box_dim = ligand.get_dxbox_dim(box_mesh_size)
+        box_dim = ligand.get_dxbox_dim(box_mesh_size, extend=5,
+          APBS_grid_size=False)
     if box_offset is None:
-        box_offset = ligand.determine_center_of_extremes()
+        box_offset = ligand.get_dxbox_offset(box_mesh_size, box_dim,
+          ligand.determine_center_of_extremes())
     
     # compute grids
     for btype in box_type:
