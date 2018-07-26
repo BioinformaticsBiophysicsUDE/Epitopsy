@@ -20,6 +20,7 @@ $(document).ready(function() {
      * the >>> and ... prompts and the output and thus make the code
      * copyable. */
     var div = $('.highlight-python .highlight,' +
+                '.highlight-default .highlight,' +
                 '.highlight-python3 .highlight')
     var pre = div.find('pre');
 
@@ -54,20 +55,21 @@ $(document).ready(function() {
     });
 
     // define the behavior of the button when it's clicked
-    $('.copybutton').toggle(
-        function() {
-            var button = $(this);
+    $('.copybutton').click(function() {
+        var button = $(this);
+        if (!button.hasClass('copybutton-js-clicked')) {
+            button.addClass('copybutton-js-clicked');
             button.parent().find('.go, .gp, .gt').hide();
             button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'hidden');
             button.css('text-decoration', 'line-through');
             button.attr('title', show_text);
-        },
-        function() {
-            var button = $(this);
+        } else {
+            button.removeClass('copybutton-js-clicked');
             button.parent().find('.go, .gp, .gt').show();
             button.next('pre').find('.gt').nextUntil('.gp, .go').css('visibility', 'visible');
             button.css('text-decoration', 'none');
             button.attr('title', hide_text);
-        });
+        }
+    });
 });
 

@@ -49,3 +49,6 @@ epitopsy/cython/*.c
 
 # other temps
 *.*~
+
+# generated documentation
+docs/build/
