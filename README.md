@@ -9,7 +9,7 @@ Python package for FFT-driven protein-ligand energy scanning and Direct Coupling
 
 * python >= 2.7.4 (python3.* has not been tested)
 * python-dev (headers are required for compilation)
-* cython >= 0.18
+* cython >= 0.28.2
 * numpy >= 1.7.0
 * biopython >= 1.6.0
 * scipy >= 0.19
